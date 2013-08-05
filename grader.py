@@ -1,62 +1,55 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr  3 10:47:20 2013
+import inspect
+import os
+import subprocess
+import json
+from pprint import pprint
 
-@author: macobo
-"""
+class Tester:
+    def __init__(self, programName):
+        self.programName = programName
+        self.tests = {}
 
-# TODO: restrict filesystem access? urllib?
-import sys
-import queue
-from time import sleep
-from threading import Thread, Lock
+    def test(self, test_function):
+        name = test_function.__name__
+        self.tests[name] = test_function
 
-d = []
-class Stdin:
-    def __init__(self, lock):
-        self.queue = queue.Queue()
-        self.lock = lock
-        self.lock.acquire()
-    def write(self, line):
-        self.queue.put(line)
-    def readline(self):
-        if self.lock.locked():
-            self.lock.release()
-            d.append("released")
-        result = self.queue.get(timeout = 3)
-        self.lock.acquire()
-        d.append("aquired")
-        return result
+    def _runTest(self, test_function):
+        function_code = inspect.getsource(test_function)
+        function_name = test_function.__name__
+        code = ""
+        #code = "{}\n{}(__import__({}))".format(function_code, 
+        #                                        function_name, 
+        #                                        self.programName)
+        results = runCode(code)
+        pprint(results)
+        print(results["stderr"])
 
-class Stdout:
-    def __init__(self):
-        self.output = []
-    def flush(self): 
-        pass
-    def write(self, msg):
-        self.output.append(msg)
-    def read(self):
-        return self.output
-        
-class Module(Thread):
-    def __init__(self, filename):
-        Thread.__init__(self)
-        self.filename = filename
-        self.lock = Lock()
-        # this thread doesn't block exiting
-        self.setDaemon(True)
-        self.start()
-        sleep(0.05) # to assure the thread has started
-    
-    def run(self):
-        self.stdin = sys.stdin = Stdin(self.lock)
-        self.stdout = sys.stdout = Stdout()
-        self.module = __import__(self.filename)
-        
-def get_module(filename):
-    m = Module(filename)
-    return m.module, m.stdin, m.stdout
-            
-def reset_io():
-    sys.stdin = sys.__stdin__
-    sys.stdout = sys.__stdout__
+    def testAll(self):
+        for key, test_function in self.tests.items():
+            self._runTest(test_function)
+
+def runCode(code, globals=None):
+    if globals is None: globals = dict()
+    stdin = bytes(json.dumps([code, globals]), "ascii")
+    print(stdin)
+    subproc = subprocess.Popen(
+        ["python3","test.py"], cwd=os.getcwd(), stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = subproc.communicate(stdin)
+    return {
+        "stdout": stdout,
+        "stderr": stderr,
+        "status": subproc.returncode
+    }
+
+
+a = Tester("b")
+
+
+@a.test
+def f(module):
+    module.a == 3
+    import sys
+    sys.stderr.write("blah")
+
+a.testAll()
