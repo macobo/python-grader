@@ -1,1 +1,2 @@
-a = 3
+def foobar(a):
+    return a + 1
