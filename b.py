@@ -1,2 +1,2 @@
-def foobar(a):
-    return a + 1
+a = input()
+print("Hello ", a)

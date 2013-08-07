@@ -10,6 +10,9 @@ from textwrap import dedent
 from pprint import pprint
 
 
+CURRENT_FOLDER = os.path.dirname(__file__)
+
+
 def runCode(code, globals=None):
     if globals is None: globals = dict()
     #stdin = bytes(json.dumps([code, globals]), "ascii")
@@ -24,10 +27,12 @@ def runCode(code, globals=None):
         "status": subproc.returncode
     }
 
+
 def dropDecorators(sourceCode):
     lines = sourceCode.split("\n")
     predicate = lambda line: line.rstrip()[0] == "@"
     return "\n".join(itertools.dropwhile(predicate, lines))
+
 
 class Tester:
     def __init__(self, testedProgramPath):
@@ -39,59 +44,32 @@ class Tester:
         self.tests[name] = test_function
 
     def _runTest(self, test_function_code, test_function_name): 
-        code = dedent("""
-        import sys
-        def singleton(clazz, *args, **kwargs):
-            return clazz(*args, **kwargs)
+        code = open(os.path.join(CURRENT_FOLDER, "execution_base.py")).read()
+        code += dedent("""
+        m = Module("{user_program_path}")
 
-        @singleton
-        class FakeStdout:
-            def __init__(self):
-                self.output = []
-
-            def write(self, b):
-                self.output.append(b)
-
-            def flush(self): pass
-            def close(self): pass
-
-            def get_output(self):
-                return "".join(self.output)
-
-
-
-        sys.stdout = FakeStdout
-
-        user_module = __import__("{user_program_path}")
-
-        # write test method here
-        # call test method - if it crashes, all's well
         {test_function_code}
-        {test_function_name}(user_module, FakeStdout)
+
+        {test_function_name}(m)
 
         sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
-
         """)
         code = code.format(
             user_program_path=self.testedProgramPath,
             test_function_name=test_function_name,
             test_function_code=test_function_code
         )
-        print(code)
         results = runCode(code)
         pprint(results)
-        #print(results["stderr"])
+        return bool(1-results["status"]), results["stderr"]
+
 
     def testAll(self):
         for key, test_function in self.tests.items():
             test_function_code = dropDecorators(inspect.getsource(test_function))
-            self._runTest(test_function_code, test_function.__name__)
-
-
-a = Tester("b")
-
-@a.test
-def f(module, stdin, stdout):
-    assert module.foobar(9) == 10
-
-a.testAll()
+            test_name = test_function.__name__
+            success, errors = self._runTest(test_function_code, test_name)
+            if success:
+                print("Test {test_name} completed successfully!".format(**locals()))
+            else:
+                print("Test {test_name} failed:\n{errors}".format(**locals()))
