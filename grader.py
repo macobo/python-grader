@@ -45,7 +45,7 @@ class Tester:
             return clazz(*args, **kwargs)
 
         @singleton
-        class StdoutCapture:
+        class FakeStdout:
             def __init__(self):
                 self.output = []
 
@@ -59,14 +59,15 @@ class Tester:
                 return "".join(self.output)
 
 
-        sys.stdout = StdoutCapture
+
+        sys.stdout = FakeStdout
 
         user_module = __import__("{user_program_path}")
 
         # write test method here
         # call test method - if it crashes, all's well
         {test_function_code}
-        {test_function_name}(user_module)
+        {test_function_name}(user_module, FakeStdout)
 
         sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
 
@@ -90,7 +91,7 @@ class Tester:
 a = Tester("b")
 
 @a.test
-def f(module):
-    assert module.foobar(9) == 11
+def f(module, stdin, stdout):
+    assert module.foobar(9) == 10
 
 a.testAll()
