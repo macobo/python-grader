@@ -2,7 +2,6 @@
 ## overwritten by user code?
 
 import os
-import json
 import inspect
 import subprocess
 import itertools
@@ -43,7 +42,7 @@ class Tester:
         name = test_function.__name__
         self.tests[name] = test_function
 
-    def _runTest(self, test_function_code, test_function_name): 
+    def runTest(self, test_function_code, test_function_name): 
         code = open(os.path.join(CURRENT_FOLDER, "execution_base.py")).read()
         code += dedent("""
         m = Module("{user_program_path}")
@@ -64,12 +63,12 @@ class Tester:
         return bool(1-results["status"]), results["stderr"]
 
 
-    def testAll(self):
-        for key, test_function in self.tests.items():
-            test_function_code = dropDecorators(inspect.getsource(test_function))
-            test_name = test_function.__name__
-            success, errors = self._runTest(test_function_code, test_name)
-            if success:
-                print("Test {test_name} completed successfully!".format(**locals()))
-            else:
-                print("Test {test_name} failed:\n{errors}".format(**locals()))
+def testAll(tester):
+    for key, test_function in terser.tests.items():
+        test_function_code = dropDecorators(inspect.getsource(test_function))
+        test_name = test_function.__name__
+        success, errors = tester.runTest(test_function_code, test_name)
+        if success:
+            print("Test {test_name} completed successfully!".format(**locals()))
+        else:
+            print("Test {test_name} failed:\n{errors}".format(**locals()))
