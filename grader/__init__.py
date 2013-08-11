@@ -1,6 +1,7 @@
 ## TODO: How to we validate that our vital components arent 
 ## overwritten by user code?
 
+import sys
 import os
 import inspect
 import subprocess
@@ -34,7 +35,9 @@ def dropDecorators(sourceCode):
 
 
 class Tester:
-    def __init__(self, testedProgramPath):
+    def __init__(self, testedProgramPath = None):
+        if testedProgramPath is None:
+            testedProgramPath = sys.argv[1][:-3]
         self.testedProgramPath = testedProgramPath
         self.tests = {}
 
@@ -64,7 +67,7 @@ class Tester:
 
 
 def testAll(tester):
-    for key, test_function in terser.tests.items():
+    for key, test_function in tester.tests.items():
         test_function_code = dropDecorators(inspect.getsource(test_function))
         test_name = test_function.__name__
         success, errors = tester.runTest(test_function_code, test_name)
