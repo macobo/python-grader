@@ -13,12 +13,11 @@ from pprint import pprint
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 
-def runCode(code, globals=None):
-    if globals is None: globals = dict()
-    #stdin = bytes(json.dumps([code, globals]), "ascii")
-    #print(stdin)
+def runCode(code, working_dir=None):
+    if working_dir is None: 
+        working_dir = os.getcwd()
     subproc = subprocess.Popen(
-        ["python3", "-c", code], cwd=os.getcwd(), stdin=subprocess.PIPE,
+        ["python3", "-c", code], cwd=working_dir, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = subproc.communicate()
     return {
@@ -35,42 +34,61 @@ def dropDecorators(sourceCode):
 
 
 class Tester:
-    def __init__(self, testedProgramPath = None):
-        if testedProgramPath is None:
+    def __init__(self, testedProgramPath = None, working_dir = None):
+        if testedProgramPath is None and len(sys.argv) > 1:
             testedProgramPath = sys.argv[1][:-3]
+
         self.testedProgramPath = testedProgramPath
+        self.working_dir = working_dir
         self.tests = {}
+        self.test_names = []
 
     def test(self, test_function):
+        " decorator for tests "
         name = test_function.__name__
         self.tests[name] = test_function
+        self.test_names.append(name)
+        return test_function
 
-    def runTest(self, test_function_code, test_function_name): 
-        code = open(os.path.join(CURRENT_FOLDER, "execution_base.py")).read()
+
+    def runTest(self, test_function_name, tester_module = None): 
+        assert test_function_name in self.test_names, "no test named "+test_function_name
+        if not tester_module:
+            tester_module = sys.argv[0][:-3]
+
+        with open(os.path.join(CURRENT_FOLDER, "execution_base.py")) as f:
+            code = f.read()
+
         code += dedent("""
+        
+        #test_function_code
+        try:
+            from {tester_module} import {test_function_name}
+        except ImportError as e:
+            sys.__stderr__.write("Is {test_function_name} global and importable?\\n")
+            raise
+
         m = Module("{user_program_path}")
-
-        {test_function_code}
-
         {test_function_name}(m)
 
-        sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
+        #sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
         """)
         code = code.format(
             user_program_path=self.testedProgramPath,
             test_function_name=test_function_name,
-            test_function_code=test_function_code
+            tester_module=tester_module
         )
-        results = runCode(code)
-        pprint(results)
-        return bool(1-results["status"]), results["stderr"]
+        #sprint(code)
+        results = runCode(code, self.working_dir)
+        results["success"] = bool(1-results["status"])
+        return results["success"], results
+
+    def allTestResults(self):
+        return [(test_name, self.runTest(test_name)) for test_name in self.test_names]
 
 
 def testAll(tester):
-    for key, test_function in tester.tests.items():
-        test_function_code = dropDecorators(inspect.getsource(test_function))
-        test_name = test_function.__name__
-        success, errors = tester.runTest(test_function_code, test_name)
+    for test_name, (success, errors) in tester.allTestResults():
         if success:
             print("Test {test_name} completed successfully!".format(**locals()))
         else:

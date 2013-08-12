@@ -42,3 +42,4 @@ search nonexisting artist, then some known:
 ====
 
 Porting macropy - import system, ast changes
+11.08 - pathing issues with tests - how do we determine what directory  to run the tests in?

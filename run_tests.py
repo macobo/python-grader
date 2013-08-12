@@ -1,5 +1,5 @@
 import unittest
 
-from tests import Tests
+from grader.tests import Tests
 
 unittest.TextTestRunner().run(Tests)

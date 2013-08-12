@@ -3,7 +3,7 @@ import queue
 from time import sleep
 from threading import Thread, Lock
 
-d = []
+# d = []
 class Stdin:
     def __init__(self, lock):
         self.queue = queue.Queue()
@@ -17,27 +17,31 @@ class Stdin:
     def readline(self):
         if self.lock.locked():
             self.lock.release()
-            d.append("released")
+            # d.append("released")
         result = self.queue.get(timeout = 3)
         self.lock.acquire()
-        d.append("aquired")
+        # d.append("aquired")
         return result
 
 class Stdout:
     def __init__(self):
-        self.output = []
-        self.lastread = 0
+        self.reset()
 
     def flush(self): pass
 
     def write(self, msg):
         self.output.append(msg)
 
+    def reset(self):
+        self.output = []
+        self.lastread = 0
+
     def read(self):
         self.lastread = len(self.output)
         return "".join(self.output)
 
     def new(self):
+        " returns the new elements in stdout since the last read "
         result = "".join(self.output[self.lastread:])
         self.lastread = len(self.output)
         return result

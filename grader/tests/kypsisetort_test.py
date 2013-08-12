@@ -3,7 +3,7 @@ from grader import Tester, testAll
 m = Tester()
 
 @m.test
-def simple(m):
+def simple_test(m):
     m.stdin.write(3)
     m.stdin.write(3)
     m.stdin.write(3)
@@ -17,7 +17,11 @@ def extraPack(m):
     m.stdin.write(7)
     m.stdin.write(5)
     # 3*7*5 = 105 cookies needed
+    m.stdout.reset()
     m.stdin.write(4) # packages per pack
-    assert "27" in m.stdout.read()
 
-testAll(m)
+    assert "27" in m.stdout.new()
+
+
+if __name__ == "__main__":
+    testAll(m)
