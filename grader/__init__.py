@@ -3,12 +3,9 @@
 
 import sys
 import os
-import inspect
 import subprocess
 import itertools
 from textwrap import dedent
-from pprint import pprint
-
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -25,13 +22,6 @@ def runCode(code, working_dir=None):
         "stderr": stderr,
         "status": subproc.returncode
     }
-
-
-def dropDecorators(sourceCode):
-    lines = sourceCode.split("\n")
-    predicate = lambda line: line.rstrip()[0] == "@"
-    return "\n".join(itertools.dropwhile(predicate, lines))
-
 
 class Tester:
     def __init__(self, testedProgramPath = None, working_dir = None):
