@@ -2,6 +2,7 @@ import sys
 import queue
 from time import sleep
 from threading import Thread, Lock
+#from macropy.tracing import macros, trace
 
 # d = []
 class Stdin:

@@ -1,6 +1,7 @@
 import unittest
 import os
 from grader import *
+from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -35,19 +36,29 @@ def function_call(m):
 @dyn_test
 def stdout_new(m):
     m.stdin.write("Karl")
-    old = m.stdout.read() # reset stdout
+    m.stdout.reset() # reset stdout
     m.module.add_one(193)
     assert(m.stdout.new() == "Got 193\n")
 
 
+@dyn_test
+def trace_macro_available(m):
+    m.stdin.write("Karl")
+    m.stdout.reset() # reset stdout
+    assert False
+    #trace[1+2+3]
+    n = m.stdout.new()
+    assert n == "Got 193\n", new
+
+
 class Tests(unittest.TestCase):
     def setUp(self):
-        self.tester = Tester("tested_module", working_dir=CURRENT_FOLDER)
+        self.tester = Tester("tested_module", "tester", working_dir=CURRENT_FOLDER)
 
     def run_test(self, test_function):
         #print(test_function.__name__)
         self.tester.test(test_function)
-        success, errors = self.tester.runTest(test_function.__name__, "tester")
+        success, errors = self.tester.runTest(test_function.__name__)
         assert success, errors
 
     def tester_initialization(self):

@@ -6,6 +6,7 @@ import os
 import subprocess
 import itertools
 from textwrap import dedent
+from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -24,11 +25,14 @@ def runCode(code, working_dir=None):
     }
 
 class Tester:
-    def __init__(self, testedProgramPath = None, working_dir = None):
+    def __init__(self, testedProgramPath=None, tester_module=None, working_dir = None):
         if testedProgramPath is None and len(sys.argv) > 1:
             testedProgramPath = sys.argv[1][:-3]
+        if tester_module is None:
+            tester_module = sys.argv[0][:-3]
 
         self.testedProgramPath = testedProgramPath
+        self.tester_module = tester_module
         self.working_dir = working_dir
         self.tests = {}
         self.test_names = []
@@ -41,22 +45,19 @@ class Tester:
         return test_function
 
 
-    def runTest(self, test_function_name, tester_module = None): 
+    def runTest(self, test_function_name): 
         """ Runs the test, returning a tuple of (success, results).
             Success is a boolean flag indicating if the test was a success,
             results is a dictionary containing stdout and stderr of run.
 
             If tester_module is not provided, current program is used. """
         assert test_function_name in self.test_names, "no test named "+test_function_name
-        if not tester_module:
-            tester_module = sys.argv[0][:-3]
 
         with open(os.path.join(CURRENT_FOLDER, "execution_base.py")) as f:
             code = f.read()
 
         code += dedent("""
         
-        #test_function_code
         try:
             from {tester_module} import {test_function_name}
         except ImportError as e:
@@ -71,15 +72,16 @@ class Tester:
         code = code.format(
             user_program_path=self.testedProgramPath,
             test_function_name=test_function_name,
-            tester_module=tester_module
+            tester_module=self.tester_module
         )
-        #sprint(code)
+        #print(code)
         results = runCode(code, self.working_dir)
         results["success"] = bool(1-results["status"])
         return results["success"], results
 
     def allTestResults(self):
-        return [(test_name, self.runTest(test_name)) for test_name in self.test_names]
+        return [(test_name, self.runTest(test_name)) 
+                                    for test_name in self.test_names]
 
 
 def testAll(tester):
