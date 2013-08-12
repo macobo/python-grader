@@ -42,6 +42,11 @@ class Tester:
 
 
     def runTest(self, test_function_name, tester_module = None): 
+        """ Runs the test, returning a tuple of (success, results).
+            Success is a boolean flag indicating if the test was a success,
+            results is a dictionary containing stdout and stderr of run.
+
+            If tester_module is not provided, current program is used. """
         assert test_function_name in self.test_names, "no test named "+test_function_name
         if not tester_module:
             tester_module = sys.argv[0][:-3]
