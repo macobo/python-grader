@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name = 'grader',
@@ -6,5 +6,9 @@ setup(
     version='0.0.1',
     description='Python grader',
     author='Karl-Aksel Puulmann',
-    author_email='oxymaccy@gmail.com'
+    author_email='oxymaccy@gmail.com',
+    install_requires= ["six"],
+    dependency_links= [
+        'http://github.com/macobo/macropy/tarball/master'
+    ]
 )
