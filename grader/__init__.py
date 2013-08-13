@@ -3,26 +3,10 @@
 
 import sys
 import os
-import subprocess
-import itertools
+from .code_runner import runCode
 from textwrap import dedent
-from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
-
-
-def runCode(code, working_dir=None):
-    if working_dir is None: 
-        working_dir = os.getcwd()
-    subproc = subprocess.Popen(
-        ["python3", "-c", code], cwd=working_dir, stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = subproc.communicate()
-    return {
-        "stdout": stdout,
-        "stderr": stderr,
-        "status": subproc.returncode
-    }
 
 class Tester:
     def __init__(self, testedProgramPath=None, tester_module=None, working_dir = None):
@@ -36,6 +20,7 @@ class Tester:
         self.working_dir = working_dir
         self.tests = {}
         self.test_names = []
+
 
     def test(self, test_function):
         " decorator for tests "
