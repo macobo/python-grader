@@ -3,8 +3,10 @@
 
 import sys
 import os
-from .code_runner import runCode
 from textwrap import dedent
+
+from .code_runner import runCode
+from .feedback_utils import *
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -52,7 +54,7 @@ class Tester:
         m = Module("{user_program_path}")
         {test_function_name}(m)
 
-        #sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
+        sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
         """)
         code = code.format(
             user_program_path=self.user_program_path,

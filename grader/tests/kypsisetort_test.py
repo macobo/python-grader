@@ -24,4 +24,4 @@ def extraPack(m):
 
 
 if __name__ == "__main__":
-    testAll(m)
+    testAll(t)

@@ -45,10 +45,10 @@ def stdout_new(m):
 def trace_macro_available(m):
     m.stdin.write("Karl")
     m.stdout.reset() # reset stdout
-    assert False
-    #trace[1+2+3]
+    trace[1+2+3]
     n = m.stdout.new()
-    assert n == "Got 193\n", new
+    assert "1+2 -> 3\n" in n, n
+    assert "1+2+3 -> 6\n" in n, n
 
 
 class Tests(unittest.TestCase):
