@@ -8,9 +8,11 @@ def test_suite(suites=[], cases=[]):
 
 from . import tester
 from . import solution_tester
+from . import feedback_utils_tester
 Tests = test_suite(cases=[
    tester,
-   solution_tester
+   solution_tester,
+   feedback_utils_tester
 ], suites=[
     
 ])

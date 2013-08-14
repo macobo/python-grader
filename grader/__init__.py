@@ -63,6 +63,7 @@ class Tester:
         results["success"] = bool(1-results["status"])
         return results["success"], results
 
+
     def allTestResults(self):
         for test_name in self.test_names:
             yield test_name, self.runTest(test_name)
