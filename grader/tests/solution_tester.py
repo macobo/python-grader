@@ -21,8 +21,11 @@ def strip_extension(path):
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_path, working_dir=CURRENT_FOLDER):
         tester = importlib.import_module("grader.tests."+tester_module).t
+
+        tester.user_program_path = solution_path
         tester.tester_module = tester_module
         tester.working_dir = working_dir
+
         tester.testedProgramPath = strip_extension(solution_path)
         for test_name, (success, results) in tester.allTestResults():
             assert success, (test_name, results)

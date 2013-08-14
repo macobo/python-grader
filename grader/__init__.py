@@ -9,13 +9,13 @@ from textwrap import dedent
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 class Tester:
-    def __init__(self, testedProgramPath=None, tester_module=None, working_dir = None):
-        if testedProgramPath is None and len(sys.argv) > 1:
-            testedProgramPath = sys.argv[1][:-3]
+    def __init__(self, user_program_path=None, tester_module=None, working_dir=None):
+        if user_program_path is None and len(sys.argv) > 1:
+            user_program_path = sys.argv[1][:-3]
         if tester_module is None:
+            # take the program name as the tester module
             tester_module = sys.argv[0][:-3]
-
-        self.testedProgramPath = testedProgramPath
+        self.user_program_path = user_program_path
         self.tester_module = tester_module
         self.working_dir = working_dir
         self.tests = {}
@@ -55,18 +55,17 @@ class Tester:
         #sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
         """)
         code = code.format(
-            user_program_path=self.testedProgramPath,
+            user_program_path=self.user_program_path,
             test_function_name=test_function_name,
             tester_module=self.tester_module
         )
-        #print(code)
         results = runCode(code, self.working_dir)
         results["success"] = bool(1-results["status"])
         return results["success"], results
 
     def allTestResults(self):
-        return [(test_name, self.runTest(test_name)) 
-                                    for test_name in self.test_names]
+        for test_name in self.test_names:
+            yield test_name, self.runTest(test_name)
 
 
 def testAll(tester):
