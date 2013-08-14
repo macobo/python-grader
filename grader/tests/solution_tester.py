@@ -2,6 +2,7 @@ import unittest
 import os
 import importlib
 from grader import *
+import os
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -13,21 +14,19 @@ existing_tests = [
 ]
 
 def strip_extension(path):
-    if path[:-3] == ".py":
-        return path[:-3]
-    return path
+    return os.path.splitext(path)[0]
 
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_path, working_dir=CURRENT_FOLDER):
         tester = importlib.import_module("grader.tests."+tester_module).t
 
-        tester.user_program_path = solution_path
+        tester.user_program_module = strip_extension(solution_path)
         tester.tester_module = tester_module
         tester.working_dir = working_dir
 
         tester.testedProgramPath = strip_extension(solution_path)
         for test_name, (success, results) in tester.allTestResults():
-            assert success, (test_name, results)
+            assert success, results["stderr"]
 
 
 def runner(tester, test_path):  

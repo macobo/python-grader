@@ -4,6 +4,7 @@
 import sys
 import os
 from textwrap import dedent
+from functools import wraps
 
 from .code_runner import runCode
 from .feedback_utils import *
@@ -11,13 +12,13 @@ from .feedback_utils import *
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 class Tester:
-    def __init__(self, user_program_path=None, tester_module=None, working_dir=None):
-        if user_program_path is None and len(sys.argv) > 1:
-            user_program_path = sys.argv[1][:-3]
+    def __init__(self, user_program_module=None, tester_module=None, working_dir=None):
+        if user_program_module is None and len(sys.argv) > 1:
+            user_program_module = os.path.splitext(sys.argv[1])[0]
         if tester_module is None:
             # take the program name as the tester module
-            tester_module = sys.argv[0][:-3]
-        self.user_program_path = user_program_path
+            tester_module = os.path.splitext(sys.argv[0])[0]
+        self.user_program_module = user_program_module
         self.tester_module = tester_module
         self.working_dir = working_dir
         self.tests = {}
@@ -29,7 +30,16 @@ class Tester:
         name = test_function.__name__
         self.tests[name] = test_function
         self.test_names.append(name)
-        return test_function
+
+        @wraps(test_function)
+        def wrapper(module, *args, **kwargs):
+            if module.caughtException:
+                raise module.caughtException
+            result = test_function(module, *args, **kwargs)
+            if module.caughtException:
+                raise module.caughtException
+            return result
+        return wrapper
 
 
     def runTest(self, test_function_name): 
@@ -51,13 +61,13 @@ class Tester:
             sys.__stderr__.write("Is {test_function_name} global and importable?\\n")
             raise
 
-        m = Module("{user_program_path}")
+        m = Module("{user_program_module}")
         {test_function_name}(m)
 
         sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
         """)
         code = code.format(
-            user_program_path=self.user_program_path,
+            user_program_module=self.user_program_module,
             test_function_name=test_function_name,
             tester_module=self.tester_module
         )

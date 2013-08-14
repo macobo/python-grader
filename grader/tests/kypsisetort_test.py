@@ -19,7 +19,6 @@ def extraPack(m):
     # 3*7*5 = 105 cookies needed
     m.stdout.reset()
     m.stdin.write(4) # packages per pack
-
     assert "27" in m.stdout.new()
 
 

@@ -52,12 +52,18 @@ class Module(Thread):
         Thread.__init__(self)
         self.filename = filename
         self.lock = Lock()
+        self.caughtException = None
         # this thread doesn't block exiting
         self.setDaemon(True)
         self.start()
         sleep(0.05)
+
     
     def run(self):
-        self.stdin = sys.stdin = Stdin(self.lock)
-        self.stdout = sys.stdout = Stdout()
-        self.module = __import__(self.filename)
+        try:
+            self.stdin = sys.stdin = Stdin(self.lock)
+            self.stdout = sys.stdout = Stdout()
+            self.module = __import__(self.filename)
+        except Exception as e:
+            self.caughtException = e
+            raise e from e

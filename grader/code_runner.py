@@ -18,17 +18,18 @@ def runCode(code, working_dir=None):
     with tempCodeFile(working_dir) as f:
         module_name = os.path.basename(f.name).split('.')[0]
         f.write(code)
-        
+
     subproc = subprocess.Popen(
         ['python3', '-c', 'import macropy.activate; import '+module_name], 
         cwd=working_dir, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = subproc.communicate()
     os.remove(f.name)
-    print(subproc.returncode, stdout, stderr)
+    #print(subproc.returncode, stdout)
+    #print(stderr.decode("utf-8"))
 
     return {
-        "stdout": stdout,
-        "stderr": stderr,
+        "stdout": stdout.decode("utf-8"),
+        "stderr": stderr.decode("utf-8"),
         "status": subproc.returncode
     }
