@@ -9,11 +9,9 @@ CURRENT_FOLDER = os.path.dirname(__file__)
 # (tester_module, solution_module)
 existing_tests = [
     ("intress_tester",   "intress_solution"),
-    ("kypsisetort_test", "kypsisetort")
+    ("kypsisetort_test", "kypsisetort"),
+    ("intress_tester_other",  "intress_solution")
 ]
-
-def strip_extension(path):
-    return os.path.splitext(path)[0]
 
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_module, working_dir=CURRENT_FOLDER):
@@ -31,5 +29,5 @@ def runner(tester_module, solution_module):
     return lambda self: self.run_tester(tester_module, solution_module)
 
 for tester_module, solution_module in existing_tests:
-    setattr(Tests, "test_"+solution_module, 
+    setattr(Tests, "test_"+solution_module+"_with_"+tester_module, 
             runner(tester_module, solution_module))
