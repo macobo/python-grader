@@ -1,4 +1,3 @@
-import sys
 import os
 from textwrap import dedent
 from functools import wraps

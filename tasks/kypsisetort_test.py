@@ -18,7 +18,3 @@ def extraPack(m):
     m.stdout.reset()
     m.stdin.write(4) # packages per pack
     assert "27" in m.stdout.new()
-
-
-if __name__ == "__main__":
-    testAll()

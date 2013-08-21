@@ -12,6 +12,3 @@ def secondTest(m):
     m.stdin.write("0") # at beginning
     m.stdin.write("10") # percentage
     assert "0." in m.stdout.read()
-
-if __name__ == '__main__':
-    testAll()
