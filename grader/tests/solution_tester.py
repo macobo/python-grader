@@ -20,6 +20,8 @@ existing_tests = [
     ("u2_kypsisetort_tester",    "u2_kypsisetort_solution"),
     ("u2_intress_tester_other",  "u2_intress_solution"),
     ("u2_nimed_tester",          "u2_nimed_solution"),
+    ("u12_tagurpidi_tester",     "u12_tagurpidi_solution"),
+    ("u6_taisnurkne_tester",     "u6_taisnurkne_solution")
 ]
 
 class Tests(unittest.TestCase):
