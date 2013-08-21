@@ -11,8 +11,8 @@ CURRENT_FOLDER = os.path.dirname(__file__)
 settings = namedtuple('GraderSettings', 
     ['user_program_module', 'tester_module', 'working_dir'])(None, None, None)
 
-_tests = {}
-_test_names = []
+testcases = {}
+testcase_names = []
 
 def configure(**extra_settings):
     global settings
@@ -26,8 +26,8 @@ def configure(**extra_settings):
 def test(test_function):
     " decorator for tests "
     name = test_function.__name__
-    _tests[name] = test_function
-    _test_names.append(name)
+    testcases[name] = test_function
+    testcase_names.append(name)
 
     @wraps(test_function)
     def wrapper(module, *args, **kwargs):
@@ -48,7 +48,7 @@ def runTest(test_function_name, **extra_settings):
         If tester_module is not provided, current program is used. """
     
     configure(**extra_settings)
-    assert test_function_name in _tests, "no test named "+test_function_name
+    assert test_function_name in testcases, "no test named "+test_function_name
 
     with open(os.path.join(CURRENT_FOLDER, "execution_base.py")) as f:
         code = f.read()
@@ -77,5 +77,5 @@ def runTest(test_function_name, **extra_settings):
 
 
 def allTestResults():
-    for test_name in _test_names:
+    for test_name in testcase_names:
         yield test_name, runTest(test_name)

@@ -1,6 +1,6 @@
 import unittest
 import os
-from grader import *
+import grader
 from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -53,22 +53,20 @@ def trace_macro_available(m):
 
 class Tests(unittest.TestCase):
     def setUp(self):
-        self.tester = Tester("tested_module", "tester", working_dir=CURRENT_FOLDER)
+        grader.configure(
+            user_program_module = "tested_module",
+            tester_module = "tester",
+            working_dir = CURRENT_FOLDER
+        )
 
     def run_test(self, test_function):
         #print(test_function.__name__)
-        self.tester.test(test_function)
-        success, errors = self.tester.runTest(test_function.__name__)
+        grader.test(test_function)
+        success, errors = grader.runTest(test_function.__name__)
         assert success, errors
 
     def tester_initialization(self):
-        self.assertEqual(len(self.tester.tests), 0)
-
-    def tester_test_decorator_adds_to_tests(self):
-        @self.tester.test
-        def some_test(m): pass
-
-        self.assertEqual(len(self.tester.tests), 1)
+        self.assertEqual(len(grader.testcases), len(dynamic_tests))
 
 
 for test_name, test_function in dynamic_tests:
