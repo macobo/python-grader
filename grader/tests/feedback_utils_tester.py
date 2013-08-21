@@ -13,7 +13,7 @@ class Tests(unittest.TestCase):
         with self.assertRaises(AssertionError) as err:
             require_contains("123456", "335")
         self.assertEquals(str(err.exception), dedent("""
-            Expected 335 to be in input.
+            Expected [335] to be in input.
             input was:
-              123456
+              [123456]
         """))

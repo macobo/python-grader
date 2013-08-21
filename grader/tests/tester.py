@@ -19,7 +19,7 @@ def stdin_stdout_available(module):
 
 @dyn_test
 def module_availability(module):
-    " module.module should be available after no more reads "
+    # module.module should be available after no more reads
     module.stdin.write("Karl")
     assert hasattr(module, "module")
 
@@ -28,6 +28,13 @@ def stdout_read(module):
     module.stdin.write("Karl")
     stdout = module.stdout.read()
     assert stdout == "Hi, Karl\n", stdout
+
+
+@dyn_test
+def waiting_input_function(m):
+    assert m.is_waiting_input()
+    m.stdin.write("foo")
+    assert not m.is_waiting_input()
 
 @dyn_test
 def function_call(m):
@@ -74,6 +81,3 @@ class Tests(unittest.TestCase):
 for test_name, test_function in dynamic_tests:
     setattr(Tests, "test_"+test_name, 
         lambda self, t=test_function: self.run_test(t))
-
-# import sys
-# sys.__stdout__.write(str(grader.testcases))

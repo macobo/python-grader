@@ -11,12 +11,11 @@ def testAll():
             print("Test {test_name} failed:\n{errors}".format(**locals()))
 
 
-def io_test(name, writes, expected_read):
+def io_test(description, writes, expected_read):
     def f(module):
         for write in writes:
             module.stdout.reset()
             module.stdin.write(write)
-        assert expected_read in module.stdout.new()
-    # hack to make it importable
-    f.__name__ = name
+        require_contains(module.stdout.new(), expected_read)
+    f.__doc__ = description
     return test(f)

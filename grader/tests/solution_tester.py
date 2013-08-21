@@ -16,9 +16,10 @@ sys.path.append(SOLUTION_FOLDER)
 # list of existing solution-tester pairs
 # (tester_module, solution_module)
 existing_tests = [
-    ("intress_tester",   "intress_solution"),
-    ("kypsisetort_test", "kypsisetort"),
-    ("intress_tester_other",  "intress_solution")
+    ("u2_intress_tester",        "u2_intress_solution"),
+    ("u2_kypsisetort_tester",    "u2_kypsisetort_solution"),
+    ("u2_intress_tester_other",  "u2_intress_solution"),
+    ("u2_nimed_tester",          "u2_nimed_solution"),
 ]
 
 class Tests(unittest.TestCase):

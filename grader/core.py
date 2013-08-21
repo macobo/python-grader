@@ -1,4 +1,5 @@
 import os
+import inspect
 from textwrap import dedent
 from functools import wraps
 from collections import defaultdict, OrderedDict
@@ -24,6 +25,8 @@ def configure(**extra_settings):
 def test(test_function):
     " decorator for tests "
     name = test_function.__name__
+    if inspect.getdoc(test_function):
+        name = inspect.getdoc(test_function)
     testcases[name] = test_function
 
     @wraps(test_function)
@@ -75,6 +78,3 @@ def runTest(test_function_name, **extra_settings):
 def allTestResults():
     for test_name in testcases:
         yield test_name, runTest(test_name)
-
-# initialize settings, reset tests
-reset()

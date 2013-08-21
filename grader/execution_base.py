@@ -8,6 +8,7 @@ from threading import Thread, Lock
 class Stdin:
     def __init__(self, lock):
         self.queue = queue.Queue()
+        self.waiting = False
         self.lock = lock
         self.lock.acquire()
 
@@ -19,7 +20,9 @@ class Stdin:
         if self.lock.locked():
             self.lock.release()
             # d.append("released")
+        self.waiting = True
         result = self.queue.get(timeout = 3)
+        self.waiting = False
         self.lock.acquire()
         # d.append("aquired")
         return result
@@ -67,3 +70,6 @@ class Module(Thread):
         except Exception as e:
             self.caughtException = e
             raise e from e
+
+    def is_waiting_input(self):
+        return self.stdin.waiting
