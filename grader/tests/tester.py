@@ -8,6 +8,7 @@ CURRENT_FOLDER = os.path.dirname(__file__)
 dynamic_tests = []
 def dyn_test(f):
     " Create a dynamic test which is called by Tests class automatically "
+    f = grader.test(f)
     dynamic_tests.append((f.__name__, f))
     return f
 
@@ -53,6 +54,7 @@ def trace_macro_available(m):
 
 class Tests(unittest.TestCase):
     def setUp(self):
+        grader.reset()
         grader.configure(
             user_program_module = "tested_module",
             tester_module = "tester",
@@ -72,3 +74,6 @@ class Tests(unittest.TestCase):
 for test_name, test_function in dynamic_tests:
     setattr(Tests, "test_"+test_name, 
         lambda self, t=test_function: self.run_test(t))
+
+# import sys
+# sys.__stdout__.write(str(grader.testcases))

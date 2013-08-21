@@ -20,11 +20,11 @@ def reset():
 
 def configure(**extra_settings):
     global settings
-    settings.update(**extra_settings)
     if settings["user_program_module"] is None and len(sys.argv) > 1:
         settings["user_program_module"] = os.path.splitext(sys.argv[1])[0]
     if settings["tester_module"] is None:
         settings["tester_module"] = os.path.splitext(sys.argv[0])[0]
+    settings.update(**extra_settings)
 
 
 def test(test_function):
@@ -51,21 +51,20 @@ def runTest(test_function_name, **extra_settings):
         If tester_module is not provided, current program is used. """
     
     configure(**extra_settings)
+    assert settings["user_program_module"] is not None
+    assert settings["tester_module"] is not None
     assert test_function_name in testcases, "no test named "+test_function_name
 
     with open(os.path.join(CURRENT_FOLDER, "execution_base.py")) as f:
         code = f.read()
 
     code += dedent("""
-    
-    try:
-        from {tester_module} import {test_function_name}
-    except ImportError as e:
-        sys.__stderr__.write("Is {test_function_name} global and importable?\\n")
-        raise
+    import grader
+    import {tester_module}
 
     m = Module("{user_program_module}")
-    {test_function_name}(m)
+    #sys.__stdout__.write(str(grader.testcases))
+    grader.testcases["{test_function_name}"](m)
 
     sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
     """)
