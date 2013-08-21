@@ -19,11 +19,6 @@ def reset():
 
 
 def configure(**extra_settings):
-    global settings
-    if settings["user_program_module"] is None and len(sys.argv) > 1:
-        settings["user_program_module"] = os.path.splitext(sys.argv[1])[0]
-    if settings["tester_module"] is None:
-        settings["tester_module"] = os.path.splitext(sys.argv[0])[0]
     settings.update(**extra_settings)
 
 

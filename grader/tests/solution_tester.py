@@ -24,6 +24,7 @@ existing_tests = [
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_module, working_dir=SOLUTION_FOLDER):
         grader.reset()
+        # load tests from tester_module
         importlib.import_module(tester_module)
 
         grader.configure(
