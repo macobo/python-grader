@@ -2,12 +2,14 @@ def indent(text, spaces):
     lines = str(text).split("\n")
     return "\n".join(" " * spaces + line for line in lines).rstrip()
 
-def require_contains(input, what):
+def require_contains(input, what, message=None, **extraparams):
     if what in input: return
-    message = "Expected {what} to be in input.\ninput was:\n{input}"
+    if message is None:
+        message = "Expected {what} to be in input.\ninput was:\n{input}"
     message = message.format(
         what=what,
-        input=indent(input, 2)
+        input=indent(input, 2),
+        **extraparams
     )
     raise AssertionError(message)
 
