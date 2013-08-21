@@ -2,22 +2,21 @@ import sys
 import os
 from textwrap import dedent
 from functools import wraps
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from .code_runner import runCode
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 settings = defaultdict(lambda:None)
-testcases = {}
-testcase_names = []
+testcases = OrderedDict()
 
 def reset():
     " resets settings and loaded tests "
     global settings, testcases, testcase_names  
     settings = defaultdict(lambda:None)
-    testcases = {}
-    testcase_names = []
+    testcases = OrderedDict()
+
 
 def configure(**extra_settings):
     global settings
@@ -32,7 +31,6 @@ def test(test_function):
     " decorator for tests "
     name = test_function.__name__
     testcases[name] = test_function
-    testcase_names.append(name)
 
     @wraps(test_function)
     def wrapper(module, *args, **kwargs):
@@ -82,7 +80,7 @@ def runTest(test_function_name, **extra_settings):
 
 
 def allTestResults():
-    for test_name in testcase_names:
+    for test_name in testcases:
         yield test_name, runTest(test_name)
 
 # initialize settings, reset tests
