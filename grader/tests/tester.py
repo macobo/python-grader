@@ -58,6 +58,10 @@ def trace_macro_available(m):
     assert "1+2 -> 3\n" in n, n
     assert "1+2+3 -> 6\n" in n, n
 
+@grader.test
+def doc_only_function(m):
+    "this function should have the docstring as its name in grader"
+
 
 class Tests(unittest.TestCase):
     def setUp(self):
@@ -75,7 +79,12 @@ class Tests(unittest.TestCase):
         assert success, errors
 
     def tester_initialization(self):
-        self.assertEqual(len(grader.testcases), len(dynamic_tests))
+        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 1)
+
+    def test_docstring_added_as_test_name(self):
+        import inspect
+        self.assertIn(inspect.getdoc(doc_only_function), 
+                    list(grader.testcases.keys()))
 
 
 for test_name, test_function in dynamic_tests:
