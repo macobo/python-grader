@@ -3,15 +3,15 @@
 from .feedback_utils import *
 from .core import *
 
-def testAll(tester):
-    for test_name, (success, errors) in tester.allTestResults():
+def testAll():
+    for test_name, (success, errors) in allTestResults():
         if success:
             print("Test {test_name} completed successfully!".format(**locals()))
         else:
             print("Test {test_name} failed:\n{errors}".format(**locals()))
 
 
-def io_test(tester, name, writes, expected_read):
+def io_test(name, writes, expected_read):
     def f(module):
         for write in writes:
             module.stdout.reset()
@@ -19,4 +19,4 @@ def io_test(tester, name, writes, expected_read):
         assert expected_read in module.stdout.new()
     # hack to make it importable
     f.__name__ = name
-    return tester.test(f)
+    return test(f)

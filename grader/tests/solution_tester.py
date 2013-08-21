@@ -6,7 +6,7 @@ import unittest
 import os
 import sys
 import importlib
-from grader import *
+import grader
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 SOLUTION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(CURRENT_FOLDER)), "tasks")
@@ -23,13 +23,15 @@ existing_tests = [
 
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_module, working_dir=SOLUTION_FOLDER):
-        tester = importlib.import_module(tester_module).t
+        grader.reset()
+        importlib.import_module(tester_module)
 
-        tester.user_program_module = solution_module
-        tester.tester_module = tester_module
-        tester.working_dir = working_dir
+        grader.configure(
+            user_program_module = solution_module,
+            tester_module = tester_module,
+            working_dir = working_dir)
 
-        for test_name, (success, results) in tester.allTestResults():
+        for test_name, (success, results) in grader.allTestResults():
             assert success, results["stderr"]
 
 

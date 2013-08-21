@@ -1,8 +1,6 @@
-from grader import Tester, testAll
+from grader import *
 
-t = Tester()
-
-@t.test
+@test
 def simple_test(m):
     m.stdin.write(3)
     m.stdin.write(3)
@@ -11,7 +9,7 @@ def simple_test(m):
     m.stdin.write(1)
     assert "27" in m.stdout.read()
 
-@t.test
+@test
 def extraPack(m):
     m.stdin.write(3)
     m.stdin.write(7)
@@ -23,4 +21,4 @@ def extraPack(m):
 
 
 if __name__ == "__main__":
-    testAll(t)
+    testAll()
