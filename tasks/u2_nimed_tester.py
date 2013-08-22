@@ -11,14 +11,6 @@ nimi sisestati (olgu ainult väikeste tähtedega, ainult suurtega või segamini)
 
 from grader import *
 
-@test
-def program_asks_input_twice(module):
-    for name in ['maRI', 'kUUsK']:
-        assert module.is_waiting_input()
-        module.stdin.write(name)
-    assert not module.is_waiting_input()
-
-
 def name_test(name, description = None):
     correct_name = name.title()
     if description is None:

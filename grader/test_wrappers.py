@@ -5,9 +5,11 @@ from .feedback_utils import *
 def io_test(description, writes, expected_read):
     def f(module):
         for write in writes:
+            assert module.is_waiting_input()
             module.stdout.reset()
             module.stdin.write(write)
         require_contains(module.stdout.new(), expected_read)
+        assert not module.is_waiting_input()
     f.__doc__ = description
     return test(f)
 
