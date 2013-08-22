@@ -15,4 +15,4 @@ configure(
 # load tests from tester_module
 importlib.import_module(tester_module)
 
-testAll()
+testAll(print_result = True)

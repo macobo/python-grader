@@ -2,11 +2,16 @@ import macropy.activate
 
 from .core import *
 from .test_wrappers import *
+from pprint import pprint
 
-def testAll():
+def testAll(print_result = False):
+    all_results = []
     for test_name, (success, errors) in allTestResults():
-        if success:
-            print("Test {test_name} completed successfully!".format(**locals()))
-        else:
-            print("Test {test_name} failed:\n{errors}".format(**locals()))
+        result = {"description": test_name, "success": success}
+        if not success:
+            result["trace"] = errors["stderr"]
+        all_results.append(result)
+    if print_result:
+        pprint(all_results)
+    return all_results
 
