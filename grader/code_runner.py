@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 def tempCodeFile(working_dir):
     return NamedTemporaryFile(
         dir = working_dir,
-        mode = "w",
+        mode = "wb",
         suffix = ".py",
         delete = False
     )
@@ -17,7 +17,7 @@ def runCode(code, working_dir=None):
 
     with tempCodeFile(working_dir) as f:
         module_name = os.path.basename(f.name).split('.')[0]
-        f.write(code)
+        f.write(code.encode("utf-8"))
 
     subproc = subprocess.Popen(
         ['python3', '-c', 'import macropy.activate; import '+module_name], 

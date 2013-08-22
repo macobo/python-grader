@@ -63,7 +63,7 @@ def runTest(test_function_name, **extra_settings):
     #sys.__stdout__.write(str(grader.testcases))
     grader.testcases["{test_function_name}"](m)
 
-    sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
+    #sys.__stdout__.write("Test {test_function_name} completed successfully.\\n")
     """)
     code = code.format(
         user_program_module=settings["user_program_module"],
