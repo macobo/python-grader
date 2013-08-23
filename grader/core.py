@@ -78,3 +78,16 @@ def runTest(test_function_name, **extra_settings):
 def allTestResults():
     for test_name in testcases:
         yield test_name, runTest(test_name)
+
+
+def testAll(print_result = False):
+    all_results = []
+    for test_name, (success, errors) in allTestResults():
+        result = {"description": test_name, "success": success}
+        if not success:
+            result["trace"] = errors["stderr"]
+        all_results.append(result)
+    if print_result:
+        from pprint import pprint
+        pprint(all_results)
+    return {"results": all_results}

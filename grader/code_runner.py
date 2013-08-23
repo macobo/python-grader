@@ -1,30 +1,37 @@
 import os
 import subprocess
+import contextlib
 
 from tempfile import NamedTemporaryFile
 
-def tempCodeFile(working_dir):
-    return NamedTemporaryFile(
+@contextlib.contextmanager
+def tempCodeModule(code_bytes, working_dir):
+    file = NamedTemporaryFile(
         dir = working_dir,
         mode = "wb",
         suffix = ".py",
         delete = False
     )
+    file.write(code_bytes)
+    file.close()
+    try:
+        module_name = os.path.splitext(os.path.basename(file.name))[0]
+        yield module_name
+    finally:
+        os.remove(file.name)
+
 
 def runCode(code, working_dir=None):
     if working_dir is None: 
         working_dir = os.getcwd()
 
-    with tempCodeFile(working_dir) as f:
-        module_name = os.path.basename(f.name).split('.')[0]
-        f.write(code.encode("utf-8"))
-
-    subproc = subprocess.Popen(
-        ['python3', '-c', 'import macropy.activate; import '+module_name], 
-        cwd=working_dir, stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = subproc.communicate()
-    os.remove(f.name)
+    code = code.encode("utf-8")
+    with tempCodeModule(code, working_dir) as module_name:
+        subproc = subprocess.Popen(
+            ['python3', '-c', 'import macropy.activate; import '+module_name], 
+            cwd=working_dir, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = subproc.communicate()
     #print(subproc.returncode, stdout)
     #print(stderr.decode("utf-8"))
 
