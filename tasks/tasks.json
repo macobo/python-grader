@@ -1,0 +1,28 @@
+{
+    "2": {
+        "küpsisetort": { 
+            "tester":   "u2_kypsisetort_tester", 
+            "solution": "u2_kypsisetort_solution"
+        },
+        "nimed": { 
+            "tester":   "u2_nimed_tester", 
+            "solution": "u2_nimed_solution"
+        },
+        "intress": { 
+            "tester":   "u2_intress_tester", 
+            "solution": "u2_intress_solution"
+        }
+    },
+    "6": {
+        "täisnurkne": {
+            "tester":   "u6_taisnurkne_tester", 
+            "solution": "u6_taisnurkne_solution"
+        }
+    },
+    "12": {
+        "tagurpidi": {
+            "tester":   "u12_tagurpidi_tester", 
+            "solution": "u12_tagurpidi_solution"
+        }
+    }
+}
