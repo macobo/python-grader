@@ -83,7 +83,13 @@ def allTestResults():
 def testAll(print_result = False):
     all_results = []
     for test_name, (success, errors) in allTestResults():
-        result = {"description": test_name, "success": success}
+
+        result = {
+            "description": test_name, 
+            "success": success, 
+            "time": errors["time"]
+        }
+        
         if not success:
             result["trace"] = errors["stderr"]
         all_results.append(result)

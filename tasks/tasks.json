@@ -14,7 +14,7 @@
         }
     },
     "6": {
-        "täisnurkne": {
+        "täisnurkne kolmnurk": {
             "tester":   "u6_taisnurkne_tester", 
             "solution": "u6_taisnurkne_solution"
         }
