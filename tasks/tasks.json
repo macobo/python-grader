@@ -9,8 +9,18 @@
             "solution": "u2_nimed_solution"
         },
         "intress": { 
-            "tester":   "u2_intress_tester", 
+            "tester":   "u2_intress_tester_other", 
             "solution": "u2_intress_solution"
+        }
+    },
+    "3": {
+        "kivi-paber-käärid": { 
+            "tester":   "u3_kivipaberkaarid_tester", 
+            "solution": "u3_kivipaberkaarid_solution"
+        },
+        "kujundid": { 
+            "tester":   "u3_kujundid_tester", 
+            "solution": "u3_kujundid_solution"
         }
     },
     "6": {

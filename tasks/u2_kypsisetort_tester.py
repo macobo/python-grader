@@ -2,6 +2,7 @@ from grader import *
 
 @test
 def simple_test(m):
+    " 3*3*3 tort, 1 pakis => 27 pakki "
     m.stdin.write(3)
     m.stdin.write(3)
     m.stdin.write(3)
@@ -11,6 +12,7 @@ def simple_test(m):
 
 @test
 def extraPack(m):
+    " 3*7*5 tort, 4 pakis => 27 pakki "
     m.stdin.write(3)
     m.stdin.write(7)
     m.stdin.write(5)
