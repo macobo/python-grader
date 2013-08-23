@@ -1,9 +1,9 @@
 import os
+import json
 import inspect
 from textwrap import dedent
 from functools import wraps
 from collections import defaultdict, OrderedDict
-
 from .code_runner import runCode
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -88,6 +88,5 @@ def testAll(print_result = False):
             result["trace"] = errors["stderr"]
         all_results.append(result)
     if print_result:
-        from pprint import pprint
-        pprint(all_results)
+        print(json.dumps({"results": all_results}, indent=4))
     return {"results": all_results}
