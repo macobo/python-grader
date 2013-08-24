@@ -1,3 +1,4 @@
+```bash
 hg clone http://hg.python.org/cpython
 cd cpython
 hg checkout 3.3
@@ -20,3 +21,4 @@ cd python-grader
 python setup.py install
 
 python run_tests.py
+```
