@@ -10,6 +10,10 @@ Focus is on writing **succint** tests for grading student solutions and useful f
 ## Setup
 
 **Prerequsite**: Install python3.3 (or python3.4), preferably use a virtualenv.
+
+For full setup guide which involves building python from source and setting up a virtualenv, 
+see [INSTALL.md](INSTALL.md)
+
 ```bash
 # navigate to your projects dir, e.g. ~/projects
 git clone https://github.com/macobo/macropy.git
