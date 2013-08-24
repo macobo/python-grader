@@ -37,7 +37,8 @@ To run tests, run `python3.3 run_tests.py`.
 
 ####Task:
 Write a function named `taisnurkne` that takes three numbers as an agument and returns True or False 
-according to whether it's possible to form a right-angled triangle. Side lengths are guaranteed to be positive.
+according to whether it's possible to form a right-angled triangle with such side lengths. 
+Side lengths are guaranteed to be positive.
 
 ####Tester [u6_taisnurkne_tester.py](tasks/u6_taisnurkne_tester.py)
 ```python
