@@ -62,6 +62,14 @@ def trace_macro_available(m):
 def doc_only_function(m):
     "this function should have the docstring as its name in grader"
 
+@grader.test
+def multiline_doc_function(m):
+    """This function should have a multiline docstring 
+        as its name in grader
+    """
+
+
+
 
 class Tests(unittest.TestCase):
     def setUp(self):
@@ -79,12 +87,16 @@ class Tests(unittest.TestCase):
         assert success, errors
 
     def tester_initialization(self):
-        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 1)
+        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 2)
 
     def test_docstring_added_as_test_name(self):
         import inspect
         self.assertIn(inspect.getdoc(doc_only_function), 
                     list(grader.testcases.keys()))
+
+    def test_multiline_docstring(self):
+        doc = "This function should have a multiline docstring as its name in grader"
+        self.assertIn(doc, list(grader.testcases.keys()))
 
 
 for test_name, test_function in dynamic_tests:

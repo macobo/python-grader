@@ -5,6 +5,7 @@ from textwrap import dedent
 from functools import wraps
 from collections import defaultdict, OrderedDict
 from .code_runner import runCode
+from .utils import setDescription, beautifyDescription
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -21,7 +22,6 @@ def reset():
 def configure(**extra_settings):
     settings.update(**extra_settings)
 
-
 def test(test_function):
     """ Decorator for a test. The function should take a single argument which
         is the object containing stdin, stdout and module (the globals of users program).
@@ -33,7 +33,7 @@ def test(test_function):
         passed to the user. """
     name = test_function.__name__
     if inspect.getdoc(test_function):
-        name = inspect.getdoc(test_function)
+        name = beautifyDescription(inspect.getdoc(test_function))
     testcases[name] = test_function
 
     @wraps(test_function)

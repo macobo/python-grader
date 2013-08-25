@@ -33,7 +33,7 @@ class Tests(unittest.TestCase):
             working_dir = working_dir)
 
         for test_name, (success, results) in grader.allTestResults():
-            assert success, results["stderr"]
+            assert success, (results["stderr"], list(grader.testcases.keys()))
 
 
 def runner(tester_module, solution_module):

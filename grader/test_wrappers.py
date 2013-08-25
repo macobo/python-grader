@@ -16,8 +16,7 @@ def io_test(description, writes_list, expected_read):
             module.stdin.write(write)
         require_contains(module.stdout.new(), expected_read)
         assert not module.is_waiting_input(), "Make sure there isn't a stray input() after your code"
-    # we use __doc__ for test names
-    f.__doc__ = description
+    setDescription(f, description)
     return test(f)
 
 def check_function(function_name, args, expected_result, description=None):
@@ -36,5 +35,5 @@ def check_function(function_name, args, expected_result, description=None):
 
     if description is None:
         description = "Check " + function_name + "(" + ", ".join(map(repr,args)) + ") == "+repr(expected_result)
-    f.__doc__ = description
+    setDescription(f, description)
     return test(f)
