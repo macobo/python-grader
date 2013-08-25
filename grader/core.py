@@ -52,7 +52,9 @@ def runTest(test_function_name, **extra_settings):
         Success is a boolean flag indicating if the test was a success,
         results is a dictionary containing stdout and stderr of run.
 
-        If tester_module is not provided, current program is used. """
+        If tester_module is not provided, curreback": string ("" if None)
+            "time": string (execution time, rounded to 2 decimal digits)
+        }nt program is used. """
     
     configure(**extra_settings)
     assert settings["user_program_module"] is not None
