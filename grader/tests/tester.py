@@ -12,7 +12,7 @@ def dyn_test(f):
     dynamic_tests.append((f.__name__, f))
     return f
 
-@dyn_test
+#@dyn_test
 def stdin_stdout_available(module):
     assert hasattr(module, "stdin")
     assert hasattr(module, "stdout")
@@ -72,19 +72,18 @@ def multiline_doc_function(m):
 
 
 class Tests(unittest.TestCase):
-    def setUp(self):
-        grader.reset()
-        grader.configure(
-            user_program_module = "tested_module",
+    @classmethod
+    def setUpClass(cls):
+        cls.results = grader.test_module(
             tester_module = "tester",
+            user_module = "tested_module",
             working_dir = CURRENT_FOLDER
         )
 
     def run_test(self, test_function):
-        #print(test_function.__name__)
-        grader.test(test_function)
-        success, errors = grader.runTest(test_function.__name__)
-        assert success, errors
+        test_name = grader.get_test_name(test_function)
+        result = self.results[test_name]
+        assert result["success"], result
 
     def tester_initialization(self):
         self.assertEqual(len(grader.testcases), len(dynamic_tests) + 2)

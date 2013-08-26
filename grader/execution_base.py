@@ -119,7 +119,8 @@ def call_test_function(fun, module):
     return {
         "success": success,
         "traceback": traceback_,
-        "time": "%.3f" % (end_time - start_time)
+        "time": "%.3f" % (end_time - start_time),
+        "stdout": module.stdout.read()
     }
 
 
@@ -140,7 +141,6 @@ def test_module(tester_module, user_module, print_result = False):
         test_name: call_test_function(test_function, Module(user_module))
             for test_name, test_function in grader.testcases.items()
     }
-    Module.restore_io()
     if print_result:
         import json
         print(json.dumps(results, indent=4))

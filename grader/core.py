@@ -13,6 +13,7 @@ testcases = OrderedDict()
 
 def reset():
     " resets settings and loaded tests "
+    global testcases
     testcases = OrderedDict()
 
 
@@ -25,10 +26,8 @@ def test(test_function):
 
         Raising an exception causes the test to fail, the resulting stack trace is
         passed to the user. """
-    name = test_function.__name__
-    if inspect.getdoc(test_function):
-        name = beautifyDescription(inspect.getdoc(test_function))
-    testcases[name] = test_function
+
+    testcases[get_test_name(test_function)] = test_function
 
     @wraps(test_function)
     def wrapper(module, *args, **kwargs):
@@ -39,6 +38,14 @@ def test(test_function):
             raise module.caughtException
         return result
     return wrapper
+
+
+def get_test_name(function):
+    """ Returns the test name as it is used by the grader. """
+    name = function.__name__
+    if inspect.getdoc(function):
+        name = beautifyDescription(inspect.getdoc(function))
+    return name
 
 
 def test_module(tester_module, user_module, print_result = False, working_dir = None):
