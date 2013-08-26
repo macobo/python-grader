@@ -1,6 +1,7 @@
 import sys
 import queue
 import importlib
+import traceback
 from time import sleep, time
 from threading import Thread, Lock
 #from macropy.tracing import macros, trace
@@ -66,6 +67,7 @@ class Module(Thread):
         try:
             self.stdin = sys.stdin = SpoofedStdin(self.lock)
             self.stdout = sys.stdout = SpoofedStdout()
+            #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
             self.module = self.import_duplicate(self.module_name)
         except Exception as e:
@@ -75,7 +77,7 @@ class Module(Thread):
             raise e from e
 
 
-    def import_duplicate(module_name):
+    def import_duplicate(self, module_name):
         """ Imports a module. If the module is previously loaded, it is nevertheless
             imported again """
         if module_name in sys.modules:
@@ -86,42 +88,65 @@ class Module(Thread):
     def is_waiting_input(self):
         return self.stdin.waiting
 
+    @classmethod
+    def restore_io(cls):
+        sys.stdin = sys.__stdin__
+        sys.stdout = sys.__stdout__
 
-def call_function(fun, args):
+
+
+def call_test_function(fun, module):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
             "success": boolean,
             "traceback": string ("" if None)
-            "time": string (execution time, rounded to 2 decimal digits)
+            "time": string (execution time, rounded to 3 decimal digits)
         }
     """
-    success, traceback = True, ""
+    success, traceback_ = True, ""
     start_time = time()
     try:
-        fun(*args)
+        fun(module)
     except Exception as e:
         success = False
-        traceback = str(e.__traceback__)
+        traceback_ = "\n".join(traceback.format_tb(e.__traceback__))
+        traceback_ += "\n" + str(e)
     end_time = time()
+    Module.restore_io()
+    #sys.__stdout__.write("=====" + "\n"*3)
+    #sys.__stdout__.write(module.stderr.read())
     return {
         "success": success,
-        "traceback": traceback,
-        "time": "%.2f" % (start_time - end_time)
+        "traceback": traceback_,
+        "time": "%.3f" % (end_time - start_time)
     }
 
 
-# TODO: an extra arg for the rest? or __name__ == main
-tester_module, user_module = sys.argv[1:3]
+def test_module(tester_module, user_module, print_result = False):
+    """ Runs all tests for user_module. Should be only run with 
+        appropriate rights/user.
 
-# populate tests
-import grader
-importlib.import_module(tester_module)
+        Note that this assumes that user_module and tester_module
+        are all in path and grader doesn't have extra tests loaded. 
 
-results = {
-    test_name: call_function(test_function, Module(user_module))
-        for test_name, test_function in grader.testcases.items()
-}
+        Returns/prints the dictionary from call_function.
+    """
+    # populate tests
+    import grader
+    importlib.import_module(tester_module)
 
-import json
-sys.__stdout__.write(json.dumps(results, indent=4))
+    results = {
+        test_name: call_test_function(test_function, Module(user_module))
+            for test_name, test_function in grader.testcases.items()
+    }
+    Module.restore_io()
+    if print_result:
+        import json
+        print(json.dumps(results, indent=4))
+    return results
+
+
+if __name__ == "__main__":
+    tester_module, user_module = sys.argv[1:3]
+    test_module(tester_module, user_module, True)

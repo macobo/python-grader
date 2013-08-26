@@ -1,5 +1,6 @@
 # from macropy.tracing import macros, require
 from .core import *
+from .utils import *
 from .feedback_utils import *
 
 def io_test(description, writes_list, expected_read):
