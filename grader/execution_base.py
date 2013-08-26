@@ -121,8 +121,8 @@ def call_test_function(fun, module):
         fun(module)
     except Exception as e:
         success = False
-        traceback_ = "\n".join(traceback.format_tb(e.__traceback__))
-        traceback_ += "\n" + str(e)
+        type_, value, tb = type(e), e, e.__traceback__
+        traceback_ = "".join(traceback.format_exception(type_, value, tb))
     end_time = time()
     Module.restore_io()
     #sys.__stdout__.write("=====" + "\n"*3)
