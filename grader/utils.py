@@ -38,5 +38,4 @@ def load_json(json_string):
 
 def dump_json(ordered_dict):
     " Dumps the dict to a string, indented "
-    #print(ordered_dict)
-    return json.dumps(ordered_dict, indent=4, ensure_ascii=False)
+    return json.dumps(ordered_dict, indent=4)#, ensure_ascii=False)

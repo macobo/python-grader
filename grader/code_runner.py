@@ -16,4 +16,7 @@ def runTester(tester_module, user_module, working_dir=None):
         cwd=working_dir, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = subproc.communicate()
-    return load_json(stdout.decode('utf-8'))
+    try:
+        return load_json(stdout.decode('utf-8'))
+    except:
+        raise Exception(stdout.decode('utf-8') + "\n\n\n\n\n" + stderr.decode('utf-8'))
