@@ -5,7 +5,7 @@ import inspect
 from functools import wraps
 from collections import OrderedDict
 from .code_runner import runTester
-from .utils import beautifyDescription
+from .utils import beautifyDescription, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 
@@ -51,7 +51,7 @@ def get_test_name(function):
 def test_module(tester_module, user_module, working_dir = None, print_result = False):
     results = runTester(tester_module, user_module, working_dir)
     if print_result:
-        print(json.dumps(results, indent=4, ensure_ascii=False))
+        print(dump_json(results, indent=4, ensure_ascii=False))
     return results
 
 

@@ -4,6 +4,7 @@ import importlib
 import traceback
 from time import sleep, time
 from threading import Thread, Lock
+from grader.utils import dump_json
 #from macropy.tracing import macros, trace
 
 class SpoofedStdin:
@@ -147,8 +148,7 @@ def test_module(tester_module, user_module, print_result = False):
             for test_name, test_function in grader.testcases.items()
     }
     if print_result:
-        import json
-        print(json.dumps(results, indent=4, ensure_ascii=False))
+        print(dump_json(results))
     return results
 
 

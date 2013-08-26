@@ -5,16 +5,15 @@ Test existing solution/tester pairs, basically regression tests.
 import unittest
 import os
 import sys
-import importlib
 import grader
-import json
+from grader.utils import load_json, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
 SOLUTION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(CURRENT_FOLDER)), "tasks")
 
 sys.path.append(SOLUTION_FOLDER)
 
-tasks_json = json.loads(open(os.path.join(SOLUTION_FOLDER, "tasks.json")).read())
+tasks_json = load_json(open(os.path.join(SOLUTION_FOLDER, "tasks.json")).read())
 # list of existing solution-tester pairs
 # (tester_module, solution_module)
 existing_tests = [
@@ -27,8 +26,7 @@ class Tests(unittest.TestCase):
         results = grader.test_module(tester_module, solution_module, working_dir)
 
         for test_name, result in results.items():
-            message = json.dumps(results, indent=4, ensure_ascii=False)
-            assert result["success"], message
+            assert result["success"], dump_json(results)
 
 
 def runner(tester_module, solution_module):

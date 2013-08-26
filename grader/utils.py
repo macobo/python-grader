@@ -1,5 +1,7 @@
 import os
+import json
 import contextlib
+from collections import OrderedDict
 
 from tempfile import NamedTemporaryFile
 
@@ -27,3 +29,16 @@ def beautifyDescription(description):
 
 def setDescription(function, description):
     function.__doc__ = beautifyDescription(description)
+
+
+def load_json(json_string):
+    " Loads json_string into an ordered_dict "
+    try:
+        return json.loads(json_string, object_pairs_hook=OrderedDict)
+    except:
+        return json.loads(json_string)
+
+
+def dump_json(ordered_dict):
+    " Dumps the OrderedDict to a string, indented "
+    return json.dumps(ordered_dict, indent=4, ensure_ascii=False)

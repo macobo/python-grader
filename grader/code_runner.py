@@ -1,7 +1,7 @@
 import os
 import subprocess
 import json
-from .utils import tempModule
+from .utils import tempModule, load_json
 
 
 def runTester(tester_module, user_module, working_dir=None):
@@ -16,4 +16,4 @@ def runTester(tester_module, user_module, working_dir=None):
         cwd=working_dir, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = subproc.communicate()
-    return json.loads(stdout.decode('utf-8'))
+    return load_json(stdout.decode('utf-8'))
