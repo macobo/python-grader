@@ -4,7 +4,9 @@ import contextlib
 from tempfile import NamedTemporaryFile
 
 @contextlib.contextmanager
-def tempModule(code, working_dir, encoding="utf8"):
+def tempModule(code, working_dir=None, encoding="utf8"):
+    if working_dir is None: 
+        working_dir = os.getcwd()
     file = NamedTemporaryFile(
         dir = working_dir,
         mode = "wb",

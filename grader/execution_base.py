@@ -69,7 +69,7 @@ class Module(Thread):
             self.stdout = sys.stdout = SpoofedStdout()
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
-            self.module = self.import_duplicate(self.module_name)
+            self.module = self.fake_import(self.module_name)
         except Exception as e:
             # Threads don't propagate their errors to main thread
             # so this is neccessary for detecting errors with importing
@@ -77,16 +77,21 @@ class Module(Thread):
             raise e from e
 
 
-    def import_duplicate(self, module_name):
+    def fake_import(self, module_name):
         """ Imports a module. If the module is previously loaded, it is nevertheless
             imported again """
-        if module_name in sys.modules:
-            del sys.modules[module_name]
-        return importlib.import_module(module_name)
+        from types import ModuleType
+        mod = ModuleType("solution_program")
+        with open(module_name + ".py") as f:
+            source = f.read()
+        code = compile(source, module_name, "exec", dont_inherit=True)
+        exec(code, mod.__dict__)
+        return mod
 
 
     def is_waiting_input(self):
         return self.stdin.waiting
+
 
     @classmethod
     def restore_io(cls):
@@ -143,7 +148,7 @@ def test_module(tester_module, user_module, print_result = False):
     }
     if print_result:
         import json
-        print(json.dumps(results, indent=4))
+        print(json.dumps(results, indent=4, ensure_ascii=False))
     return results
 
 

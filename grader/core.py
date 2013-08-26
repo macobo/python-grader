@@ -51,5 +51,11 @@ def get_test_name(function):
 def test_module(tester_module, user_module, working_dir = None, print_result = False):
     results = runTester(tester_module, user_module, working_dir)
     if print_result:
-        print(json.dumps(results, indent=4))
+        print(json.dumps(results, indent=4, ensure_ascii=False))
     return results
+
+
+def test_code(tester_module, user_code, working_dir = None, print_result = False):
+    from .utils import tempModule
+    with tempModule(user_code, working_dir) as user_module:
+        return test_module(tester_module, user_module, working_dir, print_result)

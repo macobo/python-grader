@@ -27,7 +27,7 @@ class Tests(unittest.TestCase):
         results = grader.test_module(tester_module, solution_module, working_dir)
 
         for test_name, result in results.items():
-            message = json.dumps(results, indent=4)
+            message = json.dumps(results, indent=4, ensure_ascii=False)
             assert result["success"], message
 
 
