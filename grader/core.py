@@ -48,7 +48,7 @@ def get_test_name(function):
     return name
 
 
-def test_module(tester_module, user_module, print_result = False, working_dir = None):
+def test_module(tester_module, user_module, working_dir = None, print_result = False):
     results = runTester(tester_module, user_module, working_dir)
     if print_result:
         print(json.dumps(results, indent=4))

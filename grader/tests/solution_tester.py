@@ -24,16 +24,11 @@ existing_tests = [
 class Tests(unittest.TestCase):
     def run_tester(self, tester_module, solution_module, working_dir=SOLUTION_FOLDER):
         grader.reset()
-        # load tests from tester_module
-        importlib.import_module(tester_module)
+        results = grader.test_module(tester_module, solution_module, working_dir)
 
-        grader.configure(
-            user_program_module = solution_module,
-            tester_module = tester_module,
-            working_dir = working_dir)
-
-        for test_name, (success, results) in grader.allTestResults():
-            assert success, (results["stderr"], list(grader.testcases.keys()))
+        for test_name, result in results.items():
+            message = json.dumps(results, indent=4)
+            assert result["success"], message
 
 
 def runner(tester_module, solution_module):

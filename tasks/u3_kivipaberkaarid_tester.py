@@ -18,7 +18,7 @@ def assert_contains_n(input, collection, times):
     if len(used) == times: return
     message = """Input should only contain {times} items from collection.
 input: 
-{input}
+[{input}]
 found items: {used}
 collection: {collection}
 """.format(**locals())

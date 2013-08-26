@@ -12,10 +12,11 @@ def dyn_test(f):
     dynamic_tests.append((f.__name__, f))
     return f
 
-#@dyn_test
+@dyn_test
 def stdin_stdout_available(module):
     assert hasattr(module, "stdin")
     assert hasattr(module, "stdout")
+    module.stdin.write("Karl")
 
 @dyn_test
 def module_availability(module):

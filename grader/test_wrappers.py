@@ -1,4 +1,4 @@
-# from macropy.tracing import macros, require
+from macropy.tracing import macros, require
 from .core import *
 from .utils import *
 from .feedback_utils import *
@@ -11,14 +11,17 @@ def io_test(description, writes_list, expected_read):
         and that it's not after the last one."""
     
     def f(module):
-        for write in writes_list:
-            assert module.is_waiting_input(), "Did you forget to use input()?"
+        for i, write in enumerate(writes_list):
+            assert module.is_waiting_input(), \
+                "Did you forget to use input()? Writes so far: %s" % writes_list[:i]
             module.stdout.reset()
             module.stdin.write(write)
         require_contains(module.stdout.new(), expected_read)
-        assert not module.is_waiting_input(), "Make sure there isn't a stray input() after your code"
+        assert not module.is_waiting_input(), \
+            "Make sure there isn't a stray input() after your code"
     setDescription(f, description)
     return test(f)
+
 
 def check_function(function_name, args, expected_result, description=None):
     """ Tests that calling function with the given name exists and calling it with
