@@ -32,13 +32,11 @@ def setDescription(function, description):
 
 
 def load_json(json_string):
-    " Loads json_string into an ordered_dict "
-    try:
-        return json.loads(json_string, object_pairs_hook=OrderedDict)
-    except:
-        return json.loads(json_string)
+    " Loads json_string into an dict "
+    return json.loads(json_string)
 
 
 def dump_json(ordered_dict):
-    " Dumps the OrderedDict to a string, indented "
+    " Dumps the dict to a string, indented "
+    #print(ordered_dict)
     return json.dumps(ordered_dict, indent=4, ensure_ascii=False)

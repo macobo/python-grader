@@ -51,7 +51,7 @@ def get_test_name(function):
 def test_module(tester_module, user_module, working_dir = None, print_result = False):
     results = runTester(tester_module, user_module, working_dir)
     if print_result:
-        print(dump_json(results, indent=4, ensure_ascii=False))
+        print(dump_json(results))
     return results
 
 

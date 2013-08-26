@@ -79,11 +79,11 @@ class Tests(unittest.TestCase):
             tester_module = "tester",
             user_module = "tested_module",
             working_dir = CURRENT_FOLDER
-        )
+        )["results"]
 
     def run_test(self, test_function):
         test_name = grader.get_test_name(test_function)
-        result = self.results[test_name]
+        result = next(filter(lambda x: x["description"] == test_name, self.results))
         assert result["success"], result
 
     def tester_initialization(self):

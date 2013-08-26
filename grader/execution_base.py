@@ -7,6 +7,8 @@ from threading import Thread, Lock
 from grader.utils import dump_json
 #from macropy.tracing import macros, trace
 
+import grader
+
 class SpoofedStdin:
     def __init__(self, lock):
         self.queue = queue.Queue()
@@ -16,7 +18,8 @@ class SpoofedStdin:
 
     def write(self, line):
         self.queue.put(str(line))
-        sleep(0.01)
+        # TODO: 
+        sleep(0.00001)
 
     def readline(self):
         if self.lock.locked():
@@ -61,7 +64,8 @@ class Module(Thread):
         # this thread doesn't block exiting
         self.setDaemon(True)
         self.start()
-        sleep(0.05)
+        # TODO:
+        sleep(0.005)
 
     
     def run(self):
@@ -108,6 +112,7 @@ def call_test_function(fun, module):
             "success": boolean,
             "traceback": string ("" if None)
             "time": string (execution time, rounded to 3 decimal digits)
+            "description": string (test name/its description)
         }
     """
     success, traceback_ = True, ""
@@ -126,7 +131,8 @@ def call_test_function(fun, module):
         "success": success,
         "traceback": traceback_,
         "time": "%.3f" % (end_time - start_time),
-        "stdout": module.stdout.read()
+        "stdout": module.stdout.read(),
+        "description": grader.get_test_name(fun)
     }
 
 
@@ -140,13 +146,17 @@ def test_module(tester_module, user_module, print_result = False):
         Returns/prints the dictionary from call_function.
     """
     # populate tests
-    import grader
     importlib.import_module(tester_module)
 
-    results = {
-        test_name: call_test_function(test_function, Module(user_module))
+    test_results = [
+        call_test_function(test_function, Module(user_module))
             for test_name, test_function in grader.testcases.items()
+    ]
+
+    results = {
+        "results": test_results
     }
+
     if print_result:
         print(dump_json(results))
     return results

@@ -25,7 +25,7 @@ class Tests(unittest.TestCase):
         grader.reset()
         results = grader.test_module(tester_module, solution_module, working_dir)
 
-        for test_name, result in results.items():
+        for result in results["results"]:
             assert result["success"], dump_json(results)
 
 
