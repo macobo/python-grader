@@ -2,6 +2,7 @@ import sys
 import queue
 import importlib
 import traceback
+from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
 from grader.utils import dump_json
@@ -87,7 +88,7 @@ class Module(Thread):
             imported again """
         from types import ModuleType
         mod = ModuleType("solution_program")
-        with open(module_name + ".py") as f:
+        with open(module_name + ".py", "r", "utf-8") as f:
             source = f.read()
         code = compile(source, module_name, "exec", dont_inherit=True)
         exec(code, mod.__dict__)

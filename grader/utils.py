@@ -1,7 +1,6 @@
 import os
 import json
 import contextlib
-from collections import OrderedDict
 
 from tempfile import NamedTemporaryFile
 

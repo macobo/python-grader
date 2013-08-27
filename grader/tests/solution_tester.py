@@ -6,6 +6,7 @@ import unittest
 import os
 import sys
 import grader
+from codecs import open
 from grader.utils import load_json, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -13,7 +14,9 @@ SOLUTION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(CURRENT_FOLDER)),
 
 sys.path.append(SOLUTION_FOLDER)
 
-tasks_json = load_json(open(os.path.join(SOLUTION_FOLDER, "tasks.json")).read())
+tasks_file = open(os.path.join(SOLUTION_FOLDER, "tasks.json"), "r", "utf8")
+tasks_json = load_json(tasks_file.read())
+tasks_file.close()
 # list of existing solution-tester pairs
 # (tester_module, solution_module)
 existing_tests = [

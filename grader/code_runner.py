@@ -1,6 +1,5 @@
 import os
 import subprocess
-import json
 from .utils import tempModule, load_json
 
 
