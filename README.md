@@ -35,12 +35,12 @@ To run tests, run `python3.3 run_tests.py`.
 
 ## Sample test
 
-####Task:
+###Task:
 Write a function named `taisnurkne` that takes three numbers as an agument and returns True or False 
 according to whether it's possible to form a right-angled triangle with such side lengths. 
 Side lengths are guaranteed to be positive.
 
-####Tester [u6_taisnurkne_tester.py](tasks/u6_taisnurkne_tester.py)
+###Tester [u6_taisnurkne_tester.py](tasks/u6_taisnurkne_tester.py)
 ```python
 from grader import *
 
@@ -50,7 +50,7 @@ check_function("taisnurkne", [917.2102192315585, 561.3888059296613, 1075.3752729
 check_function("taisnurkne", [917.2102192315585, 561.3888059296613, 1075.2752729563455], False)
 ```
 
-#### Running test on a file
+### Running test on a file
 To run tests, run `python3.3 -m grader <tester_file> <solution_file>` in the directory they are both contained.
 
 For example, to run the above tester (in the tasks folder) on the sample solution:
