@@ -16,7 +16,6 @@ def reset():
     global testcases
     testcases = OrderedDict()
 
-
 def test(test_function):
     """ Decorator for a test. The function should take a single argument which
         is the object containing stdin, stdout and module (the globals of users program).
@@ -47,6 +46,33 @@ def get_test_name(function):
         name = beautifyDescription(inspect.getdoc(function))
     return name
 
+### Hooks 
+
+def before_test(action):
+    """ Decorator for a hook on a tested function. Makes the tester execute
+        the function `action` before running the decorated test. """
+    def _inner_decorator(test_function):
+        test_function.__before_hooks__ = get_before_hooks(test_function) + [action]
+        return test_function
+    return _inner_decorator
+
+def after_test(action):
+    """ Decorator for a hook on a tested function. Makes the tester execute
+        the function `action` after running the decorated test. """
+    def _inner_decorator(test_function):
+        test_function.__after_hooks__ = get_after_hooks(test_function) + [action]
+        return test_function
+    return _inner_decorator
+
+def get_before_hooks(test_function):
+    """ Returns a tuple of functions to run before running `test_function`. """
+    return getattr(test_function, '__before_hooks__', [])
+
+def get_after_hooks(test_function):
+    """ Returns a tuple of functions to run before running `test_function`. """
+    return getattr(test_function, '__after_hooks__', [])
+
+### Exposed methods to test files/code
 
 def test_module(tester_module, user_module, working_dir = None, print_result = False):
     results = runTester(tester_module, user_module, working_dir)

@@ -1,6 +1,7 @@
 import unittest
 import os
 import grader
+from grader.utils import create_file, delete_file
 from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -16,7 +17,7 @@ def dyn_test(f):
 def stdin_stdout_available(module):
     assert hasattr(module, "stdin")
     assert hasattr(module, "stdout")
-    module.stdin.write("Karl")
+    #module.stdin.write("Karl")
 
 @dyn_test
 def module_availability(module):
@@ -28,7 +29,7 @@ def module_availability(module):
 def stdout_read(module):
     module.stdin.write("Karl")
     stdout = module.stdout.read()
-    assert stdout == "Hi, Karl\n", stdout
+    assert stdout == "Hi, Karl 6\n", stdout
 
 
 @dyn_test
@@ -77,7 +78,13 @@ def multiline_doc_function(m):
         as its name in grader
     """
 
-
+@grader.test
+@grader.before_test(create_file('hello.txt', 'Hello world!'))
+@grader.after_test(delete_file('hello.txt'))
+def hook_test(m):
+    with open(os.path.join(CURRENT_FOLDER, 'hello.txt')) as file:
+        txt = file.read()
+        assert txt == 'Hello world!', txt
 
 
 class Tests(unittest.TestCase):
@@ -89,13 +96,17 @@ class Tests(unittest.TestCase):
             working_dir = CURRENT_FOLDER
         )["results"]
 
-    def run_test(self, test_function):
-        test_name = grader.get_test_name(test_function)
+    def find_result(self, function):
+        test_name = grader.get_test_name(function)
         result = next(filter(lambda x: x["description"] == test_name, self.results))
+        return result
+
+    def run_test(self, test_function):
+        result = self.find_result(test_function)
         assert result["success"], result
 
     def tester_initialization(self):
-        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 2)
+        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 3)
 
     def test_docstring_added_as_test_name(self):
         import inspect
@@ -106,6 +117,10 @@ class Tests(unittest.TestCase):
         doc = "This function should have a multiline docstring as its name in grader"
         self.assertIn(doc, list(grader.testcases.keys()))
 
+    def test_hooks(self):
+        result = self.find_result(hook_test)
+        assert result["success"], result
+        assert not os.path.exists(os.path.join(CURRENT_FOLDER, "hello.txt"))
 
 for test_name, test_function in dynamic_tests:
     setattr(Tests, "test_"+test_name, 

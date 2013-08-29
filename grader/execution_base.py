@@ -108,8 +108,11 @@ class ModuleContainer(Thread):
         sys.stdout = sys.__stdout__
 
 
+def call_all(function_list):
+    for fun in function_list: 
+        fun()
 
-def call_test_function(fun, module):
+def call_test_function(test_function, tested_module_name):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -119,25 +122,31 @@ def call_test_function(fun, module):
             "description": string (test name/its description)
         }
     """
+    # pre-test hooks
+    call_all(grader.get_before_hooks(test_function))
+
+    module = ModuleContainer(tested_module_name)
     success, traceback_ = True, ""
     start_time = time()
     try:
-        fun(module)
+        test_function(module)
     except Exception as e:
         success = False
         type_, value, tb = type(e), e, e.__traceback__
         traceback_ = "".join(traceback.format_exception(type_, value, tb))
     end_time = time()
     ModuleContainer.restore_io()
-    #sys.__stdout__.write("=====" + "\n"*3)
-    #sys.__stdout__.write(module.stderr.read())
-    return {
+    result = {
         "success": success,
         "traceback": traceback_,
         "time": "%.3f" % (end_time - start_time),
         "stdout": module.stdout.read(),
-        "description": grader.get_test_name(fun)
+        "description": grader.get_test_name(test_function)
     }
+
+    # after test hooks - cleanup
+    call_all(grader.get_after_hooks(test_function))
+    return result
 
 
 def test_module(tester_module, user_module, print_result = False):
@@ -153,7 +162,7 @@ def test_module(tester_module, user_module, print_result = False):
     importlib.import_module(tester_module)
 
     test_results = [
-        call_test_function(test_function, ModuleContainer(user_module))
+        call_test_function(test_function, user_module)
             for test_name, test_function in grader.testcases.items()
     ]
 

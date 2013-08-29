@@ -1,5 +1,6 @@
 name = input()
-print("Hi,",name)
+# test builtins
+print("Hi,",name, max(5, 6))
 
 def add_one(x):
     print("Got",x)
