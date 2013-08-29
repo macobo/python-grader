@@ -45,3 +45,21 @@ def check_function(function_name, args, expected_result, description=None):
                         "(" + ", ".join(map(repr,args)) + ") == "+repr(expected_result)
     setDescription(f, description)
     return test(f)
+
+
+def line_match_test(description, writes_list, expected_reads):
+    """ Test wrapper similar to io_test. It checks each line against an
+        element from `expected_reads`. 
+        Does all the writes at the beginning.
+    """
+    def f(module):
+        for write in writes_list: 
+            module.stdout.write(write)
+        lines = module.stdout.read().strip().split('\n')
+        require[len(lines) == len(expected_reads)]
+        for line_no, (read, expected) in enumerate(zip(lines, expected_reads)):
+            error_msg = "Expected '%s' on line %d.\nGot: '%s'" % (expected, line_no+1, read)
+            require_contains(read, expected, error_msg)
+
+    setDescription(f, description)
+    return test(f)

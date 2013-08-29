@@ -21,6 +21,10 @@
         "kujundid": { 
             "tester":   "u3_kujundid_tester", 
             "solution": "u3_kujundid_solution"
+        },
+        "paaris-paaritu": {
+            "tester":   "u3_paarispaaritu_tester", 
+            "solution": "u3_paarispaaritu_solution"   
         }
     },
     "6": {

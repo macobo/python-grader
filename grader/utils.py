@@ -58,3 +58,13 @@ def delete_file(filename):
     def _inner():
         os.remove(filename)
     return _inner
+
+def create_temporary_file(filename, contents = ""):
+    from grader.core import before_test, after_test
+    """ Decorator for constructing a file which is available
+        during a single test and is deleted afterwards. """
+    def _inner(test_function):
+        before_test(create_file(filename, contents))(test_function)
+        after_test(delete_file(filename))(test_function)
+        return test_function
+    return _inner
