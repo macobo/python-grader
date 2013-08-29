@@ -90,9 +90,10 @@ def hook_test(m):
 class Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        grader.reset()
         cls.results = grader.test_module(
-            tester_module = "tester",
-            user_module = "tested_module",
+            tester_module = "core_tester",
+            user_module = "_helper_tested_module",
             working_dir = CURRENT_FOLDER
         )["results"]
 
@@ -106,7 +107,7 @@ class Tests(unittest.TestCase):
         assert result["success"], result
 
     def tester_initialization(self):
-        self.assertEqual(len(grader.testcases), len(dynamic_tests) + 3)
+        self.assertTrue(len(grader.testcases) >= len(dynamic_tests) + 3)
 
     def test_docstring_added_as_test_name(self):
         import inspect
