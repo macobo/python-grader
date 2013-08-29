@@ -16,12 +16,17 @@ def paarispaaritu(numbers):
 
 def checker(numbers):
     expected = paarispaaritu(numbers)
-    test_function = line_match_test(str(numbers), [], expected)
-    # add an hook to create and delete the temporary file.
-    # TODO: nicer syntax.
-    test_function = create_temporary_file('arvud.txt', numbers)(test_function)
+    @test
+    @create_temporary_file('arvud.txt', numbers)
+    def test_function(m):
+        lines = m.stdout.read().strip().split("\n")
+        require_each_contains(
+            lines, 
+            paarispaaritu(numbers), 
+            "Expected {expected} on line {index}.\nGot: [{got}]")
 
-    #print("c!", test_function, test_function.__before_hooks__)
+    setDescription(test_function, "Numbrid = "+str(numbers))
+
 
 checker(list(range(1,5)))
 checker(list(range(-1, -6, -1)))

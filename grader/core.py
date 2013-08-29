@@ -23,6 +23,8 @@ def test(test_function):
 
         Raising an exception causes the test to fail, the resulting stack trace is
         passed to the user. """
+    assert hasattr(test_function, '__call__'), \
+        "test_function should be a function, got "+repr(test_function)
 
     @wraps(test_function)
     def wrapper(module, *args, **kwargs):
