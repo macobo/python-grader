@@ -56,7 +56,10 @@ class SpoofedStdout:
         return result
 
 
-class Module(Thread):
+class ModuleContainer(Thread):
+    """ A thread that runs the users program.
+        It has hooks for a spoofed stdin and stdout, and also a reference to 
+        the users module (available after the import is finished) """
     def __init__(self, module_name):
         Thread.__init__(self)
         self.module_name = module_name
@@ -65,7 +68,7 @@ class Module(Thread):
         # this thread doesn't block exiting
         self.setDaemon(True)
         self.start()
-        # TODO:
+        # TODO: give a chance for the thread to run
         sleep(0.005)
 
     
@@ -125,7 +128,7 @@ def call_test_function(fun, module):
         type_, value, tb = type(e), e, e.__traceback__
         traceback_ = "".join(traceback.format_exception(type_, value, tb))
     end_time = time()
-    Module.restore_io()
+    ModuleContainer.restore_io()
     #sys.__stdout__.write("=====" + "\n"*3)
     #sys.__stdout__.write(module.stderr.read())
     return {
@@ -150,7 +153,7 @@ def test_module(tester_module, user_module, print_result = False):
     importlib.import_module(tester_module)
 
     test_results = [
-        call_test_function(test_function, Module(user_module))
+        call_test_function(test_function, ModuleContainer(user_module))
             for test_name, test_function in grader.testcases.items()
     ]
 
