@@ -1,7 +1,5 @@
 import os
-import json
 import inspect
-#from textwrap import dedent
 from functools import wraps
 from collections import OrderedDict
 from .code_runner import runTester
@@ -26,8 +24,6 @@ def test(test_function):
         Raising an exception causes the test to fail, the resulting stack trace is
         passed to the user. """
 
-    testcases[get_test_name(test_function)] = test_function
-
     @wraps(test_function)
     def wrapper(module, *args, **kwargs):
         if module.caughtException:
@@ -36,6 +32,8 @@ def test(test_function):
         if module.caughtException:
             raise module.caughtException
         return result
+
+    testcases[get_test_name(test_function)] = wrapper
     return wrapper
 
 
@@ -52,6 +50,7 @@ def before_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` before running the decorated test. """
     def _inner_decorator(test_function):
+        #print("before_test decorating", test_function)
         test_function.__before_hooks__ = get_before_hooks(test_function) + [action]
         return test_function
     return _inner_decorator
@@ -60,6 +59,7 @@ def after_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` after running the decorated test. """
     def _inner_decorator(test_function):
+        #print("after_test decorating", test_function)
         test_function.__after_hooks__ = get_after_hooks(test_function) + [action]
         return test_function
     return _inner_decorator
