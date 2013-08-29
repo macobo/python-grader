@@ -19,8 +19,8 @@ class SpoofedStdin:
 
     def write(self, line):
         self.queue.put(str(line))
-        # TODO: 
-        sleep(0.00001)
+        # TODO: timing problems
+        sleep(0.0001)
 
     def readline(self):
         if self.lock.locked():

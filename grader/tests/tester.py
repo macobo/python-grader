@@ -59,6 +59,14 @@ def trace_macro_available(m):
     assert "1+2 -> 3\n" in n, n
     assert "1+2+3 -> 6\n" in n, n
 
+@dyn_test
+def io_within_function(m):
+    m.stdin.write("Karl")
+    m.stdout.reset()
+    m.stdin.write("Hello world")
+    m.module.askInput()
+    assert "Hello world" in m.stdout.read(), m.stdout.read()
+
 @grader.test
 def doc_only_function(m):
     "this function should have the docstring as its name in grader"
