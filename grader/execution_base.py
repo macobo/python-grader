@@ -1,12 +1,11 @@
 import sys
 import queue
 import importlib
-import traceback
 import multiprocessing
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json
+from grader.utils import dump_json, get_traceback
 #from macropy.tracing import macros, trace
 
 import grader
@@ -92,12 +91,10 @@ class ModuleContainer(Thread):
             imported again """
         from types import ModuleType
         mod = ModuleType("solution_program")
-        mod.__file__ = module_name + ".py"
         with open(module_name + ".py", "r", "utf-8") as f:
             source = f.read()
         code = compile(source, module_name, "exec", dont_inherit=True)
         exec(code, mod.__dict__)
-        mod.__meh__ = str(dir(mod))
         return mod
 
 
@@ -115,6 +112,7 @@ def call_all(function_list):
     for fun in function_list: 
         fun()
 
+
 def call_test_function(q, test_name, tester_module, user_module):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
@@ -129,18 +127,12 @@ def call_test_function(q, test_name, tester_module, user_module):
     # populate tests
     importlib.import_module(tester_module)
     test_function = grader.testcases[test_name]
-    # # pre-test hooks
+    # pre-test hooks
     call_all(grader.get_before_hooks(test_function))
 
     module = ModuleContainer(user_module)
     test_function(module)
 
-    # after test hooks - cleanup
-    #call_all(grader.get_after_hooks(test_function))
-
-def get_traceback(exception):
-    type_, value, tb = type(exception), exception, exception.__traceback__
-    return "".join(traceback.format_exception(type_, value, tb))
 
 def resolve_testcase_run(q, async, test_name, timeout):
     test_function = grader.testcases[test_name]
@@ -148,22 +140,22 @@ def resolve_testcase_run(q, async, test_name, timeout):
     # TODO: if start_time doesn't resolve?
     start_time = q.get(timeout=timeout)
     time_left = start_time + timeout - time()
-    success, traceback_ = True, ""
+    success, traceback = True, ""
     return_result = None
     try:
         return_result = async.get(time_left)
     except Exception as e:
         success = False
-        type_, value, tb = type(e), e, e.__traceback__
-        traceback_ = "".join(traceback.format_exception(type_, value, tb))
+        traceback = get_traceback(e)
     exec_time = time() - start_time
     ModuleContainer.restore_io()
     result = {
         "success": success,
-        "traceback": traceback_,
+        "traceback": traceback,
         "description": grader.get_test_name(test_function),
         "time": "%.3f" % exec_time,
     }
+    # after test hooks - cleanup
     call_all(grader.get_after_hooks(test_function))
     return result
 
@@ -192,16 +184,7 @@ def test_module(tester_module, user_module, print_result = False):
             resolve_testcase_run(q, async, test_name, 1)
         )
 
-
-    # test_results = [
-    #     call_test_function(test_function, user_module)
-    #         for test_name, test_function in grader.testcases.items()
-    # ]
-
-    results = {
-        "results": test_results
-    }
-
+    results = { "results": test_results }
     if print_result:
         print(dump_json(results))
     return results
