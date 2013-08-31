@@ -94,7 +94,7 @@ class ModuleContainer(Thread):
         mod = ModuleType("solution_program")
         with open(module_name + ".py", "r", "utf-8") as f:
             source = f.read()
-        code = compile(source, module_name, "exec", dont_inherit=True)
+        code = compile(source, "<tested-program>", "exec", dont_inherit=True)
         exec(code, mod.__dict__)
         return mod
 
