@@ -2,6 +2,7 @@ import sys
 import queue
 import importlib
 import traceback
+import multiprocessing
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
@@ -91,10 +92,12 @@ class ModuleContainer(Thread):
             imported again """
         from types import ModuleType
         mod = ModuleType("solution_program")
+        mod.__file__ = module_name + ".py"
         with open(module_name + ".py", "r", "utf-8") as f:
             source = f.read()
         code = compile(source, module_name, "exec", dont_inherit=True)
         exec(code, mod.__dict__)
+        mod.__meh__ = str(dir(mod))
         return mod
 
 
@@ -112,7 +115,7 @@ def call_all(function_list):
     for fun in function_list: 
         fun()
 
-def call_test_function(test_function, tested_module_name):
+def call_test_function(q, test_name, tester_module, user_module):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -122,29 +125,45 @@ def call_test_function(test_function, tested_module_name):
             "description": string (test name/its description)
         }
     """
-    # pre-test hooks
+    q.put(time())
+    # populate tests
+    importlib.import_module(tester_module)
+    test_function = grader.testcases[test_name]
+    # # pre-test hooks
     call_all(grader.get_before_hooks(test_function))
 
-    module = ModuleContainer(tested_module_name)
+    module = ModuleContainer(user_module)
+    test_function(module)
+
+    # after test hooks - cleanup
+    #call_all(grader.get_after_hooks(test_function))
+
+def get_traceback(exception):
+    type_, value, tb = type(exception), exception, exception.__traceback__
+    return "".join(traceback.format_exception(type_, value, tb))
+
+def resolve_testcase_run(q, async, test_name, timeout):
+    test_function = grader.testcases[test_name]
+
+    # TODO: if start_time doesn't resolve?
+    start_time = q.get(timeout=timeout)
+    time_left = start_time + timeout - time()
     success, traceback_ = True, ""
-    start_time = time()
+    return_result = None
     try:
-        test_function(module)
+        return_result = async.get(time_left)
     except Exception as e:
         success = False
         type_, value, tb = type(e), e, e.__traceback__
         traceback_ = "".join(traceback.format_exception(type_, value, tb))
-    end_time = time()
+    exec_time = time() - start_time
     ModuleContainer.restore_io()
     result = {
         "success": success,
         "traceback": traceback_,
-        "time": "%.3f" % (end_time - start_time),
-        "stdout": module.stdout.read(),
-        "description": grader.get_test_name(test_function)
+        "description": grader.get_test_name(test_function),
+        "time": "%.3f" % exec_time,
     }
-
-    # after test hooks - cleanup
     call_all(grader.get_after_hooks(test_function))
     return result
 
@@ -158,13 +177,26 @@ def test_module(tester_module, user_module, print_result = False):
 
         Returns/prints the dictionary from call_function.
     """
+    from multiprocessing.pool import Pool
     # populate tests
     importlib.import_module(tester_module)
 
-    test_results = [
-        call_test_function(test_function, user_module)
-            for test_name, test_function in grader.testcases.items()
-    ]
+    pool = Pool(1)
+    manager = multiprocessing.Manager()
+    test_results = []
+    for test_name in grader.testcases:
+        q = manager.Queue()
+        args = (q, test_name, tester_module, user_module)
+        async = pool.apply_async(call_test_function, args)
+        test_results.append(
+            resolve_testcase_run(q, async, test_name, 1)
+        )
+
+
+    # test_results = [
+    #     call_test_function(test_function, user_module)
+    #         for test_name, test_function in grader.testcases.items()
+    # ]
 
     results = {
         "results": test_results
