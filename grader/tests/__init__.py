@@ -10,11 +10,13 @@ from . import core_tester
 from . import solution_tester
 from . import feedback_utils_tester
 from . import timing_tester
+from . import timeout_tester
 Tests = test_suite(cases=[
    core_tester,
    solution_tester,
    feedback_utils_tester,
-   timing_tester
+   timing_tester,
+   timeout_tester
 ], suites=[
     
 ])

@@ -78,6 +78,7 @@ class ModuleContainer(Thread):
             self.stdout = sys.stdout = SpoofedStdout()
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
+            # TODO: get/setattr, nicer message on failed access
             self.module = self.fake_import(self.module_name)
         except Exception as e:
             # Threads don't propagate their errors to main thread
