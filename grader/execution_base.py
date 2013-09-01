@@ -132,7 +132,11 @@ def call_test_function(q, test_name, tester_module, user_module):
     call_all(grader.get_before_hooks(test_function))
 
     module = ModuleContainer(user_module)
-    test_function(module)
+    try:
+        test_function(module)
+        return "" # no traceback
+    except Exception as e:
+        return get_traceback(e)
 
 
 def resolve_testcase_run(q, async, test_name, timeout):
@@ -141,17 +145,14 @@ def resolve_testcase_run(q, async, test_name, timeout):
     # TODO: if start_time doesn't resolve?
     start_time = q.get(timeout=timeout)
     time_left = start_time + timeout - time()
-    success, traceback = True, ""
-    return_result = None
     try:
-        return_result = async.get(time_left)
+        traceback = async.get(time_left)
     except Exception as e:
-        success = False
         traceback = get_traceback(e)
     exec_time = time() - start_time
     ModuleContainer.restore_io()
     result = {
-        "success": success,
+        "success": traceback == "",
         "traceback": traceback,
         "description": grader.get_test_name(test_function),
         "time": "%.3f" % exec_time,

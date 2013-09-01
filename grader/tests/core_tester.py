@@ -136,7 +136,6 @@ class Tests(unittest.TestCase):
         assert not result["success"]
         assert "SomeAwesomeMessage" in result["traceback"], result
 
-    @unittest.skip("tbd")
     def test_trace_contains_file_lines(self):
         result = self.find_result(exceptions)
         assert not result["success"]
@@ -144,7 +143,7 @@ class Tests(unittest.TestCase):
         # check if tester module trace is in
         self.assertIn('core_tester.py", line 92', trace)
         # check if user code gets a line
-        self.assertIn('line 19 in raiseException', trace)
+        self.assertIn('line 19, in raiseException', trace)
 
 
 for test_name, test_function in dynamic_tests:
