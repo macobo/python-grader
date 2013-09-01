@@ -30,5 +30,6 @@ class Tests(unittest.TestCase):
         result = self.find_result(test_function)
         assert result["success"], result
 
+    @unittest.skip("tbd (#4)")
     def test_timing_issue(self):
         self.run_test(timing_issue_test)

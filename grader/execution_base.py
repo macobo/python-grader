@@ -174,16 +174,18 @@ def test_module(tester_module, user_module, print_result = False):
     # populate tests
     importlib.import_module(tester_module)
 
-    pool = Pool(1)
     manager = multiprocessing.Manager()
     test_results = []
     for test_name in grader.testcases:
         q = manager.Queue()
+        pool = Pool(1)
+        # TODO: no other way to kill async
         args = (q, test_name, tester_module, user_module)
         async = pool.apply_async(call_test_function, args)
         test_results.append(
             resolve_testcase_run(q, async, test_name, 1)
         )
+        pool.terminate()
 
     results = { "results": test_results }
     if print_result:

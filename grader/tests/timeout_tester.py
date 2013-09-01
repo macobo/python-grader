@@ -5,6 +5,11 @@ import os
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 @grader.test
+def test_that_timeouts(m):
+    from time import sleep
+    sleep(2)
+
+@grader.test
 def slow_function_timeout(m):
     # empty test - the test should fail since 
     # m.slow_function() takes too long
@@ -34,3 +39,10 @@ class Tests(unittest.TestCase):
         result = self.find_result(slow_function_timeout)
         assert not result["success"], result
         assert "timeout" in result["traceback"].lower(), result
+        assert "1.0" in result["time"], result
+
+    def test_testing_function_timeout(self):
+        result = self.find_result(test_that_timeouts)
+        assert not result["success"], result
+        assert "timeout" in result["traceback"].lower(), result
+        assert "1.0" in result["time"], result

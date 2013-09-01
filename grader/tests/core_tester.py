@@ -136,6 +136,7 @@ class Tests(unittest.TestCase):
         assert not result["success"]
         assert "SomeAwesomeMessage" in result["traceback"], result
 
+    @unittest.skip("tbd")
     def test_trace_contains_file_lines(self):
         result = self.find_result(exceptions)
         assert not result["success"]
