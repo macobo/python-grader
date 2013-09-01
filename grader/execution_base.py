@@ -1,11 +1,11 @@
 import sys
 import queue
 import importlib
-import traceback
+import multiprocessing
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json
+from grader.utils import dump_json, get_traceback
 #from macropy.tracing import macros, trace
 
 import grader
@@ -78,6 +78,7 @@ class ModuleContainer(Thread):
             self.stdout = sys.stdout = SpoofedStdout()
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
+            # TODO: get/setattr, nicer message on failed access
             self.module = self.fake_import(self.module_name)
         except Exception as e:
             # Threads don't propagate their errors to main thread
@@ -93,7 +94,7 @@ class ModuleContainer(Thread):
         mod = ModuleType("solution_program")
         with open(module_name + ".py", "r", "utf-8") as f:
             source = f.read()
-        code = compile(source, module_name, "exec", dont_inherit=True)
+        code = compile(source, "<tested-program>", "exec", dont_inherit=True)
         exec(code, mod.__dict__)
         return mod
 
@@ -112,7 +113,30 @@ def call_all(function_list):
     for fun in function_list: 
         fun()
 
-def call_test_function(test_function, tested_module_name):
+
+def call_test_function(q, test_name, tester_module, user_module):
+    """ Called in another process. Finds the test `test_name`, calls the 
+        pre-test hooks and tries to execute it. Also saves the execution
+        start time to queue `q`.
+
+        Returns raised exception traceback as a string. If
+        no exception was raised, returns "". """
+    q.put(time())
+    # populate tests
+    importlib.import_module(tester_module)
+    test_function = grader.testcases[test_name]
+    # pre-test hooks
+    call_all(grader.get_setting(test_function, "before-hooks"))
+
+    module = ModuleContainer(user_module)
+    try:
+        test_function(module)
+        return "" # no traceback
+    except Exception as e:
+        return get_traceback(e)
+
+
+def resolve_testcase_run(q, async, test_name):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -122,30 +146,26 @@ def call_test_function(test_function, tested_module_name):
             "description": string (test name/its description)
         }
     """
-    # pre-test hooks
-    call_all(grader.get_before_hooks(test_function))
+    timeout = grader.get_setting(test_name, "timeout")
+    test_function = grader.testcases[test_name]
 
-    module = ModuleContainer(tested_module_name)
-    success, traceback_ = True, ""
-    start_time = time()
+    # TODO: if start_time doesn't resolve?
+    start_time = q.get(timeout=timeout)
+    time_left = start_time + timeout - time()
     try:
-        test_function(module)
-    except Exception as e:
-        success = False
-        type_, value, tb = type(e), e, e.__traceback__
-        traceback_ = "".join(traceback.format_exception(type_, value, tb))
-    end_time = time()
+        traceback = async.get(time_left)
+    except multiprocessing.TimeoutError as e:
+        traceback = get_traceback(e)
+    exec_time = time() - start_time
     ModuleContainer.restore_io()
     result = {
-        "success": success,
-        "traceback": traceback_,
-        "time": "%.3f" % (end_time - start_time),
-        "stdout": module.stdout.read(),
-        "description": grader.get_test_name(test_function)
+        "success": traceback == "",
+        "traceback": traceback,
+        "description": grader.get_test_name(test_function),
+        "time": "%.3f" % exec_time,
     }
-
     # after test hooks - cleanup
-    call_all(grader.get_after_hooks(test_function))
+    call_all(grader.get_setting(test_function, "after-hooks"))
     return result
 
 
@@ -158,18 +178,25 @@ def test_module(tester_module, user_module, print_result = False):
 
         Returns/prints the dictionary from call_function.
     """
+    from multiprocessing.pool import Pool
     # populate tests
     importlib.import_module(tester_module)
+    assert len(grader.testcases) > 0
 
-    test_results = [
-        call_test_function(test_function, user_module)
-            for test_name, test_function in grader.testcases.items()
-    ]
+    manager = multiprocessing.Manager()
+    test_results = []
+    for test_name in grader.testcases:
+        q = manager.Queue()
+        pool = Pool(1)
+        # TODO: no other way to kill async
+        args = (q, test_name, tester_module, user_module)
+        async = pool.apply_async(call_test_function, args)
+        test_results.append(
+            resolve_testcase_run(q, async, test_name)
+        )
+        pool.terminate()
 
-    results = {
-        "results": test_results
-    }
-
+    results = { "results": test_results }
     if print_result:
         print(dump_json(results))
     return results

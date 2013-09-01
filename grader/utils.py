@@ -1,6 +1,7 @@
 import os
 import json
 import contextlib
+import traceback
 
 from tempfile import NamedTemporaryFile
 
@@ -40,6 +41,13 @@ def load_json(json_string):
 def dump_json(ordered_dict):
     " Dumps the dict to a string, indented "
     return json.dumps(ordered_dict, indent=4)#, ensure_ascii=False)
+
+
+## 
+def get_traceback(exception):
+    type_, value, tb = type(exception), exception, exception.__traceback__
+    return "".join(traceback.format_exception(type_, value, tb))
+
 
 
 ## File creation, deletion for hooks

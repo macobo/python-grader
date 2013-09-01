@@ -9,6 +9,15 @@ CURRENT_FOLDER = os.path.dirname(__file__)
 
 testcases = OrderedDict()
 
+DEFAULT_SETTINGS = {
+    # hooks that run before tests
+    "before-hooks": (),
+    # hooks that run after tests
+    "after-hooks": (),
+    # timeout for function run
+    "timeout": 0.5
+}
+
 def reset():
     " resets settings and loaded tests "
     global testcases
@@ -35,7 +44,8 @@ def test(test_function):
             raise module.caughtException
         return result
 
-    testcases[get_test_name(test_function)] = wrapper
+    name = get_test_name(test_function)
+    testcases[name] = wrapper
     return wrapper
 
 
@@ -46,14 +56,29 @@ def get_test_name(function):
         name = beautifyDescription(inspect.getdoc(function))
     return name
 
+def get_setting(test_function, setting_name):
+    if isinstance(test_function, str):
+        test_function = testcases[test_function]
+    if not hasattr(test_function, "_grader_settings_"):
+        # copy default settings
+        test_function._grader_settings_ = DEFAULT_SETTINGS.copy()
+    return test_function._grader_settings_[setting_name]
+
+def set_setting(test_function, setting_name, value):
+    if isinstance(test_function, str):
+        test_function = testcases[test_function]
+    # populate settings if needed
+    get_setting(test_function, setting_name)
+    test_function._grader_settings_[setting_name] = value
+
 ### Hooks 
 
 def before_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` before running the decorated test. """
     def _inner_decorator(test_function):
-        #print("before_test decorating", test_function)
-        test_function.__before_hooks__ = get_before_hooks(test_function) + [action]
+        hooks = get_setting(test_function, "before-hooks") + (action,)
+        set_setting(test_function, "before-hooks", hooks)
         return test_function
     return _inner_decorator
 
@@ -61,18 +86,17 @@ def after_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` after running the decorated test. """
     def _inner_decorator(test_function):
-        #print("after_test decorating", test_function)
-        test_function.__after_hooks__ = get_after_hooks(test_function) + [action]
+        hooks = get_setting(test_function, "after-hooks") + (action,)
+        set_setting(test_function, "after-hooks", hooks)
         return test_function
     return _inner_decorator
 
-def get_before_hooks(test_function):
-    """ Returns a tuple of functions to run before running `test_function`. """
-    return getattr(test_function, '__before_hooks__', [])
-
-def get_after_hooks(test_function):
-    """ Returns a tuple of functions to run before running `test_function`. """
-    return getattr(test_function, '__after_hooks__', [])
+def timeout(seconds):
+    """ Decorator for a test. Indicates how long the test can run. """
+    def _inner(test_function):
+        set_setting(test_function, "timeout", seconds)
+        return test_function
+    return _inner
 
 ### Exposed methods to test files/code
 

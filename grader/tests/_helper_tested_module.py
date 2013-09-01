@@ -14,3 +14,6 @@ def slow_function(a):
 def askInput():
     a = input()
     print(slow_function(a))
+
+def raiseException(msg):
+    raise Exception(msg)
