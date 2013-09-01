@@ -126,7 +126,7 @@ def call_test_function(q, test_name, tester_module, user_module):
     importlib.import_module(tester_module)
     test_function = grader.testcases[test_name]
     # pre-test hooks
-    call_all(grader.get_before_hooks(test_function))
+    call_all(grader.get_setting(test_function, "before-hooks"))
 
     module = ModuleContainer(user_module)
     try:
@@ -136,7 +136,7 @@ def call_test_function(q, test_name, tester_module, user_module):
         return get_traceback(e)
 
 
-def resolve_testcase_run(q, async, test_name, timeout):
+def resolve_testcase_run(q, async, test_name):
     """ Calls the function with args, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -146,6 +146,7 @@ def resolve_testcase_run(q, async, test_name, timeout):
             "description": string (test name/its description)
         }
     """
+    timeout = grader.get_setting(test_name, "timeout")
     test_function = grader.testcases[test_name]
 
     # TODO: if start_time doesn't resolve?
@@ -153,7 +154,7 @@ def resolve_testcase_run(q, async, test_name, timeout):
     time_left = start_time + timeout - time()
     try:
         traceback = async.get(time_left)
-    except Exception as e:
+    except multiprocessing.TimeoutError as e:
         traceback = get_traceback(e)
     exec_time = time() - start_time
     ModuleContainer.restore_io()
@@ -164,7 +165,7 @@ def resolve_testcase_run(q, async, test_name, timeout):
         "time": "%.3f" % exec_time,
     }
     # after test hooks - cleanup
-    call_all(grader.get_after_hooks(test_function))
+    call_all(grader.get_setting(test_function, "after-hooks"))
     return result
 
 
@@ -180,6 +181,7 @@ def test_module(tester_module, user_module, print_result = False):
     from multiprocessing.pool import Pool
     # populate tests
     importlib.import_module(tester_module)
+    assert len(grader.testcases) > 0
 
     manager = multiprocessing.Manager()
     test_results = []
@@ -190,7 +192,7 @@ def test_module(tester_module, user_module, print_result = False):
         args = (q, test_name, tester_module, user_module)
         async = pool.apply_async(call_test_function, args)
         test_results.append(
-            resolve_testcase_run(q, async, test_name, 1)
+            resolve_testcase_run(q, async, test_name)
         )
         pool.terminate()
 
