@@ -115,15 +115,12 @@ def call_all(function_list):
 
 
 def call_test_function(q, test_name, tester_module, user_module):
-    """ Calls the function with args, checking if it doesn't raise an Exception.
-        Returns a dictionary in the following form:
-        {
-            "success": boolean,
-            "traceback": string ("" if None)
-            "time": string (execution time, rounded to 3 decimal digits)
-            "description": string (test name/its description)
-        }
-    """
+    """ Called in another process. Finds the test `test_name`, calls the 
+        pre-test hooks and tries to execute it. Also saves the execution
+        start time to queue `q`.
+
+        Returns raised exception traceback as a string. If
+        no exception was raised, returns "". """
     q.put(time())
     # populate tests
     importlib.import_module(tester_module)
@@ -140,6 +137,15 @@ def call_test_function(q, test_name, tester_module, user_module):
 
 
 def resolve_testcase_run(q, async, test_name, timeout):
+    """ Calls the function with args, checking if it doesn't raise an Exception.
+        Returns a dictionary in the following form:
+        {
+            "success": boolean,
+            "traceback": string ("" if None)
+            "time": string (execution time, rounded to 3 decimal digits)
+            "description": string (test name/its description)
+        }
+    """
     test_function = grader.testcases[test_name]
 
     # TODO: if start_time doesn't resolve?
