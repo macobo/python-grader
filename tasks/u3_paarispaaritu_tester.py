@@ -15,7 +15,6 @@ def paarispaaritu(numbers):
     return ["paaris" if x % 2 == 0 else "paaritu" for x in numbers]
 
 def checker(numbers):
-    expected = paarispaaritu(numbers)
     @test
     @create_temporary_file('arvud.txt', numbers)
     def test_function(m):
