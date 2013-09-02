@@ -1,3 +1,17 @@
+"""
+This module handles the execution of the users model. It should ideally
+be called in an subprocess (like code_runner does) in a secure enviroment
+with all code files prepared.
+
+This overhead is needed to avoid having extra testcases loaded by the grader.
+
+`test_module` loads the tester code loaded in a file. In that For each test, an 
+async request is fired (run in another process). It is resolved within the 
+`resolve_testcase_run` function. If that call timeouts, it is then terminated.
+
+See `resolve_testcase_run` for output format description.
+"""
+
 import sys
 import queue
 import importlib
@@ -56,7 +70,9 @@ class SpoofedStdout:
         result = "".join(self.output)
         if self.need_locking:
             self.timing_lock.release()
-            sleep(0.00001)
+            # give other thread a chance to execute
+            # so we don't grab the lock back immediately
+            sleep(0.00001) 
         return result
 
     def new(self):
