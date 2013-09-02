@@ -11,11 +11,12 @@ from grader.utils import dump_json, get_traceback
 import grader
 
 class SpoofedStdin:
-    def __init__(self, lock):
+    def __init__(self, timing_lock):
         self.queue = queue.Queue()
         self.waiting = False
-        self.lock = lock
-        self.lock.acquire()
+        self.timing_lock = timing_lock
+        self.timing_lock.acquire()
+        self.need_locking = True
 
     def write(self, line):
         self.queue.put(str(line))
@@ -23,18 +24,21 @@ class SpoofedStdin:
         sleep(0.0001)
 
     def readline(self):
-        if self.lock.locked():
-            self.lock.release()
+        if self.timing_lock.locked() and self.need_locking:
+            self.timing_lock.release()
         self.waiting = True
         result = self.queue.get(timeout = 3)
         self.waiting = False
-        self.lock.acquire()
+        if self.need_locking:
+            self.timing_lock.acquire()
         return result
 
 
 class SpoofedStdout:
-    def __init__(self):
+    def __init__(self, timing_lock):
+        self.timing_lock = timing_lock
         self.reset()
+        self.need_locking = True
 
     def flush(self): pass
 
@@ -46,13 +50,23 @@ class SpoofedStdout:
         self.lastread = 0
 
     def read(self):
+        if self.need_locking:
+            self.timing_lock.acquire()
         self.lastread = len(self.output)
-        return "".join(self.output)
+        result = "".join(self.output)
+        if self.need_locking:
+            self.timing_lock.release()
+            sleep(0.00001)
+        return result
 
     def new(self):
         " returns the new elements in stdout since the last read "
+        if self.need_locking:
+            self.timing_lock.acquire()
         result = "".join(self.output[self.lastread:])
         self.lastread = len(self.output)
+        if self.need_locking:
+            self.timing_lock.release()
         return result
 
 
@@ -63,7 +77,8 @@ class ModuleContainer(Thread):
     def __init__(self, module_name):
         Thread.__init__(self)
         self.module_name = module_name
-        self.lock = Lock()
+        # dealing with timing issues, see #5
+        self.timing_lock = Lock()
         self.caughtException = None
         # this thread doesn't block exiting
         self.setDaemon(True)
@@ -74,12 +89,16 @@ class ModuleContainer(Thread):
     
     def run(self):
         try:
-            self.stdin = sys.stdin = SpoofedStdin(self.lock)
-            self.stdout = sys.stdout = SpoofedStdout()
+            self.stdin = sys.stdin = SpoofedStdin(self.timing_lock)
+            self.stdout = sys.stdout = SpoofedStdout(self.timing_lock)
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
             # TODO: get/setattr, nicer message on failed access
             self.module = self.fake_import(self.module_name)
+            if self.timing_lock.locked():
+                self.timing_lock.release()
+            self.stdin.need_locking = False
+            self.stdout.need_locking = False
         except Exception as e:
             # Threads don't propagate their errors to main thread
             # so this is neccessary for detecting errors with importing
