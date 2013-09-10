@@ -14,7 +14,12 @@ SOLUTION_FOLDER = os.path.join(os.path.dirname(os.path.dirname(CURRENT_FOLDER)),
 
 sys.path.append(SOLUTION_FOLDER)
 
-tasks_file = open(os.path.join(SOLUTION_FOLDER, "tasks.json"), "r", "utf8")
+try:
+    tasks_file = open(os.path.join(SOLUTION_FOLDER, "tasks.json"), "r", "utf8")
+except:
+    print("Failed to open tasks/tasks.json. Did you do git submodule update?")
+    sys.exit(1)
+
 tasks_json = load_json(tasks_file.read())
 tasks_file.close()
 # list of existing solution-tester pairs

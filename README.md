@@ -26,6 +26,11 @@ cd ..
 
 git clone https://github.com/macobo/python-grader.git
 cd python-grader
+
+# download sample tasks from bitbucket (ask karl for access)
+git submodule init
+git submodule update
+
 python3.3 setup.py install
 ```
 
