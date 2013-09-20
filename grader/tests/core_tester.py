@@ -133,12 +133,12 @@ class Tests(unittest.TestCase):
 
     def test_exceptions_cause_test_failure(self):
         result = self.find_result(exceptions)
-        assert not result["success"]
+        assert not result["success"], result
         assert "SomeAwesomeMessage" in result["traceback"], result
 
     def test_trace_contains_file_lines(self):
         result = self.find_result(exceptions)
-        assert not result["success"]
+        assert not result["success"], result
         trace = result["traceback"]
         # check if tester module trace is in
         self.assertIn('core_tester.py", line 92', trace)
