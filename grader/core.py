@@ -15,7 +15,7 @@ DEFAULT_SETTINGS = {
     # hooks that run after tests
     "after-hooks": (),
     # timeout for function run
-    "timeout": 0.5
+    "timeout": 1.0
 }
 
 def reset():

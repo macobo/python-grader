@@ -15,11 +15,10 @@ See `resolve_testcase_run` for output format description.
 import sys
 import queue
 import importlib
-import multiprocessing
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json, get_traceback
+from grader.utils import dump_json, get_traceback, ProcessKillerThread
 #from macropy.tracing import macros, trace
 
 import grader
@@ -148,31 +147,25 @@ def call_all(function_list):
     for fun in function_list: 
         fun()
 
+def call_test_function(test_index, tester_module, user_module):
+    """ Called in another process. Finds the test `test_name`,  calls the 
+        pre-test hooks and tries to execute it. 
 
-def call_test_function(q, test_name, tester_module, user_module):
-    """ Called in another process. Finds the test `test_name`, calls the 
-        pre-test hooks and tries to execute it. Also saves the execution
-        start time to queue `q`.
-
-        Returns raised exception traceback as a string. If
-        no exception was raised, returns "". """
-    q.put(time())
-    # populate tests
+        If an exception was raised by call, prints it to stdout """
     importlib.import_module(tester_module)
+    test_name = list(grader.testcases.keys())[test_index]
     test_function = grader.testcases[test_name]
-    # pre-test hooks
-    call_all(grader.get_setting(test_function, "before-hooks"))
 
     module = ModuleContainer(user_module)
     try:
         test_function(module)
-        return "" # no traceback
     except Exception as e:
-        return get_traceback(e)
+        ModuleContainer.restore_io()
+        print(get_traceback(e))
 
 
-def resolve_testcase_run(q, async, test_name):
-    """ Calls the function with args, checking if it doesn't raise an Exception.
+def do_testcase_run(test_name, tester_module, user_module):
+    """ Calls the test, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
             "success": boolean,
@@ -180,27 +173,30 @@ def resolve_testcase_run(q, async, test_name):
             "time": string (execution time, rounded to 3 decimal digits)
             "description": string (test name/its description)
         }
-    """
-    timeout = grader.get_setting(test_name, "timeout")
-    test_function = grader.testcases[test_name]
 
-    # TODO: if start_time doesn't resolve?
-    start_time = q.get(timeout=timeout)
-    time_left = start_time + timeout - time()
-    try:
-        traceback = async.get(time_left)
-    except multiprocessing.TimeoutError as e:
-        traceback = get_traceback(e)
-    exec_time = time() - start_time
-    ModuleContainer.restore_io()
+        If the test timeouts, traceback is "timeout"
+    """
+    from grader.code_runner import call_test
+    test_index = list(grader.testcases.keys()).index(test_name)
+    timeout = grader.get_setting(test_name, "timeout")
+
+    # pre-test hooks
+    call_all(grader.get_setting(test_name, "before-hooks"))
+
+    start = time()
+    stdout = call_test(test_index, tester_module, user_module, timeout = timeout)
+    end = time()
+    if (end-start) > timeout:
+        stdout = "Timeout"
+
     result = {
-        "success": traceback == "",
-        "traceback": traceback,
-        "description": grader.get_test_name(test_function),
-        "time": "%.3f" % exec_time,
+        "success": stdout == "",
+        "traceback": stdout,
+        "description": test_name,
+        "time": "%.3f" % (end-start),
     }
     # after test hooks - cleanup
-    call_all(grader.get_setting(test_function, "after-hooks"))
+    call_all(grader.get_setting(test_name, "after-hooks"))
     return result
 
 
@@ -213,23 +209,11 @@ def test_module(tester_module, user_module, print_result = False):
 
         Returns/prints the dictionary from call_function.
     """
-    from multiprocessing.pool import Pool
     # populate tests
     importlib.import_module(tester_module)
     assert len(grader.testcases) > 0
-
-    manager = multiprocessing.Manager()
-    test_results = []
-    for test_name in grader.testcases:
-        q = manager.Queue()
-        pool = Pool(1)
-        # TODO: no other way to kill async
-        args = (q, test_name, tester_module, user_module)
-        async = pool.apply_async(call_test_function, args)
-        test_results.append(
-            resolve_testcase_run(q, async, test_name)
-        )
-        pool.terminate()
+    test_results = [do_testcase_run(test_name, tester_module, user_module) 
+                                    for test_name in grader.testcases.keys()]
 
     results = { "results": test_results }
     if print_result:
@@ -238,5 +222,9 @@ def test_module(tester_module, user_module, print_result = False):
 
 
 if __name__ == "__main__":
-    tester_module, user_module = sys.argv[1:3]
-    test_module(tester_module, user_module, True)
+    if len(sys.argv) == 3: # testing module
+        tester_module, user_module = sys.argv[1:3]
+        test_module(tester_module, user_module, True)
+    elif len(sys.argv) == 4: # calling test function
+        test_index, tester_module, user_module = sys.argv[1:4]
+        call_test_function(int(test_index), tester_module, user_module)

@@ -4,7 +4,6 @@ from .utils import tempModule, load_json
 
 
 def runTester(tester_module, user_module, working_dir=None):
-    # TODO: security
     if working_dir is None: 
         working_dir = os.getcwd()
 
@@ -19,3 +18,18 @@ def runTester(tester_module, user_module, working_dir=None):
         return load_json(stdout.decode('utf-8'))
     except:
         raise Exception(stdout.decode('utf-8') + "\n\n\n\n\n" + stderr.decode('utf-8'))
+
+
+def call_test(test_index, tester_module, user_module, working_dir=None, timeout=1):
+    if working_dir is None: 
+        working_dir = os.getcwd()
+
+    code = "import macropy.activate; from grader import execution_base as e; "
+    code += "e.call_test_function("+str(test_index)+", '"+tester_module+"', '"+user_module+"')"
+    try:
+        stdout = subprocess.check_output(
+            ["timeout", str(timeout), "python3", "-c", code], 
+            cwd=working_dir)
+    except subprocess.CalledProcessError as e:
+        stdout = e.output
+    return stdout.decode('utf-8')

@@ -1,7 +1,7 @@
 from time import sleep 
 
 def some_slow_function_that_prints_result(a, b):
-    sleep(0.3)
+    sleep(0.1)
     return "result"
 
 a = input() 
