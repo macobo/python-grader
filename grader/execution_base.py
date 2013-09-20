@@ -155,7 +155,6 @@ def call_test_function(test_index, tester_module, user_module):
     importlib.import_module(tester_module)
     test_name = list(grader.testcases.keys())[test_index]
     test_function = grader.testcases[test_name]
-    
 
     module = ModuleContainer(user_module)
     try:
@@ -177,7 +176,7 @@ def do_testcase_run(test_name, tester_module, user_module):
 
         If the test timeouts, traceback is "timeout"
     """
-    from grader.code_runner import _test_subproc
+    from grader.code_runner import call_test
     test_index = list(grader.testcases.keys()).index(test_name)
     timeout = grader.get_setting(test_name, "timeout")
 
@@ -185,25 +184,10 @@ def do_testcase_run(test_name, tester_module, user_module):
     call_all(grader.get_setting(test_name, "before-hooks"))
 
     start = time()
-    import subprocess
-    try:
-        stdout = subprocess.check_output([
-        "timeout", str(timeout), "python3", "-m", "grader.execution_base", str(test_index), tester_module, user_module])
-    except Exception as e:
-        #print(e.returncode, e.output, " ".join(e.cmd))
-        stdout = e.output
-    # subproc = _test_subproc(test_index, tester_module, user_module)
-    # killer = ProcessKillerThread(subproc, timeout)
-    # 
-
-    # stdout, stderr = subproc.communicate()
-    stdout = stdout.decode('utf-8')
-
+    stdout = call_test(test_index, tester_module, user_module, timeout = timeout)
     end = time()
     if (end-start) > timeout:
         stdout = "Timeout"
-
-
 
     result = {
         "success": stdout == "",
