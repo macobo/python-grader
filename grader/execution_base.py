@@ -162,7 +162,7 @@ def call_test_function(test_index, tester_module, user_module):
         test_function(module)
     except Exception as e:
         ModuleContainer.restore_io()
-        print(e)
+        print(get_traceback(e))
 
 
 def do_testcase_run(test_name, tester_module, user_module):
@@ -184,20 +184,30 @@ def do_testcase_run(test_name, tester_module, user_module):
     # pre-test hooks
     call_all(grader.get_setting(test_name, "before-hooks"))
 
-    subproc = _test_subproc(test_index, tester_module, user_module)
-    killer = ProcessKillerThread(subproc, timeout)
     start = time()
+    import subprocess
+    try:
+        stdout = subprocess.check_output([
+        "timeout", str(timeout), "python3", "-m", "grader.execution_base", str(test_index), tester_module, user_module])
+    except Exception as e:
+        #print(e.returncode, e.output, " ".join(e.cmd))
+        stdout = e.output
+    # subproc = _test_subproc(test_index, tester_module, user_module)
+    # killer = ProcessKillerThread(subproc, timeout)
+    # 
 
-    stdout, stderr = subproc.communicate()
-    stderr = stderr.decode('utf-8')
+    # stdout, stderr = subproc.communicate()
+    stdout = stdout.decode('utf-8')
 
     end = time()
-    if stderr == "" and killer.killedProcess:
-        stderr = "Timeout"
+    if (end-start) > timeout:
+        stdout = "Timeout"
+
+
 
     result = {
-        "success": stderr == "",
-        "traceback": stderr,
+        "success": stdout == "",
+        "traceback": stdout,
         "description": test_name,
         "time": "%.3f" % (end-start),
     }
@@ -232,5 +242,5 @@ if __name__ == "__main__":
         tester_module, user_module = sys.argv[1:3]
         test_module(tester_module, user_module, True)
     elif len(sys.argv) == 4: # calling test function
-        tester_module, user_module, test_name = sys.argv[1:4]
-        do_testcase_run(test_name, tester_module, user_module)
+        test_index, tester_module, user_module = sys.argv[1:4]
+        call_test_function(int(test_index), tester_module, user_module)

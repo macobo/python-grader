@@ -33,19 +33,19 @@ class ProcessKillerThread(Thread):
         self.subproc = subproc
         self.limit = limit
         self.killedProcess = False
+        self.start()
 
     def run(self):
+        import time, subprocess
         start = time.time()
         while (time.time() - start) < self.limit:
-            time.sleep(.25)
+            time.sleep(.10)
             if self.subproc.poll() is not None:
                 # Process ended, no need for us any more.
                 return
 
         if self.subproc.poll() is None:
-            # Can't use subproc.kill because we launched the subproc with sudo.
-            pgid = os.getpgid(self.subproc.pid)
-            subprocess.call(["sudo", "pkill", "-9", "-g", str(pgid)])
+            self.subproc.kill()
             self.killedProcess = True
 
 ## Function descriptions
