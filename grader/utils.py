@@ -2,6 +2,7 @@ import os
 import json
 import contextlib
 import traceback
+from threading import Thread
 
 from tempfile import NamedTemporaryFile
 
@@ -23,6 +24,29 @@ def tempModule(code, working_dir=None, encoding="utf8"):
     finally:
         os.remove(file.name)
 
+
+## Process killer
+class ProcessKillerThread(Thread):
+    " A thread to kill a process after a given time limit. "
+    def __init__(self, subproc, limit):
+        super(ProcessKillerThread, self).__init__()
+        self.subproc = subproc
+        self.limit = limit
+        self.killedProcess = False
+
+    def run(self):
+        start = time.time()
+        while (time.time() - start) < self.limit:
+            time.sleep(.25)
+            if self.subproc.poll() is not None:
+                # Process ended, no need for us any more.
+                return
+
+        if self.subproc.poll() is None:
+            # Can't use subproc.kill because we launched the subproc with sudo.
+            pgid = os.getpgid(self.subproc.pid)
+            subprocess.call(["sudo", "pkill", "-9", "-g", str(pgid)])
+            self.killedProcess = True
 
 ## Function descriptions
 def beautifyDescription(description):
