@@ -5,7 +5,7 @@ Python Grader
 
 Providing a **robust** and **secure** way to automatically grade first-year 
 programming courses taught in Python.
-Focus is on writing **succint** tests for grading student solutions and useful feedback for the student. 
+Focus is on writing **succinct** tests for grading student solutions and useful feedback for the student. 
 
 ## Setup
 
