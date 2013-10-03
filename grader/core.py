@@ -111,3 +111,10 @@ def test_code(tester_module, user_code, working_dir = None, print_result = False
     from .utils import tempModule
     with tempModule(user_code, working_dir) as user_module:
         return test_module(tester_module, user_module, working_dir, print_result)
+
+
+def test_solution(tester_code, user_code, working_dir = None, print_result = False):
+    from .utils import tempModule
+    with tempModule(user_code, working_dir) as user_module:
+        with tempModule(tester_code, working_dir) as tester_module:
+            return test_module(tester_module, user_module, working_dir, print_result)
