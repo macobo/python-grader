@@ -54,7 +54,14 @@ def beautifyDescription(description):
     return " ".join(filter(lambda x:x, lines))
 
 def setDescription(function, description):
-    function.__doc__ = beautifyDescription(description)
+    import grader
+    old_description = grader.get_test_name(function)
+    if old_description in grader.testcases:
+        del grader.testcases[old_description]
+    description = beautifyDescription(description)
+    function.__doc__ = description
+    grader.testcases[description] = function
+
 
 
 ## Json managing

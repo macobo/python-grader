@@ -10,12 +10,14 @@ from . import core_tester
 from . import feedback_utils_tester
 from . import timing_tester
 from . import timeout_tester
+from . import renaming_tester
 
 cases = [
    core_tester,
    feedback_utils_tester,
    timing_tester,
-   timeout_tester
+   timeout_tester,
+   renaming_tester
 ]
 
 import os
