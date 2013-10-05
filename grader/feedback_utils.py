@@ -7,8 +7,8 @@ def require_contains(input, what, message=None, **extraparams):
     if message is None:
         message = "Expected [{what}] to be in input.\ninput was:\n  [{input}]"
     message = message.format(
-        what=what,
-        input=input,
+        what=repr(what),
+        input=repr(input),
         **extraparams
     )
     raise AssertionError(message)

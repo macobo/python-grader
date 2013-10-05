@@ -95,7 +95,8 @@ def create_file(filename, contents = ""):
 def delete_file(filename):
     " Hook for deleting files "
     def _inner():
-        os.remove(filename)
+        try: os.remove(filename)
+        except: pass
     return _inner
 
 def create_temporary_file(filename, contents = ""):
