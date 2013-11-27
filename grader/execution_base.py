@@ -18,7 +18,7 @@ import importlib
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json, get_traceback, ProcessKillerThread
+from grader.utils import dump_json, get_traceback
 #from macropy.tracing import macros, trace
 
 import grader
@@ -118,7 +118,7 @@ class ModuleContainer(Thread):
             # Threads don't propagate their errors to main thread
             # so this is neccessary for detecting errors with importing
             self.caughtException = e
-            raise e from e
+            raise
 
 
     def fake_import(self, module_name):
@@ -161,7 +161,13 @@ def call_test_function(test_index, tester_module, user_module):
         test_function(module)
     except Exception as e:
         ModuleContainer.restore_io()
-        print(get_traceback(e))
+        error_message = ""
+        if module.caughtException:
+            error_message += "Exception in program:\n\n"
+            error_message += get_traceback(module.caughtException)
+            error_message += "\n\nException in tester:\n\n"
+        error_message += get_traceback(e)
+        print(error_message)
 
 
 def do_testcase_run(test_name, tester_module, user_module):

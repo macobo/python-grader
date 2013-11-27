@@ -2,7 +2,6 @@ import os
 import json
 import contextlib
 import traceback
-from threading import Thread
 
 from tempfile import NamedTemporaryFile
 
@@ -24,29 +23,6 @@ def tempModule(code, working_dir=None, encoding="utf8"):
     finally:
         os.remove(file.name)
 
-
-## Process killer
-class ProcessKillerThread(Thread):
-    " A thread to kill a process after a given time limit. "
-    def __init__(self, subproc, limit):
-        super(ProcessKillerThread, self).__init__()
-        self.subproc = subproc
-        self.limit = limit
-        self.killedProcess = False
-        self.start()
-
-    def run(self):
-        import time, subprocess
-        start = time.time()
-        while (time.time() - start) < self.limit:
-            time.sleep(.10)
-            if self.subproc.poll() is not None:
-                # Process ended, no need for us any more.
-                return
-
-        if self.subproc.poll() is None:
-            self.subproc.kill()
-            self.killedProcess = True
 
 ## Function descriptions
 def beautifyDescription(description):
