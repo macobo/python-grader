@@ -34,6 +34,7 @@ class SpoofedStdin:
     def write(self, line):
         self.queue.put(str(line))
         # TODO: timing problems
+        #       replace it with notify
         sleep(0.0001)
 
     def readline(self):
@@ -167,6 +168,7 @@ def call_test_function(test_index, tester_module, user_module):
             error_message += get_traceback(module.caughtException)
             error_message += "\n\nException in tester:\n\n"
         error_message += get_traceback(e)
+        #print(repr(ModuleContainer.stdout.read())+">>>>>"+error_message)
         print(error_message)
 
 
