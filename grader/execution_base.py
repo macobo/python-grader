@@ -14,7 +14,6 @@ See `resolve_testcase_run` for output format description.
 
 import sys
 import queue
-from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
 from grader.utils import dump_json, get_traceback, import_module
@@ -121,18 +120,6 @@ class ModuleContainer(Thread):
             raise
 
 
-    def fake_import(self, module_name):
-        """ Imports a module. If the module is previously loaded, it is nevertheless
-            imported again. Used when importing the solution program. """
-        from types import ModuleType
-        mod = ModuleType("solution_program")
-        with open(module_name + ".py", "r", "utf-8") as f:
-            source = f.read()
-        code = compile(source, "<tested-program>", "exec", dont_inherit=True)
-        exec(code, mod.__dict__)
-        return mod
-
-
     def is_waiting_input(self):
         return self.stdin.waiting
 
@@ -191,14 +178,14 @@ def do_testcase_run(test_name, tester_module, user_module):
     call_all(grader.get_setting(test_name, "before-hooks"))
 
     start = time()
-    stdout = call_test(test_index, tester_module, user_module, timeout = timeout)
+    traceback = call_test(test_index, tester_module, user_module, timeout=timeout)
     end = time()
     if (end-start) > timeout:
-        stdout = "Timeout"
+        traceback = "Timeout"
 
     result = {
-        "success": stdout == "",
-        "traceback": stdout,
+        "success": traceback == "",
+        "traceback": traceback,
         "description": test_name,
         "time": "%.3f" % (end-start),
     }
