@@ -1,6 +1,6 @@
 """ Wrappers to make writing tests easier """
 
-from macropy.tracing import macros, require
+#from macropy.tracing import macros, require
 from .core import *
 from .utils import *
 from .feedback_utils import *
@@ -37,8 +37,7 @@ def check_function(function_name, args, expected_result, description=None):
         assert hasattr(m.module, function_name), \
                 "Please define the function with name "+function_name
         function = getattr(m.module, function_name)
-        #import sys; sys.__stdout__.write(str(dir(m.module)))
-        require[function(*args) == expected_result]
+        assertEquals(function(*args), expected_result)
 
     if description is None:
         description = "Check " + function_name + \

@@ -14,12 +14,9 @@ See `resolve_testcase_run` for output format description.
 
 import sys
 import queue
-import importlib
-from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
 from grader.utils import dump_json, get_traceback, import_module
-#from macropy.tracing import macros, trace
 
 import grader
 
@@ -110,7 +107,8 @@ class ModuleContainer(Thread):
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
             # TODO: get/setattr, nicer message on failed access
-            self.module = self.fake_import(self.module_name)
+            self.module = import_module(self.module_name, "<tested-program>")
+            #self.fake_import(self.module_name)
             if self.timing_lock.locked():
                 self.timing_lock.release()
             self.stdin.need_locking = False
@@ -120,18 +118,6 @@ class ModuleContainer(Thread):
             # so this is neccessary for detecting errors with importing
             self.caughtException = e
             raise
-
-
-    def fake_import(self, module_name):
-        """ Imports a module. If the module is previously loaded, it is nevertheless
-            imported again. Used when importing the solution program. """
-        from types import ModuleType
-        mod = ModuleType("solution_program")
-        with open(module_name + ".py", "r", "utf-8") as f:
-            source = f.read()
-        code = compile(source, "<tested-program>", "exec", dont_inherit=True)
-        exec(code, mod.__dict__)
-        return mod
 
 
     def is_waiting_input(self):
@@ -153,7 +139,7 @@ def call_test_function(test_index, tester_module, user_module):
         pre-test hooks and tries to execute it. 
 
         If an exception was raised by call, prints it to stdout """
-    importlib.import_module(tester_module)
+    import_module(tester_module)
     test_name = list(grader.testcases.keys())[test_index]
     test_function = grader.testcases[test_name]
 
@@ -192,14 +178,14 @@ def do_testcase_run(test_name, tester_module, user_module):
     call_all(grader.get_setting(test_name, "before-hooks"))
 
     start = time()
-    stdout = call_test(test_index, tester_module, user_module, timeout = timeout)
+    traceback = call_test(test_index, tester_module, user_module, timeout=timeout)
     end = time()
     if (end-start) > timeout:
-        stdout = "Timeout"
+        traceback = "Timeout"
 
     result = {
-        "success": stdout == "",
-        "traceback": stdout,
+        "success": traceback == "",
+        "traceback": traceback,
         "description": test_name,
         "time": "%.3f" % (end-start),
     }
@@ -218,7 +204,7 @@ def test_module(tester_module, user_module, print_result = False):
         Returns/prints the dictionary from call_function.
     """
     # populate tests
-    importlib.import_module(tester_module)
+    import_module(tester_module)
     assert len(grader.testcases) > 0
     test_results = [do_testcase_run(test_name, tester_module, user_module) 
                                     for test_name in grader.testcases.keys()]

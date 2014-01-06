@@ -2,7 +2,7 @@ import unittest
 import os
 import grader
 from grader.utils import create_file, delete_file
-from macropy.tracing import macros, trace
+#from macropy.tracing import macros, trace
 
 # TODO: test setDescription
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -52,14 +52,14 @@ def stdout_new(m):
     assert(m.stdout.new() == "Got 193\n")
 
 
-@dyn_test
-def trace_macro_available(m):
-    m.stdin.write("Karl")
-    m.stdout.reset() # reset stdout
-    trace[1+2+3]
-    n = m.stdout.new()
-    assert "1+2 -> 3\n" in n, n
-    assert "1+2+3 -> 6\n" in n, n
+# @dyn_test
+# def trace_macro_available(m):
+#     m.stdin.write("Karl")
+#     m.stdout.reset() # reset stdout
+#     trace[1+2+3]
+#     n = m.stdout.new()
+#     assert "1+2 -> 3\n" in n, n
+#     assert "1+2+3 -> 6\n" in n, n
 
 @dyn_test
 def io_within_function(m):
@@ -94,8 +94,8 @@ def exceptions(m):
 
 
 class Tests(unittest.TestCase):
-    tester_module = "core_tester"
-    user_module = "_helper_tested_module"
+    tester_module = "core_tester.py"
+    user_module = "_helper_tested_module.py"
 
     @classmethod
     def setUpClass(cls):

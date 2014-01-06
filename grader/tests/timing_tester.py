@@ -16,8 +16,8 @@ class Tests(unittest.TestCase):
     def setUpClass(cls):
         grader.reset()
         cls.results = grader.test_module(
-            tester_module = "timing_tester",
-            user_module = "_helper_timing_module",
+            tester_module = "timing_tester.py",
+            user_module = "_helper_timing_module.py",
             working_dir = CURRENT_FOLDER
         )["results"]
 

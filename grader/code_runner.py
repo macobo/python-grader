@@ -7,7 +7,8 @@ def runTester(tester_module, user_module, working_dir=None):
     if working_dir is None: 
         working_dir = os.getcwd()
 
-    code = "import macropy.activate; from grader import execution_base as e; "
+    #code = "import macropy.activate; from grader import execution_base as e; "
+    code = "from grader import execution_base as e; "
     code += "e.test_module('"+tester_module+"', '"+user_module+"', True)"
     subproc = subprocess.Popen(
         ['python3', '-c', code], 
@@ -24,7 +25,8 @@ def call_test(test_index, tester_module, user_module, working_dir=None, timeout=
     if working_dir is None: 
         working_dir = os.getcwd()
 
-    code = "import macropy.activate; from grader import execution_base as e; "
+    #code = "import macropy.activate; from grader import execution_base as e; "
+    code = "from grader import execution_base as e; "
     code += "e.call_test_function("+str(test_index)+", '"+tester_module+"', '"+user_module+"')"
     try:
         stdout = subprocess.check_output(

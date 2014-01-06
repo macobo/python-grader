@@ -16,12 +16,11 @@ def readFile(path):
 
 class Tests(unittest.TestCase):
     def tempModuleCheck(self, contents, folder):
-        with tempModule(contents, folder) as module_name:
-            path = join(folder, module_name+".py")
-            self.assertTrue(os.path.exists(path))
+        with tempModule(contents, folder) as module_path:
+            self.assertTrue(os.path.exists(module_path))
 
-            self.assertEqual(readFile(path), contents)
-        self.assertFalse(os.path.exists(path))
+            self.assertEqual(readFile(module_path), contents)
+        self.assertFalse(os.path.exists(module_path))
 
     def test_tempModule(self):
         self.tempModuleCheck("HelloWorld\nHello", CURRENT_FOLDER)
@@ -38,8 +37,7 @@ class Tests(unittest.TestCase):
             'if __name__ == "__main__":\n'
             '    other = 7'
         )
-        with tempModule(code, CURRENT_FOLDER) as module_name:
-            module_path = join(CURRENT_FOLDER, module_name + ".py")
+        with tempModule(code, CURRENT_FOLDER) as module_path:
             if name is not None:
                 module = import_module(module_path, name)
             else:

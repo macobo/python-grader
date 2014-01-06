@@ -10,10 +10,11 @@ cd ~
 virtualenv -p /usr/local/bin/python3.3 py33env
 source py33env/bin/activate
 
-git clone https://github.com/macobo/macropy.git
-cd macropy
-pip install six
-python setup.py install
+# Macropy is not needed anymore
+# git clone https://github.com/macobo/macropy.git
+# cd macropy
+# pip install six
+# python setup.py install
 
 cd ..
 git clone https://github.com/macobo/python-grader.git
