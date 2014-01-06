@@ -69,6 +69,15 @@ def io_within_function(m):
     m.module.askInput()
     assert "Hello world" in m.stdout.read(), m.stdout.read()
 
+@dyn_test
+def users_name(m):
+    "When running tests, the __name__ within solution module should be set to __main__"
+    m.stdin.write("Karl")
+    assert hasattr(m, "module")
+    assert hasattr(m.module, "something")
+    assert m.module.__name__ == "__main__", m.module.__name__
+    assert m.module.something == "something"
+
 @grader.test
 def doc_only_function(m):
     "this function should have the docstring as its name in grader"
@@ -148,7 +157,7 @@ class Tests(unittest.TestCase):
         assert not result["success"], result
         trace = result["traceback"]
         # check if tester module trace is in
-        self.assertIn('core_tester.py", line 99', trace)
+        self.assertIn('core_tester.py", line 108', trace)
         # check if user code gets a line
         self.assertIn('line 19, in raiseException', trace)
 

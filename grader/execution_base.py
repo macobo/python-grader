@@ -107,7 +107,7 @@ class ModuleContainer(Thread):
             #self.stderr = sys.stderr = SpoofedStdout()
             # this has to be last since it blocks if there's io
             # TODO: get/setattr, nicer message on failed access
-            self.module = import_module(self.module_name, "<tested-program>")
+            self.module = import_module(self.module_name, "__main__")
             #self.fake_import(self.module_name)
             if self.timing_lock.locked():
                 self.timing_lock.release()

@@ -17,3 +17,6 @@ def askInput():
 
 def raiseException(msg):
     raise Exception(msg)
+
+if __name__ == "__main__":
+    something = "something"
