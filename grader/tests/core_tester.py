@@ -1,7 +1,7 @@
 import unittest
 import os
 import grader
-from grader.utils import create_file, delete_file, add_AST_as_argument
+from grader.utils import create_file, delete_file, expose_ast
 #from macropy.tracing import macros, trace
 
 
@@ -88,7 +88,7 @@ def hook_test(m):
         assert txt == 'Hello world!', txt
 
 @dyn_test
-@grader.before_test(add_AST_as_argument)
+@expose_ast
 def ast_hook_test(m, AST):
     import ast
     assert isinstance(AST, ast.AST)

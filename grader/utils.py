@@ -100,10 +100,15 @@ def delete_file(filename):
 
     return _inner
 
-def add_AST_as_argument(info):
-    " Pre-test hook for adding the users solution module AST as an argument to tester "
-    module_ast = get_module_AST(info["user_module"])
-    info["extra_kwargs"]["AST"] = module_ast
+def expose_ast(test_function):
+    """ Decorator for exposing the ast of the solution module
+        as an argument to the tester. Uses a pre-test hook. """
+    from grader.core import before_test
+    def _hook(info):
+        module_ast = get_module_AST(info["user_module"])
+        info["extra_kwargs"]["AST"] = module_ast
+
+    return before_test(_hook)(test_function)
 
 
 def create_temporary_file(filename, contents = ""):
