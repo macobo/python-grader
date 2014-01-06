@@ -1,3 +1,4 @@
+"""A module containing utility functions used by the grader module and some useful pre-test hooks."""
 import os
 import json
 import contextlib

@@ -144,9 +144,9 @@ class ModuleContainer(Thread):
         sys.stdout = sys.__stdout__
 
 
-def call_all(function_list):
+def call_all(function_list, *args, **kwargs):
     for fun in function_list: 
-        fun()
+        fun(*args, **kwargs)
 
 def call_test_function(test_index, tester_module, user_module):
     """ Called in another process. Finds the test `test_name`,  calls the 

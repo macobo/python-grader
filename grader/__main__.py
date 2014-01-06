@@ -1,3 +1,8 @@
+""" 
+Executed when using `python -m grader <tester_module> <solution_module>`.
+
+Tests the module and prints the results (json) to console.
+"""
 import sys
 import os
 
