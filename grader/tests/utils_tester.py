@@ -75,6 +75,6 @@ class Tests(unittest.TestCase):
         except Exception as e:
             traceback = get_traceback(e)
             self.assertIn("Traceback (most recent call last):\n", traceback)
-            self.assertIn('File "'+__file__+'", line 76, in test_get_traceback\n', traceback)
+            self.assertIn('File "'+__file__+'", line 74, in test_get_traceback\n', traceback)
             self.assertIn('raise ValueError("ErrorMessage")\n', traceback)
             self.assertIn('ValueError: ErrorMessage\n', traceback)

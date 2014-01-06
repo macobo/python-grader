@@ -1,10 +1,10 @@
 import unittest
 import os
 import grader
-from grader.utils import create_file, delete_file
+from grader.utils import create_file, delete_file, add_AST_as_argument
 #from macropy.tracing import macros, trace
 
-# TODO: test setDescription
+
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 dynamic_tests = []
@@ -87,6 +87,12 @@ def hook_test(m):
         txt = file.read()
         assert txt == 'Hello world!', txt
 
+@dyn_test
+@grader.before_test(add_AST_as_argument)
+def ast_hook_test(m, AST):
+    import ast
+    assert isinstance(AST, ast.AST)
+
 @grader.test
 def exceptions(m):
     m.stdin.write("Karl")
@@ -142,7 +148,7 @@ class Tests(unittest.TestCase):
         assert not result["success"], result
         trace = result["traceback"]
         # check if tester module trace is in
-        self.assertIn('core_tester.py", line 93', trace)
+        self.assertIn('core_tester.py", line 99', trace)
         # check if user code gets a line
         self.assertIn('line 19, in raiseException', trace)
 

@@ -16,6 +16,13 @@ def import_module(path, name=None):
     module = loader.load_module(name)
     return module
 
+def get_module_AST(path):
+    import tokenize
+    import ast
+    with tokenize.open(path) as sourceFile:
+        contents = sourceFile.read()
+    return ast.parse(contents)
+
 
 @contextlib.contextmanager
 def tempModule(code, working_dir=None, encoding="utf8"):
@@ -77,17 +84,27 @@ def create_file(filename, contents = ""):
     import collections
     if isinstance(contents, collections.Iterable) and not isinstance(contents, str):
         contents = "\n".join(map(str, contents))
-    def _inner():
+
+    def _inner(info):
         with open(filename, "w") as f:
             f.write(contents)
+
     return _inner
 
 def delete_file(filename):
     " Hook for deleting files "
+
     def _inner():
         try: os.remove(filename)
         except: pass
+
     return _inner
+
+def add_AST_as_argument(info):
+    " Pre-test hook for adding the users solution module AST as an argument to tester "
+    module_ast = get_module_AST(info["user_module"])
+    info["extra_kwargs"]["AST"] = module_ast
+
 
 def create_temporary_file(filename, contents = ""):
     from grader.core import before_test, after_test

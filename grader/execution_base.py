@@ -132,20 +132,36 @@ class ModuleContainer(Thread):
 
 def call_all(function_list, *args, **kwargs):
     for fun in function_list: 
-        fun(*args, **kwargs)
+        fun(*args)
 
-def call_test_function(test_index, tester_module, user_module):
+def call_test_function(test_name, tester_module, user_module):
     """ Called in another process. Finds the test `test_name`,  calls the 
         pre-test hooks and tries to execute it. 
 
         If an exception was raised by call, prints it to stdout """
+
+    pre_hook_info = {
+        "test_name": test_name,
+        "tester_module": tester_module,
+        "user_module": user_module,
+        "extra_args": [],
+        "extra_kwargs": {}
+    }
+
     import_module(tester_module)
-    test_name = list(grader.testcases.keys())[test_index]
     test_function = grader.testcases[test_name]
 
+    # pre-test hooks
+    call_all(grader.get_setting(test_name, "before-hooks"), pre_hook_info)
+
+    # start users program
     module = ModuleContainer(user_module)
     try:
-        test_function(module)
+        test_function(
+            module,
+            *pre_hook_info["extra_args"], 
+            **pre_hook_info["extra_kwargs"]
+        )
     except Exception as e:
         ModuleContainer.restore_io()
         error_message = ""
@@ -171,14 +187,12 @@ def do_testcase_run(test_name, tester_module, user_module):
         If the test timeouts, traceback is "timeout"
     """
     from grader.code_runner import call_test
-    test_index = list(grader.testcases.keys()).index(test_name)
+    #test_index = list(grader.testcases.keys()).index(test_name)
     timeout = grader.get_setting(test_name, "timeout")
 
-    # pre-test hooks
-    call_all(grader.get_setting(test_name, "before-hooks"))
 
     start = time()
-    traceback = call_test(test_index, tester_module, user_module, timeout=timeout)
+    traceback = call_test(test_name, tester_module, user_module, timeout=timeout)
     end = time()
     if (end-start) > timeout:
         traceback = "Timeout"
@@ -221,5 +235,5 @@ if __name__ == "__main__":
         tester_module, user_module = sys.argv[1:3]
         test_module(tester_module, user_module, True)
     elif len(sys.argv) == 4: # calling a specific test function
-        test_index, tester_module, user_module = sys.argv[1:4]
-        call_test_function(int(test_index), tester_module, user_module)
+        test_name, tester_module, user_module = sys.argv[1:4]
+        call_test_function(test_name, tester_module, user_module)
