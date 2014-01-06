@@ -4,6 +4,7 @@ import grader
 from grader.utils import create_file, delete_file
 from macropy.tracing import macros, trace
 
+# TODO: test setDescription
 CURRENT_FOLDER = os.path.dirname(__file__)
 
 dynamic_tests = []
@@ -141,7 +142,7 @@ class Tests(unittest.TestCase):
         assert not result["success"], result
         trace = result["traceback"]
         # check if tester module trace is in
-        self.assertIn('core_tester.py", line 92', trace)
+        self.assertIn('core_tester.py", line 93', trace)
         # check if user code gets a line
         self.assertIn('line 19, in raiseException', trace)
 

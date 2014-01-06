@@ -6,6 +6,15 @@ import traceback
 
 from tempfile import NamedTemporaryFile
 
+def import_module(path, name=None):
+    if name is None:
+        name = path
+    import importlib.machinery
+    loader = importlib.machinery.SourceFileLoader(name, path)
+    module = loader.load_module(name)
+    return module
+
+
 @contextlib.contextmanager
 def tempModule(code, working_dir=None, encoding="utf8"):
     if working_dir is None: 
@@ -27,6 +36,9 @@ def tempModule(code, working_dir=None, encoding="utf8"):
 
 ## Function descriptions
 def beautifyDescription(description):
+    """ Converts docstring of a function to a test description
+        by removing excess whitespace and joining the answer on one
+        line """
     lines = (line.strip() for line in description.split('\n'))
     return " ".join(filter(lambda x:x, lines))
 

@@ -1,5 +1,5 @@
 """
-This module handles the execution of the users model. It should ideally
+This module handles the execution of the users module. It should ideally
 be called in an subprocess (like code_runner does) in a secure enviroment
 with all code files prepared.
 
@@ -18,7 +18,7 @@ import importlib
 from codecs import open
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json, get_traceback
+from grader.utils import dump_json, get_traceback, import_module
 #from macropy.tracing import macros, trace
 
 import grader
@@ -124,7 +124,7 @@ class ModuleContainer(Thread):
 
     def fake_import(self, module_name):
         """ Imports a module. If the module is previously loaded, it is nevertheless
-            imported again """
+            imported again. Used when importing the solution program. """
         from types import ModuleType
         mod = ModuleType("solution_program")
         with open(module_name + ".py", "r", "utf-8") as f:
@@ -230,9 +230,10 @@ def test_module(tester_module, user_module, print_result = False):
 
 
 if __name__ == "__main__":
+    # called by code_runner.py
     if len(sys.argv) == 3: # testing module
         tester_module, user_module = sys.argv[1:3]
         test_module(tester_module, user_module, True)
-    elif len(sys.argv) == 4: # calling test function
+    elif len(sys.argv) == 4: # calling a specific test function
         test_index, tester_module, user_module = sys.argv[1:4]
         call_test_function(int(test_index), tester_module, user_module)

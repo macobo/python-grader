@@ -11,8 +11,10 @@ from . import feedback_utils_tester
 from . import timing_tester
 from . import timeout_tester
 from . import renaming_tester
+from . import utils_tester
 
 cases = [
+   utils_tester,
    core_tester,
    feedback_utils_tester,
    timing_tester,
