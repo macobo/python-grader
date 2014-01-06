@@ -24,8 +24,8 @@ class Tests(unittest.TestCase):
     def setUpClass(cls):
         grader.reset()
         cls.results = grader.test_module(
-            tester_module = "timeout_tester",
-            user_module = "_helper_timeout_module",
+            tester_module = "timeout_tester.py",
+            user_module = "_helper_timeout_module.py",
             working_dir = CURRENT_FOLDER
         )["results"]
 

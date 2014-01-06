@@ -1,4 +1,6 @@
-"""A module containing utility functions used by the grader module and some useful pre-test hooks."""
+""" An utility module containing utility functions used by the grader module 
+    and some useful pre-test hooks.
+"""
 import os
 import json
 import contextlib
@@ -28,8 +30,7 @@ def tempModule(code, working_dir=None, encoding="utf8"):
     file.write(code.encode(encoding))
     file.close()
     try:
-        module_name = os.path.splitext(os.path.basename(file.name))[0]
-        yield module_name
+        yield file.name
     finally:
         os.remove(file.name)
 

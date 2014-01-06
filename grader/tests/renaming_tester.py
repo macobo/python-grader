@@ -16,8 +16,8 @@ test_generator("other", lambda: 2)
 test_generator("fail", lambda: "fail")
 
 class Tests(unittest.TestCase):
-    tester_module = "renaming_tester"
-    user_module = "_helper_tested_module"
+    tester_module = "renaming_tester.py"
+    user_module = "_helper_tested_module.py"
 
     @classmethod
     def setUpClass(cls):

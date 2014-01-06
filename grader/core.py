@@ -39,6 +39,7 @@ def test(test_function):
     def wrapper(module, *args, **kwargs):
         if module.caughtException:
             raise module.caughtException
+        
         result = test_function(module, *args, **kwargs)
         if module.caughtException:
             raise module.caughtException

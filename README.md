@@ -16,14 +16,6 @@ see [INSTALL.md](INSTALL.md)
 
 ```bash
 # navigate to your projects dir, e.g. ~/projects
-git clone https://github.com/macobo/macropy.git
-cd macropy
-
-git checkout python3
-pip install six
-python3.3 setup.py install
-cd ..
-
 git clone https://github.com/macobo/python-grader.git
 cd python-grader
 
