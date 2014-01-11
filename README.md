@@ -19,10 +19,6 @@ see [INSTALL.md](INSTALL.md)
 git clone https://github.com/macobo/python-grader.git
 cd python-grader
 
-# download sample tasks from bitbucket (ask karl for access)
-git submodule init
-git submodule update
-
 python3.3 setup.py install
 ```
 
@@ -37,7 +33,7 @@ Write a function named `taisnurkne` that takes three numbers as an agument and r
 according to whether it's possible to form a right-angled triangle with such side lengths. 
 Side lengths are guaranteed to be positive.
 
-###Tester [u6_taisnurkne_tester.py](tasks/u6_taisnurkne_tester.py)
+###Tester [u6_taisnurkne_tester.py](tasks/MTAT.100/book/u6_taisnurkne_tester.py)
 ```python
 from grader import *
 
@@ -52,7 +48,7 @@ To run tests, run `python3.3 -m grader <tester_file> <solution_file>` in the dir
 
 For example, to run the above tester (in the tasks folder) on the sample solution:
 ```bash
-cd tasks
+cd tasks/MTAT.100/book
 python3.3 -m grader u6_taisnurkne_tester.py u6_taisnurkne_solution.py
 ```
 
