@@ -1,0 +1,6 @@
+Valdis Birkavs: EUR 1700.0
+Guntars Krasts: LVL 1900.0
+Ivars Godmanis: USD 1600.0
+Valdis Birkavs: LVL 3200.0
+Ivars Godmanis: LVL 1600.0
+Valdis Birkavs: USD 1000.0
