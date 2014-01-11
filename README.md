@@ -1,4 +1,4 @@
-Python Grader
+Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
 ## Goals
