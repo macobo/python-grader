@@ -1,3 +1,0 @@
-[submodule "tasks"]
-	path = tasks
-	url = https://bitbucket.org/macobo/grader-tasks.git
