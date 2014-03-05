@@ -1,15 +1,14 @@
 import os
 import subprocess
-from .utils import tempModule, load_json
+from .utils import load_json
 
 
-def runTester(tester_module, user_module, working_dir=None):
-    if working_dir is None: 
-        working_dir = os.getcwd()
+def runTester(tester_module, user_module, options={}):
+    working_dir = os.getcwd()
 
     #code = "import macropy.activate; from grader import execution_base as e; "
     code = "from grader import execution_base as e; "
-    code += "e.test_module('"+tester_module+"', '"+user_module+"', True)"
+    code += "e.test_module('{}', '{}', {})".format(tester_module, user_module, options)
     subproc = subprocess.Popen(
         ['python3', '-c', code], 
         cwd=working_dir, stdin=subprocess.PIPE,

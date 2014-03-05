@@ -207,28 +207,6 @@ def do_testcase_run(test_name, tester_module, user_module):
     call_all(grader.get_setting(test_name, "after-hooks"))
     return result
 
-
-def test_module(tester_module, user_module, print_result = False):
-    """ Runs all tests for user_module. Should be only run with 
-        appropriate rights/user.
-
-        Note that this assumes that user_module and tester_module
-        are all in path and grader doesn't have extra tests loaded. 
-
-        Returns/prints the dictionary from call_function.
-    """
-    # populate tests
-    import_module(tester_module)
-    assert len(grader.testcases) > 0
-    test_results = [do_testcase_run(test_name, tester_module, user_module) 
-                                    for test_name in grader.testcases.keys()]
-
-    results = { "results": test_results }
-    if print_result:
-        print(dump_json(results))
-    return results
-
-
 if __name__ == "__main__":
     # called by code_runner.py
     if len(sys.argv) == 3: # testing module

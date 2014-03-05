@@ -2,7 +2,7 @@ import os
 import inspect
 from functools import wraps
 from collections import OrderedDict
-from .code_runner import runTester
+#from .code_runner import runTester
 from .utils import beautifyDescription, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -105,21 +105,34 @@ def timeout(seconds):
 
 ### Exposed methods to test files/code
 
-def test_module(tester_module, user_module, working_dir = None, print_result = False):
-    results = runTester(tester_module, user_module, working_dir)
-    if print_result:
+def test_module(tester_module, user_module, **options):
+    """ Runs all tests for user_module. Should be only run with 
+        appropriate rights/user.
+
+        Note that this assumes that user_module and tester_module
+        are all in path and grader doesn't have extra tests loaded. 
+
+        Returns/prints the dictionary from call_function.
+    """
+    from .execution_base import do_testcase_run
+    from .utils import import_module
+    # populate tests
+    reset()
+    import_module(tester_module)
+    assert len(testcases) > 0
+    test_results = [do_testcase_run(test_name, tester_module, user_module) 
+                                    for test_name in testcases.keys()]
+
+    results = { "results": test_results }
+    if options.get('print_result'):
         print(dump_json(results))
     return results
 
 
-def test_code(tester_module, user_code, working_dir = None, print_result = False):
-    from .utils import tempModule
-    with tempModule(user_code, working_dir) as user_module:
-        return test_module(tester_module, user_module, working_dir, print_result)
-
-
-def test_solution(tester_code, user_code, working_dir = None, print_result = False):
-    from .utils import tempModule
-    with tempModule(user_code, working_dir) as user_module:
-        with tempModule(tester_code, working_dir) as tester_module:
-            return test_module(tester_module, user_module, working_dir, print_result)
+def test_solution(tester_code, user_code, **options):
+    from .utils import AssetFolder
+    assets = AssetFolder(tester_code, user_code, is_code=True)
+    try:
+        return test_module(assets.tester_path, assets.solution_path, **options)
+    finally:
+        assets.remove()
