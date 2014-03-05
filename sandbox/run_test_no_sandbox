@@ -11,4 +11,5 @@ if len(argv) < 4:
     print("Usage: run_test_no_sandbox <tester-path> <solution-path> <test-name>")
     exit(1)
 
-#from grader import execution_base
+from grader import execution_base
+execution_base.call_test_function(argv[3], argv[1], argv[2])

@@ -118,7 +118,7 @@ class Tests(unittest.TestCase):
         cls.results = grader.test_module(
             tester_path = cls.tester_path,
             solution_path = cls.solution_path,
-            working_dir = CURRENT_FOLDER
+            runner_cmd = grader.DEFAULT_TESTCASE_RUNNER
         )["results"]
 
     def find_result(self, function):

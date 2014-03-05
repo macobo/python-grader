@@ -2,17 +2,14 @@ import os
 import subprocess
 from .utils import load_json
 
-def call_test(test_name, tester_module, user_module, working_dir=None, timeout=1):
-    if working_dir is None: 
-        working_dir = os.getcwd()
+def call_test(test_name, tester_path, solution_path, options):
+    working_dir = os.getcwd()
 
-    #code = "import macropy.activate; from grader import execution_base as e; "
-    code = "from grader import execution_base as e; "
-    code += "e.call_test_function("+repr(test_name)+", '"+tester_module+"', '"+user_module+"')"
+    cmd = ["timeout", str(options["timeout"]), 
+           options["runner_cmd"], tester_path, solution_path, test_name]
     try:
-        stdout = subprocess.check_output(
-            ["timeout", str(timeout), "python3", "-c", code], 
-            cwd=working_dir)
+        stdout = subprocess.check_output(cmd, cwd=working_dir)
     except subprocess.CalledProcessError as e:
         stdout = e.output
-    return stdout.decode('utf-8')
+    stdout = stdout.decode('utf-8')
+    return stdout

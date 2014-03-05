@@ -118,7 +118,7 @@ def test_module(tester_path, solution_path, **options):
 
     test_results = []
     for test_name in testcases:
-        result = do_testcase_run(test_name, tester_path, solution_path)
+        result = do_testcase_run(test_name, tester_path, solution_path, options)
         test_results.append(result)
 
     results = { "results": test_results }

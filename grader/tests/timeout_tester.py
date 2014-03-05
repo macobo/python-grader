@@ -27,7 +27,7 @@ class Tests(unittest.TestCase):
         cls.results = grader.test_module(
             tester_path = os.path.join(CURRENT_FOLDER, "timeout_tester.py"),
             solution_path = os.path.join(HELPERS_FOLDER, "_helper_timeout_module.py"),
-            working_dir = CURRENT_FOLDER
+            runner_cmd = grader.DEFAULT_TESTCASE_RUNNER
         )["results"]
 
     def find_result(self, function):

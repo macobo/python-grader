@@ -174,7 +174,7 @@ def call_test_function(test_name, tester_module, user_module):
         print(error_message)
 
 
-def do_testcase_run(test_name, tester_module, user_module):
+def do_testcase_run(test_name, tester_module, user_module, options):
     """ Calls the test, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -187,13 +187,12 @@ def do_testcase_run(test_name, tester_module, user_module):
         If the test timeouts, traceback is "timeout"
     """
     from grader.code_runner import call_test
-    timeout = grader.get_setting(test_name, "timeout")
-
+    options["timeout"] = grader.get_setting(test_name, "timeout")
 
     start = time()
-    traceback = call_test(test_name, tester_module, user_module, timeout=timeout)
+    traceback = call_test(test_name, tester_module, user_module, options)
     end = time()
-    if (end-start) > timeout:
+    if (end-start) > options["timeout"]:
         traceback = "Timeout"
 
     result = {
