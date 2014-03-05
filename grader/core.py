@@ -6,6 +6,10 @@ from .code_runner import runTester
 from .utils import beautifyDescription, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
+DEFAULT_TESTCASE_RUNNER = os.path.join(
+                                os.path.dirname(CURRENT_FOLDER), 
+                                "sandbox", 
+                                "run_test_no_sandbox")
 
 testcases = OrderedDict()
 
