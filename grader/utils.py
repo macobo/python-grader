@@ -6,7 +6,8 @@ import json
 import contextlib
 import traceback
 
-from tempfile import NamedTemporaryFile
+from shutil import copy, rmtree
+from tempfile import NamedTemporaryFile, mkdtemp
 
 def import_module(path, name=None):
     if name is None:
@@ -40,6 +41,26 @@ def tempModule(code, working_dir=None, encoding="utf8"):
         yield file.name
     finally:
         os.remove(file.name)
+
+class AssetFolder:
+    def __init__(self, tester_path, solution_path, other_assets=[]):
+        self.path = mkdtemp()
+        self.tester_path = self._copy(tester_path)
+        self.solution_path = self._copy(solution_path)
+
+        self.other_assets = list(map(lambda x: self._copy(x), other_assets))
+
+    def _copy(self, file_path):
+        return copy(file_path, self.path)
+
+    def remove(self):
+        if not os.path.exists(self.path):
+            raise IOError("{} already doesn't exist".format(self.path))
+        rmtree(self.path)
+
+    def __str__(self):
+        return "<Assets: %s %s %s>" % (self.tester_path, self.solution_path, self.other_assets)
+
 
 
 ## Function descriptions

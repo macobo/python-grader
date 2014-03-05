@@ -7,9 +7,15 @@ import sys
 import os
 
 from . import *
+from .utils import AssetFolder
 
 tester_module, solution_module = sys.argv[1:3]
-#tester_module   = os.path.splitext(sys.argv[1])[0]
-#solution_module = os.path.splitext(sys.argv[2])[0]
 
-test_module(tester_module, solution_module, print_result=True)
+assets = AssetFolder(tester_module, solution_module)
+
+try:
+    #print("TESTING", assets)
+    test_module(assets.tester_path, assets.solution_path, print_result=True)
+finally:
+    #print("Removing temp folder")
+    assets.remove()
