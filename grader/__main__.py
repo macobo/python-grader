@@ -1,5 +1,5 @@
 """ 
-Executed when using `python -m grader <tester_module> <solution_module>`.
+Executed when using `python -m grader <tester_path> <solution_path> [<other_files>...]`.
 
 Tests the module and prints the results (json) to console.
 """
@@ -11,7 +11,7 @@ from .utils import AssetFolder
 
 tester_module, solution_module = sys.argv[1:3]
 
-assets = AssetFolder(tester_module, solution_module)
+assets = AssetFolder(tester_module, solution_module, sys.argv[3:])
 
 try:
     #print("TESTING", assets)
