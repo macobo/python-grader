@@ -15,13 +15,13 @@ from . import renaming_tester
 from . import utils_tester
 
 cases = [
-   utils_tester,
-    datastructures_tester,
-   core_tester,
-   assertions_tester,
-   timing_tester,
-   timeout_tester,
-   #renaming_tester
+  utils_tester,
+  datastructures_tester,
+  core_tester,
+  assertions_tester,
+  timing_tester,
+  timeout_tester,
+  renaming_tester
 ]
 
 import os

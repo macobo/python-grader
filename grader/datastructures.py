@@ -31,16 +31,12 @@ class OrderedTestcases:
         self.cases[new_name] = self.cases[old_name]
         self.cases.pop(old_name)
 
-    def load_cases(self, module_path):
+    def load_from(self, module_path):
         self.clear()
         import_module(module_path)
-
-    @property
-    def names(self):
-        return self.order
     
-    def test_names(self):
-        return 
+    def values(self):
+        return ((o, self.cases[o]) for o in self.order)
 
     def __getitem__(self, name):
         return self.cases[name]
@@ -49,7 +45,7 @@ class OrderedTestcases:
         return name in self.cases
 
     def __iter__(self):
-        return ((o, self.cases[o]) for o in self.order)
+        return iter(self.order)
 
     def __len__(self):
         return len(list(x for x in self))

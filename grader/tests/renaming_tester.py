@@ -17,15 +17,15 @@ test_generator("other", lambda: 2)
 test_generator("fail", lambda: "fail")
 
 class Tests(unittest.TestCase):
-    tester_module = os.path.join(HELPERS_FOLDER, "renaming_tester.py")
-    user_module = os.path.join(HELPERS_FOLDER, "_helper_tested_module.py")
+    tester_path = os.path.join(CURRENT_FOLDER, "renaming_tester.py")
+    solution_path = os.path.join(HELPERS_FOLDER, "_helper_tested_module.py")
 
     @classmethod
     def setUpClass(cls):
         #grader.reset()
         cls.results = grader.test_module(
-            tester_module = cls.tester_module,
-            user_module = cls.user_module,
+            tester_path = cls.tester_path,
+            solution_path = cls.solution_path,
             working_dir = CURRENT_FOLDER
         )["results"]
 

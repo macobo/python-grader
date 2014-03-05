@@ -104,23 +104,22 @@ def timeout(seconds):
 
 ### Exposed methods to test files/code
 
-def test_module(tester_module, user_module, **options):
-    """ Runs all tests for user_module. Should be only run with 
-        appropriate rights/user.
+def test_module(tester_path, solution_path, **options):
+    """ Runs all tests for the solution given as argument. 
+        Should be only run with appropriate rights/user.
 
-        Note that this assumes that user_module and tester_module
-        are all in path and grader doesn't have extra tests loaded. 
-
-        Returns/prints the dictionary from call_function.
+        Returns/prints the results as json.
     """
     from .execution_base import do_testcase_run
     from .utils import import_module
     # populate tests
-    reset()
-    import_module(tester_module)
+    testcases.load_from(tester_path)
     assert len(testcases) > 0
-    test_results = [do_testcase_run(test_name, tester_module, user_module) 
-                                    for test_name in testcases.names]
+
+    test_results = []
+    for test_name in testcases:
+        result = do_testcase_run(test_name, tester_path, solution_path)
+        test_results.append(result)
 
     results = { "results": test_results }
     if options.get('print_result'):
