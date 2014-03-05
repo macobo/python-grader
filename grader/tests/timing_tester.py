@@ -3,6 +3,7 @@ import grader
 import os
 
 CURRENT_FOLDER = os.path.dirname(__file__)
+HELPERS_FOLDER = os.path.join(CURRENT_FOLDER, "helpers")
 
 @grader.test
 def timing_issue_test(m):
@@ -16,8 +17,8 @@ class Tests(unittest.TestCase):
     def setUpClass(cls):
         grader.reset()
         cls.results = grader.test_module(
-            tester_module = "timing_tester.py",
-            user_module = "_helper_timing_module.py",
+            tester_module = os.path.join(CURRENT_FOLDER, "timing_tester.py"),
+            user_module = os.path.join(HELPERS_FOLDER, "_helper_timing_module.py"),
             working_dir = CURRENT_FOLDER
         )["results"]
 

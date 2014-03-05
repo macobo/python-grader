@@ -1,11 +1,11 @@
 import unittest
 import os
 import grader
-from grader.utils import create_file, delete_file, expose_ast
+from grader.decorators import create_file, delete_file, expose_ast
 #from macropy.tracing import macros, trace
 
-
 CURRENT_FOLDER = os.path.dirname(__file__)
+HELPERS_FOLDER = os.path.join(CURRENT_FOLDER, "helpers")
 
 dynamic_tests = []
 def dyn_test(f):
@@ -92,7 +92,7 @@ def multiline_doc_function(m):
 @grader.before_test(create_file('hello.txt', 'Hello world!'))
 @grader.after_test(delete_file('hello.txt'))
 def hook_test(m):
-    with open(os.path.join(CURRENT_FOLDER, 'hello.txt')) as file:
+    with open('hello.txt') as file:
         txt = file.read()
         assert txt == 'Hello world!', txt
 
@@ -109,8 +109,8 @@ def exceptions(m):
 
 
 class Tests(unittest.TestCase):
-    tester_module = "core_tester.py"
-    user_module = "_helper_tested_module.py"
+    tester_module = os.path.join(CURRENT_FOLDER, "core_tester.py")
+    user_module = os.path.join(HELPERS_FOLDER, "_helper_tested_module.py")
 
     @classmethod
     def setUpClass(cls):
@@ -136,11 +136,11 @@ class Tests(unittest.TestCase):
     def test_docstring_added_as_test_name(self):
         import inspect
         self.assertIn(inspect.getdoc(doc_only_function), 
-                    list(grader.testcases.keys()))
+                    grader.testcases)
 
     def test_multiline_docstring(self):
         doc = "This function should have a multiline docstring as its name in grader"
-        self.assertIn(doc, list(grader.testcases.keys()))
+        self.assertIn(doc, grader.testcases)
 
     def test_hooks(self):
         result = self.find_result(hook_test)

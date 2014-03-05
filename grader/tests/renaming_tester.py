@@ -3,6 +3,7 @@ import os
 import grader
 
 CURRENT_FOLDER = os.path.dirname(__file__)
+HELPERS_FOLDER = os.path.join(CURRENT_FOLDER, "helpers")
 
 def test_generator(name, fun):
     @grader.test
@@ -16,8 +17,8 @@ test_generator("other", lambda: 2)
 test_generator("fail", lambda: "fail")
 
 class Tests(unittest.TestCase):
-    tester_module = "renaming_tester.py"
-    user_module = "_helper_tested_module.py"
+    tester_module = os.path.join(HELPERS_FOLDER, "renaming_tester.py")
+    user_module = os.path.join(HELPERS_FOLDER, "_helper_tested_module.py")
 
     @classmethod
     def setUpClass(cls):
@@ -38,7 +39,7 @@ class Tests(unittest.TestCase):
 
     def test_initialization(self):
         names = sorted([x["description"] for x in self.results])
-        assert len(names) == 3
+        assert len(names) == 3, names
         assert "other" in names
         assert "fail" in names
         assert "some_test" not in names

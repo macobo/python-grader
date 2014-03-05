@@ -1,8 +1,8 @@
 import unittest
 import os
 from os.path import join
+from grader.asset_management import tempModule
 from grader.utils import (
-    tempModule,
     import_module,
     beautifyDescription,
     get_traceback

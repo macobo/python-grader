@@ -3,6 +3,7 @@ import grader
 import os
 
 CURRENT_FOLDER = os.path.dirname(__file__)
+HELPERS_FOLDER = os.path.join(CURRENT_FOLDER, "helpers")
 TIMEOUT = 0.2
 
 @grader.test
@@ -24,8 +25,8 @@ class Tests(unittest.TestCase):
     def setUpClass(cls):
         grader.reset()
         cls.results = grader.test_module(
-            tester_module = "timeout_tester.py",
-            user_module = "_helper_timeout_module.py",
+            tester_module = os.path.join(CURRENT_FOLDER, "timeout_tester.py"),
+            user_module = os.path.join(HELPERS_FOLDER, "_helper_timeout_module.py"),
             working_dir = CURRENT_FOLDER
         )["results"]
 

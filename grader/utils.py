@@ -4,7 +4,7 @@
 import os
 import json
 import traceback
-
+import tokenize
 
 def import_module(path, name=None):
     if name is None:
@@ -13,6 +13,19 @@ def import_module(path, name=None):
     loader = importlib.machinery.SourceFileLoader(name, path)
     module = loader.load_module(name)
     return module
+
+# def import_module(path, name=None):
+#     """ Imports a module. If the module is previously loaded, it is nevertheless
+#         imported again """
+#     if name is None:
+#         name = path
+#     from types import ModuleType
+#     mod = ModuleType("solution_program")
+#     with tokenize.open(path) as f:
+#         source = f.read()
+#     code = compile(source, name, "exec", dont_inherit=True)
+#     exec(code, mod.__dict__)
+#     return mod
 
 ## Function descriptions
 def beautifyDescription(description):
@@ -26,10 +39,10 @@ def setDescription(function, description):
     import grader
     old_description = grader.get_test_name(function)
     if old_description in grader.testcases:
-        del grader.testcases[old_description]
+        grader.testcases.remove(old_description)
     description = beautifyDescription(description)
     function.__doc__ = description
-    grader.testcases[description] = function
+    grader.testcases.add(description, function)
 
 ## Json managing
 def load_json(json_string):

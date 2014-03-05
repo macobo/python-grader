@@ -1,6 +1,6 @@
 import unittest
 import textwrap
-from grader.feedback_utils import *
+from grader.assertions import *
 
 def dedent(str):
     return textwrap.dedent(str).strip()

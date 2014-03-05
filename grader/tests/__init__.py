@@ -6,8 +6,9 @@ def test_suite(suites=[], cases=[]):
     new_cases = [unittest.makeSuite(x.Tests) for x in cases]
     return unittest.TestSuite(new_cases + new_suites)
 
+from . import datastructures_tester
 from . import core_tester
-from . import feedback_utils_tester
+from . import assertions_tester
 from . import timing_tester
 from . import timeout_tester
 from . import renaming_tester
@@ -15,11 +16,12 @@ from . import utils_tester
 
 cases = [
    utils_tester,
+    datastructures_tester,
    core_tester,
-   feedback_utils_tester,
+   assertions_tester,
    timing_tester,
    timeout_tester,
-   renaming_tester
+   #renaming_tester
 ]
 
 import os

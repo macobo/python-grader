@@ -187,7 +187,6 @@ def do_testcase_run(test_name, tester_module, user_module):
         If the test timeouts, traceback is "timeout"
     """
     from grader.code_runner import call_test
-    #test_index = list(grader.testcases.keys()).index(test_name)
     timeout = grader.get_setting(test_name, "timeout")
 
 

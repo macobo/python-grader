@@ -2,7 +2,7 @@ import os
 import inspect
 from functools import wraps
 from collections import OrderedDict
-#from .code_runner import runTester
+from .datastructures import OrderedTestcases
 from .utils import beautifyDescription, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -11,7 +11,7 @@ DEFAULT_TESTCASE_RUNNER = os.path.join(
                                 "sandbox", 
                                 "run_test_no_sandbox")
 
-testcases = OrderedDict()
+testcases = OrderedTestcases()
 
 DEFAULT_SETTINGS = {
     # hooks that run before tests
@@ -24,8 +24,7 @@ DEFAULT_SETTINGS = {
 
 def reset():
     " resets settings and loaded tests "
-    global testcases
-    testcases = OrderedDict()
+    testcases.clear()
 
 def test(test_function):
     """ Decorator for a test. The function should take a single argument which
@@ -50,7 +49,7 @@ def test(test_function):
         return result
 
     name = get_test_name(test_function)
-    testcases[name] = wrapper
+    testcases.add(name, wrapper)
     return wrapper
 
 
@@ -121,7 +120,7 @@ def test_module(tester_module, user_module, **options):
     import_module(tester_module)
     assert len(testcases) > 0
     test_results = [do_testcase_run(test_name, tester_module, user_module) 
-                                    for test_name in testcases.keys()]
+                                    for test_name in testcases.names]
 
     results = { "results": test_results }
     if options.get('print_result'):
