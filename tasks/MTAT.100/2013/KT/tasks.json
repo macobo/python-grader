@@ -1,0 +1,14 @@
+{
+    "tasks": [
+        {
+            "name": "midateha",
+            "tester":   "KT1_midateha_tester.py",
+            "solution": "KT1_midateha_solution.py"
+        },
+        {
+            "name": "nädalapäev",
+            "tester":   "KT1_nadalapaev_tester.py",
+            "solution": "KT1_nadalapaev_solution.py"
+        }
+    ]
+}
