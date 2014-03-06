@@ -22,6 +22,7 @@ parser.add_argument('assets', type=is_valid_path, nargs="*")
 parser.add_argument('-c', '--test-runner', 
     dest="runner_cmd",
     default=DEFAULT_TESTCASE_RUNNER,
+    type=is_valid_path,
     help="Command to run to run a test within a sandbox")
 
 args = parser.parse_args()

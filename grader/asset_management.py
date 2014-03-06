@@ -28,12 +28,17 @@ class AssetFolder:
             creator_function = self._write
         else:
             creator_function = self._copy
-        self.tester_path = creator_function(tester_path)
-        self.solution_path = creator_function(solution_path)
+        if tester_path:
+            self.tester_path = creator_function(tester_path)
+        if solution_path:
+            self.solution_path = creator_function(solution_path)
 
         self.other_assets = list(map(creator_function, other_assets))
 
     def _copy(self, file_path):
+        if os.path.isdir(file_path):
+            files = os.listdir(file_path)
+            return [self._copy(os.path.join(file_path, name)) for name in files]
         return copy(file_path, self.path)
 
     def _write(self, code):
