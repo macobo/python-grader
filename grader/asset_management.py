@@ -40,11 +40,11 @@ class AssetFolder:
             files = os.listdir(file_path)
             return [self._copy(os.path.join(file_path, name)) for name in files]
         return copy(file_path, self.path)
-
+  
     def _write(self, code):
         file = NamedTemporaryFile(
-            dir = working_dir,
-            mode = "wb",
+            dir = self.path,
+            mode = "w",
             suffix = ".py",
             delete = False
         )

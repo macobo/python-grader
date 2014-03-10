@@ -6,10 +6,13 @@ from .datastructures import OrderedTestcases
 from .utils import beautifyDescription, dump_json
 
 CURRENT_FOLDER = os.path.dirname(__file__)
-DEFAULT_TESTCASE_RUNNER = os.path.join(
-                                os.path.dirname(CURRENT_FOLDER), 
-                                "sandbox", 
-                                "run_test_no_sandbox")
+
+_SANDBOX_DIR = os.path.join(os.path.dirname(CURRENT_FOLDER), "sandbox")
+TESTCASE_RUNNERS = {
+    'unsafe': os.path.join(_SANDBOX_DIR, "run_test_no_sandbox"),
+    'docker': os.path.join(_SANDBOX_DIR, "run_test_docker_sandbox")
+}
+DEFAULT_TESTCASE_RUNNER = TESTCASE_RUNNERS['unsafe']
 
 testcases = OrderedTestcases()
 
@@ -110,6 +113,11 @@ def test_module(tester_path, solution_path, **options):
 
         Returns/prints the results as json.
     """
+    if "runner_cmd" not in options:
+        options["runner_cmd"] = DEFAULT_TESTCASE_RUNNER
+    elif options["runner_cmd"] in TESTCASE_RUNNERS:
+        options["runner_cmd"] = TESTCASE_RUNNERS[options["runner_cmd"]]
+
     from .execution_base import do_testcase_run
     from .utils import import_module
     # populate tests
@@ -128,7 +136,7 @@ def test_module(tester_path, solution_path, **options):
 
 
 def test_solution(tester_code, user_code, **options):
-    from .utils import AssetFolder
+    from .asset_management import AssetFolder
     assets = AssetFolder(tester_code, user_code, is_code=True)
     try:
         return test_module(assets.tester_path, assets.solution_path, **options)

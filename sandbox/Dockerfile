@@ -13,4 +13,7 @@ RUN apt-get install -y python3-pip git-core
 RUN git clone https://github.com/macobo/python-grader.git
 RUN cd python-grader && python3 setup.py install
 
+ADD docker_entrypoint docker_entrypoint
 ADD run_test_no_sandbox run_test_no_sandbox
+
+ENTRYPOINT ["/bin/bash", "/docker_entrypoint"]
