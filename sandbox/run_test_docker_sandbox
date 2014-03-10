@@ -13,7 +13,7 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 def generate_container(client, code_dir, command):
     return client.create_container(
-        "runner", 
+        "macobo/python-grader-sandbox", 
         command=command,
         volumes={code_dir:{}},
         working_dir=code_dir,
@@ -49,4 +49,4 @@ if __name__ == "__main__":
             print(line.decode("utf-8"),)
     finally:
         pass
-        assets.remove()
+        #assets.remove()
