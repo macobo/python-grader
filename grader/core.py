@@ -46,7 +46,6 @@ def test(test_function):
     def wrapper(module, *args, **kwargs):
         if module.caughtException:
             raise module.caughtException
-        
         result = test_function(module, *args, **kwargs)
         if module.caughtException:
             raise module.caughtException
@@ -81,8 +80,8 @@ def set_setting(test_function, setting_name, value):
     get_setting(test_function, setting_name)
     test_function._grader_settings_[setting_name] = value
 
-### Hooks 
 
+### Hooks
 def before_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` before running the decorated test. """
@@ -127,6 +126,8 @@ def test_module(tester_path, solution_path, **options):
     from .execution_base import do_testcase_run
     # populate tests
     testcases.load_from(tester_path)
+    if options['debug']:
+        print(list(testcases))
     assert len(testcases) > 0
 
     test_results = []

@@ -36,6 +36,8 @@ parser.add_argument('-c', '--test-runner',
                     default=DEFAULT_TESTCASE_RUNNER,
                     type=valid_runner,
                     help="Command to run to run a test within a sandbox")
+parser.add_argument("--debug", help="debugging output", action="store_true")
+
 
 args = parser.parse_args()
 
@@ -46,7 +48,8 @@ try:
         assets.tester_path,
         assets.solution_path,
         print_result=True,
-        runner_cmd=args.runner_cmd)
+        runner_cmd=args.runner_cmd,
+        debug=args.debug)
 finally:
     pass
     #assets.remove()
