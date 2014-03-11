@@ -1,8 +1,9 @@
 import os
 
+
 ## File creation, deletion hooks
-def create_file(filename, contents = ""):
-    """ Hook for creating files 
+def create_file(filename, contents=""):
+    """ Hook for creating files
         Example usage:
 
         @grader.test
@@ -23,8 +24,9 @@ def create_file(filename, contents = ""):
 
     return _inner
 
+
 def delete_file(filename):
-    """ Hook for deleting files 
+    """ Hook for deleting files
         Example usage:
         
         @grader.test
@@ -37,14 +39,17 @@ def delete_file(filename):
     """
 
     def _inner():
-        try: os.remove(filename)
-        except: pass
+        try:
+            os.remove(filename)
+        except:
+            pass
 
     return _inner
 
-def create_temporary_file(filename, contents = ""):
+
+def create_temporary_file(filename, contents=""):
     """ Decorator for constructing a file which is available
-        during a single test and is deleted afterwards. 
+        during a single test and is deleted afterwards.
 
         Example usage:
         @grader.test
@@ -54,12 +59,12 @@ def create_temporary_file(filename, contents = ""):
                 txt = file.read()
         """
     from grader.core import before_test, after_test
+
     def _inner(test_function):
         before_test(create_file(filename, contents))(test_function)
         after_test(delete_file(filename))(test_function)
         return test_function
     return _inner
-
 
 
 def get_module_AST(path):
@@ -70,10 +75,12 @@ def get_module_AST(path):
         contents = sourceFile.read()
     return ast.parse(contents)
 
+
 def expose_ast(test_function):
     """ Decorator for exposing the ast of the solution module
         as an argument to the tester. """
     from grader.core import before_test
+
     def _hook(info):
         module_ast = get_module_AST(info["user_module"])
         info["extra_kwargs"]["AST"] = module_ast

@@ -6,13 +6,13 @@ from tempfile import NamedTemporaryFile, mkdtemp, gettempdir
 
 @contextlib.contextmanager
 def tempModule(code, working_dir=None, encoding="utf8"):
-    if working_dir is None: 
+    if working_dir is None:
         working_dir = gettempdir()
     file = NamedTemporaryFile(
-        dir = working_dir,
-        mode = "wb",
-        suffix = ".py",
-        delete = False
+        dir=working_dir,
+        mode="wb",
+        suffix=".py",
+        delete=False
     )
     file.write(code.encode(encoding))
     file.close()
@@ -20,6 +20,7 @@ def tempModule(code, working_dir=None, encoding="utf8"):
         yield file.name
     finally:
         os.remove(file.name)
+
 
 class AssetFolder:
     def __init__(self, tester_path, solution_path, other_assets=[], is_code=False):
@@ -43,10 +44,10 @@ class AssetFolder:
   
     def _write(self, code):
         file = NamedTemporaryFile(
-            dir = self.path,
-            mode = "w",
-            suffix = ".py",
-            delete = False
+            dir=self.path,
+            mode="w",
+            suffix=".py",
+            delete=False
         )
         file.write(code)
         file.close()

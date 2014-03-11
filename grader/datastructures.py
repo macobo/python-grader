@@ -1,5 +1,6 @@
 from .utils import import_module
 
+
 class OrderedTestcases:
     " Class that acts like a ordered dictionary, with removal and reset"
     def __init__(self):

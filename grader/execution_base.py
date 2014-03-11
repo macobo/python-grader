@@ -16,9 +16,10 @@ import sys
 import queue
 from time import sleep, time
 from threading import Thread, Lock
-from grader.utils import dump_json, get_traceback, import_module
+from grader.utils import get_traceback, import_module
 
 import grader
+
 
 class SpoofedStdin:
     def __init__(self, timing_lock):
@@ -38,7 +39,7 @@ class SpoofedStdin:
         if self.timing_lock.locked() and self.need_locking:
             self.timing_lock.release()
         self.waiting = True
-        result = self.queue.get(timeout = 3)
+        result = self.queue.get(timeout=3)
         self.waiting = False
         if self.need_locking:
             self.timing_lock.acquire()
@@ -51,7 +52,8 @@ class SpoofedStdout:
         self.reset()
         self.need_locking = True
 
-    def flush(self): pass
+    def flush(self):
+        pass
 
     def write(self, msg):
         self.output.append(msg)
@@ -69,7 +71,7 @@ class SpoofedStdout:
             self.timing_lock.release()
             # give other thread a chance to execute
             # so we don't grab the lock back immediately
-            sleep(0.00001) 
+            sleep(0.00001)
         return result
 
     def new(self):
@@ -85,7 +87,7 @@ class SpoofedStdout:
 
 class ModuleContainer(Thread):
     """ A thread that runs the users program.
-        It has hooks for a spoofed stdin and stdout, and also a reference to 
+        It has hooks for a spoofed stdin and stdout, and also a reference to
         the users module (available after the import is finished) """
     def __init__(self, module_name):
         Thread.__init__(self)
@@ -99,7 +101,6 @@ class ModuleContainer(Thread):
         # TODO: give a chance for the thread to run
         sleep(0.005)
 
-    
     def run(self):
         try:
             self.stdin = sys.stdin = SpoofedStdin(self.timing_lock)
@@ -119,10 +120,8 @@ class ModuleContainer(Thread):
             self.caughtException = e
             raise
 
-
     def is_waiting_input(self):
         return self.stdin.waiting
-
 
     @classmethod
     def restore_io(cls):
@@ -131,12 +130,13 @@ class ModuleContainer(Thread):
 
 
 def call_all(function_list, *args, **kwargs):
-    for fun in function_list: 
+    for fun in function_list:
         fun(*args)
 
+
 def call_test_function(test_name, tester_module, user_module):
-    """ Called in another process. Finds the test `test_name`,  calls the 
-        pre-test hooks and tries to execute it. 
+    """ Called in another process. Finds the test `test_name`,  calls the
+        pre-test hooks and tries to execute it.
 
         If an exception was raised by call, prints it to stdout """
 
@@ -159,7 +159,7 @@ def call_test_function(test_name, tester_module, user_module):
     try:
         test_function(
             module,
-            *pre_hook_info["extra_args"], 
+            *pre_hook_info["extra_args"],
             **pre_hook_info["extra_kwargs"]
         )
     except Exception as e:
@@ -192,24 +192,15 @@ def do_testcase_run(test_name, tester_module, user_module, options):
     start = time()
     traceback = call_test(test_name, tester_module, user_module, options)
     end = time()
-    if (end-start) > options["timeout"]:
+    if (end - start) > options["timeout"]:
         traceback = "Timeout"
 
     result = {
         "success": traceback == "",
         "traceback": traceback,
         "description": test_name,
-        "time": "%.3f" % (end-start),
+        "time": "%.3f" % (end - start),
     }
     # after test hooks - cleanup
     call_all(grader.get_setting(test_name, "after-hooks"))
     return result
-
-if __name__ == "__main__":
-    # called by code_runner.py
-    if len(sys.argv) == 3: # testing module
-        tester_module, user_module = sys.argv[1:3]
-        test_module(tester_module, user_module, True)
-    elif len(sys.argv) == 4: # calling a specific test function
-        test_name, tester_module, user_module = sys.argv[1:4]
-        call_test_function(test_name, tester_module, user_module)
