@@ -1,0 +1,14 @@
+{
+    "tasks": [
+        {
+            "name": "ve2_jarel_summa",
+            "tester": "KT3_J1_2_summa_tester.py",
+            "solution": "KT3_J1_2_summa_solution.py"
+        },
+        {
+            "name": "ve2_jarel_failide_yhendamine",
+            "tester": "KT3_J1_3_failide_yhendamine_tester.py",
+            "solution": "KT3_J1_3_failide_yhendamine_solution.py"
+        }
+    ]
+}

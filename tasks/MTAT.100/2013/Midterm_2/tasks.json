@@ -1,0 +1,45 @@
+{
+
+    "tasks": [
+        {
+            "name": "ve2_esimene_ja_viimane",
+            "tester": "KT3_N10_2_esimene_ja_viimane_tester.py",
+            "solution": "KT3_N10_2_esimene_ja_viimane_solution.py"
+        },
+        {
+            "name": "ve2_lapsevanemad",
+            "tester": "KT3_N10_3_lapsevanemad_tester.py",
+            "solution": "KT3_N10_3_lapsevanemad_solution.py"
+        },
+        {
+            "name": "ve2_erinevus",
+            "tester": "KT3_N16_2_erinevus_tester.py",
+            "solution": "KT3_N16_2_erinevus_solution.py"
+        },
+        {
+            "name": "ve2_read_veergudeks",
+            "tester": "KT3_N16_3_read_veergudeks_tester.py",
+            "solution": "KT3_N16_3_read_veergudeks_solution.py"
+        },
+        {
+            "name": "ve2_tootajate_arv",
+            "tester": "KT3_R8_2_tootajate_arv_tester.py",
+            "solution": "KT3_R8_2_tootajate_arv_solution.py"
+        },
+        {
+            "name": "ve2_tabeli_kuvamine",
+            "tester": "KT3_R8_3_tabeli_kuvamine_tester.py",
+            "solution": "KT3_R8_3_tabeli_kuvamine_solution.py"
+        },
+        {
+            "name": "ve2_paiguta",
+            "tester": "KT3_R10_2_paiguta_tester.py",
+            "solution": "KT3_R10_2_paiguta_solution.py"
+        },
+        {
+            "name": "ve2_sonade_jargnevus",
+            "tester": "KT3_R10_3_sonade_jargnevus_tester.py",
+            "solution": "KT3_R10_3_sonade_jargnevus_solution.py"
+        }
+    ]
+}
