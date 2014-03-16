@@ -126,7 +126,7 @@ def test_module(tester_path, solution_path, **options):
     from .execution_base import do_testcase_run
     # populate tests
     testcases.load_from(tester_path)
-    if options['debug']:
+    if options.get('debug'):
         print(list(testcases))
     assert len(testcases) > 0
 

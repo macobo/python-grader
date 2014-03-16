@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name = 'grader',
+    name='grader',
     packages=['grader'],
-    data_files = [('sandbox', [
+    data_files=[('sandbox', [
         'sandbox/run_test_no_sandbox',
         'sandbox/run_test_docker_sandbox'
     ])],
