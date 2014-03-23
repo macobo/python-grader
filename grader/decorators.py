@@ -1,5 +1,5 @@
 import os
-
+from .utils import read_code
 
 ## File creation, deletion hooks
 def create_file(filename, contents=""):
@@ -68,12 +68,10 @@ def create_temporary_file(filename, contents=""):
 
 
 def get_module_AST(path):
-    import tokenize
     import ast
     # encoding-safe open
-    with tokenize.open(path) as sourceFile:
-        contents = sourceFile.read()
-    return ast.parse(contents)
+    code = read_code(path)
+    return ast.parse(code)
 
 
 def expose_ast(test_function):

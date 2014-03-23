@@ -13,6 +13,8 @@ from . import timing_tester
 from . import timeout_tester
 from . import renaming_tester
 from . import utils_tester
+from . import stdio_tester
+
 
 cases = [
   utils_tester,
@@ -21,7 +23,8 @@ cases = [
   assertions_tester,
   timing_tester,
   timeout_tester,
-  renaming_tester
+  renaming_tester,
+  stdio_tester
 ]
 
 import os

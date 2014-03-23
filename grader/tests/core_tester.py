@@ -34,10 +34,10 @@ def stdout_read(module):
 
 
 @dyn_test
-def waiting_input_function(m):
-    assert m.is_waiting_input()
+def finished_property(m):
+    assert not m.finished
     m.stdin.write("foo")
-    assert not m.is_waiting_input()
+    assert m.finished
 
 @dyn_test
 def function_call(m):

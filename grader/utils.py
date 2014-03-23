@@ -47,3 +47,10 @@ def dump_json(ordered_dict):
 def get_traceback(exception):
     type_, value, tb = type(exception), exception, exception.__traceback__
     return "".join(traceback.format_exception(type_, value, tb))
+
+def read_code(path):
+    import tokenize
+    # encoding-safe open
+    with tokenize.open(path) as sourceFile:
+        contents = sourceFile.read()
+    return contents
