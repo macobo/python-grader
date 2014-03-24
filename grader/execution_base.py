@@ -52,7 +52,7 @@ def call_test_function(test_name, tester_module, user_module):
 
     # start users program
     try:
-        module = ProgramContainer(user_module)
+        module = ProgramContainer(user_module, results)
         module.condition.acquire()
         test_function(
             module,

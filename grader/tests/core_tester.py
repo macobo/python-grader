@@ -107,6 +107,9 @@ def exceptions(m):
     m.stdin.write("Karl")
     m.module.raiseException("SomeAwesomeMessage")
 
+@grader.test
+def test_logging(m):
+    m.log("something")
 
 class Tests(unittest.TestCase):
     tester_path = os.path.join(CURRENT_FOLDER, "core_tester.py")
@@ -117,8 +120,7 @@ class Tests(unittest.TestCase):
         grader.reset()
         cls.results = grader.test_module(
             tester_path = cls.tester_path,
-            solution_path = cls.solution_path,
-            runner_cmd = grader.DEFAULT_TESTCASE_RUNNER
+            solution_path = cls.solution_path
         )["results"]
 
     def find_result(self, function):
@@ -161,7 +163,11 @@ class Tests(unittest.TestCase):
         # check if user code gets a line
         self.assertIn('line 19, in raiseException', trace)
 
+    def test_logging(self):
+        result = self.find_result(test_logging)
+        assert result["success"], result
+        assert result["log"] == ["something"], result
 
 for test_name, test_function in dynamic_tests:
-    setattr(Tests, "test_"+test_name, 
-        lambda self, t=test_function: self.run_test(t))
+    setattr(Tests, "test_" + test_name,
+            lambda self, t=test_function: self.run_test(t))

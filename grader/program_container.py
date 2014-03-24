@@ -9,10 +9,11 @@ from .stdio import SyncCondition, SpoofedStdin, SpoofedStdout
 class ProgramContainer(Thread):
     """ The thread in which the users program runs """
 
-    def __init__(self, module_path):
+    def __init__(self, module_path, results):
         Thread.__init__(self)
 
         self.module_path = module_path
+        self._results = results
         self.condition = SyncCondition()
 
         self.caughtException = None
@@ -51,6 +52,9 @@ class ProgramContainer(Thread):
         code = compile(source, "<tested-program>", "exec", dont_inherit=True)
         exec(code, mod.__dict__)
         return mod
+
+    def log(self, what):
+        self._results["log"].append(what)
 
     @classmethod
     def restore_io(cls):
