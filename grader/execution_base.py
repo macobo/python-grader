@@ -12,11 +12,16 @@ async request is fired (run in another process). It is resolved within the
 See `resolve_testcase_run` for output format description.
 """
 
-from time import time
-from .utils import get_traceback, import_module
-from .program_container import ProgramContainer
 import grader
+from time import time
+from .program_container import ProgramContainer
+from .utils import get_traceback, get_error_message, import_module, dump_json, load_json
 
+RESULT_DEFAULTS = {
+    "log": [],
+    "error_message": "",
+    "traceback": ""
+}
 
 def call_all(function_list, *args, **kwargs):
     for fun in function_list:
@@ -43,25 +48,24 @@ def call_test_function(test_name, tester_module, user_module):
     # pre-test hooks
     call_all(grader.get_setting(test_name, "before-hooks"), pre_hook_info)
 
+    results = RESULT_DEFAULTS.copy()
+
     # start users program
-    module = ProgramContainer(user_module)
-    module.condition.acquire()
     try:
+        module = ProgramContainer(user_module)
+        module.condition.acquire()
         test_function(
             module,
             *pre_hook_info["extra_args"],
             **pre_hook_info["extra_kwargs"]
         )
     except Exception as e:
+        results["error_message"] = get_error_message(e)
+        results["traceback"] = get_traceback(e)
+        raise
+    finally:
         module.restore_io()
-        error_message = ""
-        if module.caughtException:
-            error_message += "Exception in program:\n\n"
-            error_message += get_traceback(module.caughtException)
-            error_message += "\n\nException in tester:\n\n"
-        error_message += get_traceback(e)
-        #print(repr(ModuleContainer.stdout.read())+">>>>>"+error_message)
-        print(error_message)
+        print(dump_json(results))
 
 
 def do_testcase_run(test_name, tester_module, user_module, options):
@@ -80,17 +84,23 @@ def do_testcase_run(test_name, tester_module, user_module, options):
     options["timeout"] = grader.get_setting(test_name, "timeout")
 
     start = time()
-    traceback = call_test(test_name, tester_module, user_module, options)
+    success, stdout, stderr = call_test(test_name, tester_module, user_module, options)
     end = time()
-    if (end - start) > options["timeout"]:
-        traceback = "Timeout"
 
-    result = {
-        "success": traceback == "",
-        "traceback": traceback,
-        "description": test_name,
-        "time": "%.3f" % (end - start),
-    }
+    try:
+        result = load_json(stdout)
+    except:
+        result = RESULT_DEFAULTS.copy()
+
+    if (end - start) > options["timeout"]:
+        result["error_message"] = "Timeout"
+        result["traceback"] = "Timeout"
+
+    result.update(
+        success=success,
+        description=test_name,
+        time=("%.3f" % (end - start))
+    )
     # after test hooks - cleanup
     call_all(grader.get_setting(test_name, "after-hooks"))
     return result

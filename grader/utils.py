@@ -44,9 +44,15 @@ def dump_json(ordered_dict):
     return json.dumps(ordered_dict, indent=4)
 
 
+def get_error_message(exception):
+    type_ = type(exception)
+    return "{}: {}".format(type_.__name__, str(exception))
+
+
 def get_traceback(exception):
     type_, value, tb = type(exception), exception, exception.__traceback__
     return "".join(traceback.format_exception(type_, value, tb))
+
 
 def read_code(path):
     import tokenize
