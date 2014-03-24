@@ -12,10 +12,7 @@ async request is fired (run in another process). It is resolved within the
 See `resolve_testcase_run` for output format description.
 """
 
-import sys
-import queue
-from time import sleep, time
-from threading import Thread, Lock
+from time import time
 from .utils import get_traceback, import_module
 from .program_container import ProgramContainer
 import grader

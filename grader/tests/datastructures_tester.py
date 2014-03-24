@@ -1,5 +1,5 @@
 import unittest
-from ..datastructures import OrderedTestcases
+from grader.datastructures import OrderedTestcases
 
 class Tests(unittest.TestCase):
     def setUp(self):

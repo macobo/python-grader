@@ -36,7 +36,6 @@ class Tests(unittest.TestCase):
         result = self.find_result('no_writes', self.empty_module_results)
         assert result["success"], result
 
-    @unittest.skip("")
     def test_no_io_extra_write(self):
         result = self.find_result('two_writes', self.empty_module_results)
         assert result["success"], result

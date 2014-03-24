@@ -14,6 +14,12 @@ def call_test(test_name, tester_path, solution_path, options):
         solution_path,
         test_name
     ]
+    # subproc = subprocess.Popen(
+    #     cmd, cwd=working_dir,
+    #     stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    # )
+    # stdout, stderr = subproc.communicate()
+    # status = subproc.returncode
     try:
         stdout = subprocess.check_output(cmd, cwd=working_dir)
     except subprocess.CalledProcessError as e:

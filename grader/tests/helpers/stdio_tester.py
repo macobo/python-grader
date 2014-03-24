@@ -7,5 +7,6 @@ def no_writes(m):
 @test
 def two_writes(m):
     m.stdin.put('ONE')
-    assert m.module.variable == 'ONE'
+    if not m.finished:
+        assert m.module.variable == 'ONE', m.module.variable
     m.stdin.put('END')
