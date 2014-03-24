@@ -87,14 +87,12 @@ def do_testcase_run(test_name, tester_module, user_module, options):
     success, stdout, stderr = call_test(test_name, tester_module, user_module, options)
     end = time()
 
-    try:
-        result = load_json(stdout)
-    except:
-        result = RESULT_DEFAULTS.copy()
-
     if (end - start) > options["timeout"]:
+        result = RESULT_DEFAULTS.copy()
         result["error_message"] = "Timeout"
         result["traceback"] = "Timeout"
+    else:
+        result = load_json(stdout)
 
     result.update(
         success=success,
