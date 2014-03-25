@@ -1,11 +1,13 @@
 Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
-## Goals
+Module for automatically testing first-year programming courses taught in Python 3.
 
-Providing a **robust** and **secure** way to automatically grade first-year 
-programming courses taught in Python.
-Focus is on writing **succinct** tests for grading student solutions and useful feedback for the student. 
+Goal is to allow to test both functions and classes as well as interactive input-output based programs. 
+
+For the student, feedback provided by the module should be helpful for debugging and understanding where they went wrong.
+
+For the teacher, this module allows them to test existing tasks without having to change their specification very much as unit-test modules require.
 
 ## Setup
 
