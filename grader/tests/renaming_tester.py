@@ -25,8 +25,7 @@ class Tests(unittest.TestCase):
         #grader.reset()
         cls.results = grader.test_module(
             tester_path = cls.tester_path,
-            solution_path = cls.solution_path,
-            runner_cmd = grader.DEFAULT_TESTCASE_RUNNER
+            solution_path = cls.solution_path
         )["results"]
 
     def find_result(self, test_name):

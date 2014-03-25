@@ -1,7 +1,7 @@
 import unittest
 import os
 from os.path import join
-from grader.asset_management import tempModule
+from grader.asset_management import tempModule, AssetFolder
 from grader.utils import (
     import_module,
     beautifyDescription,
@@ -29,6 +29,11 @@ class Tests(unittest.TestCase):
         from tempfile import TemporaryDirectory
         with TemporaryDirectory(dir=CURRENT_FOLDER) as folder:
             self.tempModuleCheck("Somethingsomething\nSomethingÄÄÄõõõ", folder)
+
+    def test_assets(self):
+        with AssetFolder('a', 'b', is_code=True) as assets:
+            assert os.path.exists(assets.path)
+        assert not os.path.exists(assets.path)
 
 
     def import_check(self, name=None):
@@ -75,6 +80,6 @@ class Tests(unittest.TestCase):
         except Exception as e:
             traceback = get_traceback(e)
             self.assertIn("Traceback (most recent call last):\n", traceback)
-            self.assertIn('File "'+__file__+'", line 74, in test_get_traceback\n', traceback)
+            self.assertIn('File "'+__file__+'", line 79, in test_get_traceback\n', traceback)
             self.assertIn('raise ValueError("ErrorMessage")\n', traceback)
             self.assertIn('ValueError: ErrorMessage\n', traceback)

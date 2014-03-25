@@ -23,6 +23,7 @@ RESULT_DEFAULTS = {
     "traceback": ""
 }
 
+
 def call_all(function_list, *args, **kwargs):
     for fun in function_list:
         fun(*args)
@@ -81,18 +82,23 @@ def do_testcase_run(test_name, tester_module, user_module, options):
         If the test timeouts, traceback is "timeout"
     """
     from grader.code_runner import call_test
+    # TODO: not correct probably
     options["timeout"] = grader.get_setting(test_name, "timeout")
 
     start = time()
     success, stdout, stderr = call_test(test_name, tester_module, user_module, options)
     end = time()
 
+    result = RESULT_DEFAULTS.copy()
     if (end - start) > options["timeout"]:
-        result = RESULT_DEFAULTS.copy()
         result["error_message"] = "Timeout"
         result["traceback"] = "Timeout"
     else:
-        result = load_json(stdout)
+        try:
+            result = load_json(stdout)
+        except Exception as e:
+            result["traceback"] = stdout
+            result["stderr"] = stderr
 
     result.update(
         success=success,

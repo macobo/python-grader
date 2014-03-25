@@ -35,7 +35,7 @@ class OrderedTestcases:
     def load_from(self, module_path):
         self.clear()
         import_module(module_path)
-    
+
     def values(self):
         return ((o, self.cases[o]) for o in self.order)
 

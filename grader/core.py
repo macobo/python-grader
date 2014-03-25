@@ -1,21 +1,12 @@
-import os
 import inspect
 from functools import wraps
+from .asset_management import AssetFolder
 from .datastructures import OrderedTestcases
 from .utils import beautifyDescription, dump_json
 
-CURRENT_FOLDER = os.path.dirname(__file__)
-
-_SANDBOX_DIR = os.path.join(os.path.dirname(CURRENT_FOLDER), "sandbox")
-TESTCASE_RUNNERS = {
-    'unsafe': os.path.join(_SANDBOX_DIR, "run_test_no_sandbox"),
-    'docker': os.path.join(_SANDBOX_DIR, "run_test_docker_sandbox")
-}
-DEFAULT_TESTCASE_RUNNER = TESTCASE_RUNNERS['unsafe']
-
 testcases = OrderedTestcases()
 
-DEFAULT_SETTINGS = {
+DEFAULT_TEST_SETTINGS = {
     # hooks that run before tests
     "before-hooks": (),
     # hooks that run after tests
@@ -69,7 +60,7 @@ def get_setting(test_function, setting_name):
         test_function = testcases[test_function]
     if not hasattr(test_function, "_grader_settings_"):
         # copy default settings
-        test_function._grader_settings_ = DEFAULT_SETTINGS.copy()
+        test_function._grader_settings_ = DEFAULT_TEST_SETTINGS.copy()
     return test_function._grader_settings_[setting_name]
 
 
@@ -112,39 +103,35 @@ def timeout(seconds):
 ### Exposed methods to test files/code
 
 
-def test_module(tester_path, solution_path, **options):
+def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     """ Runs all tests for the solution given as argument.
         Should be only run with appropriate rights/user.
 
         Returns/prints the results as json.
     """
-    if "runner_cmd" not in options:
-        options["runner_cmd"] = DEFAULT_TESTCASE_RUNNER
-    elif options["runner_cmd"] in TESTCASE_RUNNERS:
-        options["runner_cmd"] = TESTCASE_RUNNERS[options["runner_cmd"]]
 
     from .execution_base import do_testcase_run
-    # populate tests
-    testcases.load_from(tester_path)
-    if options.get('debug'):
-        print(list(testcases))
-    assert len(testcases) > 0
 
-    test_results = []
-    for test_name in testcases:
-        result = do_testcase_run(test_name, tester_path, solution_path, options)
-        test_results.append(result)
+    # copy files for during the tests to /tmp
+    with AssetFolder(tester_path, solution_path, other_assets) as assets:
+        # populate tests
+        testcases.load_from(assets.tester_path)
+        assert len(testcases) > 0
+
+        test_results = []
+        for test_name in testcases:
+            result = do_testcase_run(test_name, assets.tester_path, assets.solution_path, {})
+            test_results.append(result)
 
     results = {"results": test_results}
-    if options.get('print_result'):
-        print(dump_json(results))
     return results
 
 
-def test_solution(tester_code, user_code, **options):
-    from .asset_management import AssetFolder
-    assets = AssetFolder(tester_code, user_code, is_code=True)
-    try:
-        return test_module(assets.tester_path, assets.solution_path, **options)
-    finally:
-        assets.remove()
+def test_solution(tester_code, user_code, other_assets=[], **options):
+    with AssetFolder(tester_code, user_code, other_assets, is_code=True) as assets:
+        return test_module(
+            assets.tester_path,
+            assets.solution_path,
+            assets.other_assets,
+            **options
+        )

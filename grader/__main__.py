@@ -7,7 +7,7 @@ import os
 import argparse
 
 from . import *
-from .asset_management import AssetFolder
+from .utils import dump_json
 
 
 def is_valid_path(path, raiseError=True):
@@ -31,25 +31,21 @@ parser = argparse.ArgumentParser(description='Test a program.')
 parser.add_argument('tester_path', type=is_valid_path)
 parser.add_argument('solution_path', type=is_valid_path)
 parser.add_argument('assets', type=is_valid_path, nargs="*")
-parser.add_argument('-c', '--test-runner',
-                    dest="runner_cmd",
-                    default=DEFAULT_TESTCASE_RUNNER,
-                    type=valid_runner,
-                    help="Command to run to run a test within a sandbox")
-parser.add_argument("--debug", help="debugging output", action="store_true")
+# parser.add_argument('-c', '--test-runner',
+#                     dest="runner_cmd",
+#                     default=DEFAULT_TESTCASE_RUNNER,
+#                     type=valid_runner,
+#                     help="Command to run to run a test within a sandbox")
+#parser.add_argument("--debug", help="debugging output", action="store_true")
 
 
 args = parser.parse_args()
 
-assets = AssetFolder(args.tester_path, args.solution_path, args.assets)
-
-try:
-    test_module(
-        assets.tester_path,
-        assets.solution_path,
-        print_result=True,
-        runner_cmd=args.runner_cmd,
-        debug=args.debug)
-finally:
-    pass
-    #assets.remove()
+result = test_module(
+    args.tester_path,
+    args.solution_path,
+    #runner_cmd=args.runner_cmd,
+    #debug=args.debug
+)
+print(dump_json(result))
+pass

@@ -58,5 +58,11 @@ class AssetFolder:
             raise IOError("{} already doesn't exist".format(self.path))
         rmtree(self.path)
 
+    def __enter__(self): 
+        return self
+        
+    def __exit__(self, *args):
+        self.remove()
+
     def __str__(self):
         return "<Assets: %s %s %s>" % (self.tester_path, self.solution_path, self.other_assets)
