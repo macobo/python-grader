@@ -3,15 +3,15 @@ from functools import wraps
 from .code_runner import call_sandbox, DOCKER_SANDBOX
 from .asset_management import AssetFolder
 from .datastructures import OrderedTestcases
-from .utils import beautifyDescription, dump_json, load_json
+from .utils import beautifyDescription, load_json
 
 testcases = OrderedTestcases()
 
 DEFAULT_TEST_SETTINGS = {
     # hooks that run before tests
-    "before-hooks": (),
+    "pre-hooks": (),
     # hooks that run after tests
-    "after-hooks": (),
+    "post-hooks": (),
     # timeout for function run
     "timeout": 1.0
 }
@@ -82,8 +82,8 @@ def before_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` before running the decorated test. """
     def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "before-hooks") + (action,)
-        set_setting(test_function, "before-hooks", hooks)
+        hooks = get_setting(test_function, "pre-hooks") + (action,)
+        set_setting(test_function, "pre-hooks", hooks)
         return test_function
     return _inner_decorator
 
@@ -92,8 +92,8 @@ def after_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` after running the decorated test. """
     def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "after-hooks") + (action,)
-        set_setting(test_function, "after-hooks", hooks)
+        hooks = get_setting(test_function, "post-hooks") + (action,)
+        set_setting(test_function, "post-hooks", hooks)
         return test_function
     return _inner_decorator
 

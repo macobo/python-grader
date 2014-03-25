@@ -38,7 +38,7 @@ def delete_file(filename):
                 # ...
     """
 
-    def _inner():
+    def _inner(result):
         try:
             os.remove(filename)
         except:
@@ -67,6 +67,17 @@ def create_temporary_file(filename, contents=""):
     return _inner
 
 
+def add_value(value_name, value_or_fn):
+    """ post-hook which as the value or the result of evaluating function on
+        result to the test result dict """
+    def _inner(result):
+        value = value_or_fn
+        if hasattr(value, '__call__'):
+            value = value_or_fn(result)
+        result[value_name] = value
+    return _inner
+
+
 def get_module_AST(path):
     import ast
     # encoding-safe open
@@ -75,7 +86,7 @@ def get_module_AST(path):
 
 
 def expose_ast(test_function):
-    """ Decorator for exposing the ast of the solution module
+    """ pre-test hook for exposing the ast of the solution module
         as an argument to the tester. """
     from grader.core import before_test
 

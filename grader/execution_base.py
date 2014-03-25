@@ -47,7 +47,7 @@ def call_test_function(test_name, tester_module, user_module):
     test_function = grader.testcases[test_name]
 
     # pre-test hooks
-    call_all(grader.get_setting(test_name, "before-hooks"), pre_hook_info)
+    call_all(grader.get_setting(test_name, "pre-hooks"), pre_hook_info)
 
     results = RESULT_DEFAULTS.copy()
 
@@ -106,5 +106,5 @@ def do_testcase_run(test_name, tester_module, user_module, options):
         time=("%.3f" % (end - start))
     )
     # after test hooks - cleanup
-    call_all(grader.get_setting(test_name, "after-hooks"))
+    call_all(grader.get_setting(test_name, "post-hooks"), result)
     return result

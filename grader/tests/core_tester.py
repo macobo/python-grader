@@ -1,7 +1,7 @@
 import unittest
 import os
 import grader
-from grader.decorators import create_file, delete_file, expose_ast
+from grader.decorators import create_file, delete_file, expose_ast, add_value
 #from macropy.tracing import macros, trace
 
 CURRENT_FOLDER = os.path.dirname(__file__)
@@ -96,6 +96,11 @@ def hook_test(m):
         txt = file.read()
         assert txt == 'Hello world!', txt
 
+@grader.test
+@grader.after_test(add_value('x', 1))
+@grader.after_test(add_value('x', lambda r: r["description"]))
+def add_value_test(m): pass
+
 @dyn_test
 @expose_ast
 def ast_hook_test(m, AST):
@@ -149,6 +154,11 @@ class Tests(unittest.TestCase):
         assert result["success"], result
         assert not os.path.exists(os.path.join(CURRENT_FOLDER, "hello.txt"))
 
+    def test_add_value_hook(self):
+        result = self.find_result(add_value_test)
+        assert result["success"], result
+        assert result["x"] == 1, result
+
     def test_exceptions_cause_test_failure(self):
         result = self.find_result(exceptions)
         assert not result["success"], result
@@ -159,7 +169,7 @@ class Tests(unittest.TestCase):
         assert not result["success"], result
         trace = result["traceback"]
         # check if tester module trace is in
-        self.assertIn('core_tester.py", line 108', trace)
+        self.assertIn('core_tester.py", line 113', trace)
         # check if user code gets a line
         self.assertIn('line 19, in raiseException', trace)
 
