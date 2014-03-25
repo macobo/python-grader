@@ -1,8 +1,9 @@
 import inspect
 from functools import wraps
+from .code_runner import call_sandbox, DOCKER_SANDBOX
 from .asset_management import AssetFolder
 from .datastructures import OrderedTestcases
-from .utils import beautifyDescription, dump_json
+from .utils import beautifyDescription, dump_json, load_json
 
 testcases = OrderedTestcases()
 
@@ -13,6 +14,10 @@ DEFAULT_TEST_SETTINGS = {
     "after-hooks": (),
     # timeout for function run
     "timeout": 1.0
+}
+
+SANDBOXES = {
+    'docker': [DOCKER_SANDBOX]
 }
 
 
@@ -114,6 +119,12 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
 
     # copy files for during the tests to /tmp
     with AssetFolder(tester_path, solution_path, other_assets) as assets:
+        if sandbox_cmd is not None:
+            sandbox_cmd = SANDBOXES.get(sandbox_cmd, sandbox_cmd)
+            status, stdout, stderr = call_sandbox(
+                sandbox_cmd, assets.tester_path, assets.solution_path)
+            return load_json(stdout)
+
         # populate tests
         testcases.load_from(assets.tester_path)
         assert len(testcases) > 0

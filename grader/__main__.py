@@ -23,20 +23,19 @@ def valid_runner(runner):
     path = is_valid_path(runner, False)
     if path:
         return path
-    if runner in TESTCASE_RUNNERS:
-        return TESTCASE_RUNNERS[runner]
+    if runner in SANDBOXES:
+        return runner
     raise argparse.ArgumentTypeError("Test runner {0} does not exist".format(runner))
 
 parser = argparse.ArgumentParser(description='Test a program.')
 parser.add_argument('tester_path', type=is_valid_path)
 parser.add_argument('solution_path', type=is_valid_path)
 parser.add_argument('assets', type=is_valid_path, nargs="*")
-# parser.add_argument('-c', '--test-runner',
-#                     dest="runner_cmd",
-#                     default=DEFAULT_TESTCASE_RUNNER,
-#                     type=valid_runner,
-#                     help="Command to run to run a test within a sandbox")
-#parser.add_argument("--debug", help="debugging output", action="store_true")
+parser.add_argument('-c', '--test-runner',
+                    dest="runner_cmd",
+                    default=None,
+                    type=valid_runner,
+                    help="sandbox starting command")
 
 
 args = parser.parse_args()
@@ -44,8 +43,6 @@ args = parser.parse_args()
 result = test_module(
     args.tester_path,
     args.solution_path,
-    #runner_cmd=args.runner_cmd,
-    #debug=args.debug
+    sandbox_cmd=args.runner_cmd
 )
 print(dump_json(result))
-pass

@@ -7,11 +7,8 @@ uid=$(( ( RANDOM )  + 10000 ))
 #echo "127.0.0.1 $(hostname)" >> /etc/hosts
 
 groupadd code
-useradd -u "$uid" -G code -d "/home/codecube" -m codecube 
-
-chgrp code $folder_name
-chmod -R g+r $folder_name
-#chmod a+x /run_test_no_sandbox
+useradd -u "$uid" -G code -d "/home/codecube" -m codecube
 
 cd $folder_name
+chmod -R 0755 .
 sudo -u codecube python3 -m grader $1 $2

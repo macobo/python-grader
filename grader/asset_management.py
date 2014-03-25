@@ -58,9 +58,12 @@ class AssetFolder:
             raise IOError("{} already doesn't exist".format(self.path))
         rmtree(self.path)
 
+    def files_in_path(self):
+        return os.listdir(self.path)
+
     def __enter__(self): 
         return self
-        
+
     def __exit__(self, *args):
         self.remove()
 

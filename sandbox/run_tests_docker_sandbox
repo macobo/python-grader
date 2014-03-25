@@ -31,11 +31,6 @@ if __name__ == "__main__":
 
     folder = path.dirname(tester_path)
     command = [
-        #"/run_test_no_sandbox",
-        #code_dir,
-        #path.basename(tester_path),
-        #path.basename(solution_path),
-        #test_name
         path.join(code_dir, path.basename(tester_path)),
         path.join(code_dir, path.basename(solution_path)),
         code_dir
