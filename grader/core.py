@@ -138,11 +138,12 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     return results
 
 
-def test_solution(tester_code, user_code, other_assets=[], **options):
+def test_code(tester_code, user_code, other_assets=[], *args, **kwargs):
     with AssetFolder(tester_code, user_code, other_assets, is_code=True) as assets:
         return test_module(
             assets.tester_path,
             assets.solution_path,
             assets.other_assets,
-            **options
+            *args,
+            **kwargs
         )
