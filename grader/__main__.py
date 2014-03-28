@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser(description='Test a program.')
 parser.add_argument('tester_path', type=is_valid_path)
 parser.add_argument('solution_path', type=is_valid_path)
 parser.add_argument('assets', type=is_valid_path, nargs="*")
-parser.add_argument('-c', '--test-runner',
+parser.add_argument('-s', '--sandbox',
                     dest="runner_cmd",
                     default=None,
                     type=valid_runner,

@@ -16,6 +16,8 @@ class OrderedTestcases:
     def add(self, name, value):
         #assert name not in self.order
         self.cases[name] = value
+        if name in self.order:
+            self.order.remove(name)
         self.order.append(name)
 
     def remove(self, name):
