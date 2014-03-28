@@ -15,36 +15,9 @@ NB! Selleks, et mitte olla väljundi kontrollimisel ülemäära range, otsib
 from grader import *
 
 
-def set_description(d):
-    def inner(f):
-        setDescription(f, d)
-        return f
-    return inner
-
-
-def test_with_args(description=None, **kwargs):
-    if description is None:
-        keys = sorted(kwargs.keys())
-        description = ", ".join(key+"={"+key+"}" for key in keys)
-
-    pair_each_element_with = lambda key, lst: [(key, v) for v in lst]
-    # generate list of args to test
-    paired = [pair_each_element_with(key, value) for key, value in kwargs.items()]
-    test_kwargs = list(map(dict, zip(*paired)))
-
-    def _inner(function):
-        # remove from tests if there
-        for kw in test_kwargs:
-            @test
-            @set_description(description.format(**kw))
-            def tested_fun(m):
-                function(m, **kw)
-    return _inner
-
-
 @test_with_args(
     description="Vahemik [{low}, {high}]",
-    low=[0, 2, -3, 88], high=[5, 2, -1, 100])
+    low=[0, 2, -3, 88, 5], high=[5, 2, -1, 100, 0])
 def test_interval(m, low, high):
     m.stdin.put(str(low))
     m.stdin.put(str(high))
@@ -54,5 +27,6 @@ def test_interval(m, low, high):
 
     expected = list(map(str, range(low, high+1)))
 
-    assert lines == expected, (
-        "Ootasime:\n{}\n----\nSaime:\n{}".format("\n".join(expected), output.strip()))
+    assert lines == expected or expected==[] and lines==[""], (
+        "Ootasime:\n{}\n----\nSaime:\n{}"
+        .format("\n".join(expected), output.strip()))

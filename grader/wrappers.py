@@ -47,6 +47,35 @@ def check_function(function_name, args, expected_result, description=None):
     setDescription(f, description)
     return test(f)
 
+def set_description(d):
+    def inner(f):
+        setDescription(f, d)
+        return f
+    return inner
+
+
+def test_with_args(description=None, **kwargs):
+    if description is None:
+        keys = sorted(kwargs.keys())
+        description = ", ".join(key+"={"+key+"}" for key in keys)
+
+    pair_each_element_with = lambda key, lst: [(key, v) for v in lst]
+    # generate list of args to test
+    paired = [pair_each_element_with(key, value) for key, value in kwargs.items()]
+    test_kwargs = list(map(dict, zip(*paired)))
+
+    def _inner(function):
+        # remove from tests if there
+        def make_f(kw):
+            @test
+            @set_description(description.format(**kw))
+            def _inner(m):
+                function(m, **kw)
+
+        for kw in test_kwargs:
+            make_f(kw)
+    return _inner
+
 
 def assertEquals(a, b, template = "Expected {a} but got {b}", **kw):
     if a != b:
