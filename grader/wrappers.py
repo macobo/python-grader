@@ -59,10 +59,20 @@ def test_with_args(description=None, **kwargs):
         keys = sorted(kwargs.keys())
         description = ", ".join(key+"={"+key+"}" for key in keys)
 
+    # filter out functions, treat separately
+    functions = {k: f for k, f in kwargs.items() if hasattr(f, '__call__')}
+    values = {k: v for k, v in kwargs.items() if k not in functions}
+
     pair_each_element_with = lambda key, lst: [(key, v) for v in lst]
-    # generate list of args to test
-    paired = [pair_each_element_with(key, value) for key, value in kwargs.items()]
+    # generate list of args to test, without function values
+    paired = [pair_each_element_with(key, value) for key, value in values.items()]
     test_kwargs = list(map(dict, zip(*paired)))
+
+    def calc_function_kwargs(values):
+        out = values.copy()
+        for k, fun in functions.items():
+            out[k] = fun(**values)
+        return out
 
     def _inner(function):
         # remove from tests if there
@@ -73,7 +83,7 @@ def test_with_args(description=None, **kwargs):
                 function(m, **kw)
 
         for kw in test_kwargs:
-            make_f(kw)
+            make_f(calc_function_kwargs(kw))
     return _inner
 
 
