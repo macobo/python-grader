@@ -54,19 +54,7 @@ def set_description(d):
     return inner
 
 
-def test_with_args(description=None, **kwargs):
-    if description is None:
-        keys = sorted(kwargs.keys())
-        description = ", ".join(key+"={"+key+"}" for key in keys)
-
-    # filter out functions, treat separately
-    functions = {k: f for k, f in kwargs.items() if hasattr(f, '__call__')}
-    values = {k: v for k, v in kwargs.items() if k not in functions}
-
-    pair_each_element_with = lambda key, lst: [(key, v) for v in lst]
-    # generate list of args to test, without function values
-    paired = [pair_each_element_with(key, value) for key, value in values.items()]
-    test_kwargs = list(map(dict, zip(*paired)))
+def test_with_args(*test_args, description=None, **arg_functions):
 
     def calc_function_kwargs(values):
         out = values.copy()
@@ -75,15 +63,17 @@ def test_with_args(description=None, **kwargs):
         return out
 
     def _inner(function):
+        if description is None:
+            description = ", ".join(str(i)+"={"+key+"}" for i, key in enumerate(test_args[0]))
         # remove from tests if there
-        def make_f(kw):
+        def make_f(arg, kw):
             @test
             @set_description(description.format(**kw))
             def _inner(m):
                 function(m, **kw)
 
-        for kw in test_kwargs:
-            make_f(calc_function_kwargs(kw))
+        for args in test_args:
+            make_f(args, calc_function_kwargs(arg_functions))
     return _inner
 
 
