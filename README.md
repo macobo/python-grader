@@ -1,13 +1,64 @@
 Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
-Module for automatically testing first-year programming courses taught in Python 3.
+Module for writing tests in python 3. Used to teach various first-year programming courses at University of Tartu.
 
-Goal is to allow to test both functions and classes as well as interactive input-output based programs. 
+Goal is to allow testing interactive input-output based programs as well as functions and variables. 
 
 For the student, feedback provided by the module should be helpful for debugging and understanding where they went wrong.
 
 For the teacher, this module allows them to test existing tasks without having to change their specification very much as unit-test modules require.
+
+
+
+## Example
+
+###Task statement
+Write a program which tries to guess an integer that the user picks with as few 
+guesses as possible. 
+
+More specifically, each time the program outputs a number, 
+the user will answer that the number is either “too large”, “too small” or “correct”. 
+
+###Tester [interactive_search_tester.py](tasks/Examples/interactive_search_tester.py)
+```python
+from grader import *
+
+# This decorator creates 12 tests, each searching for a different number
+@test_with_args(
+    # list all the different numbers to search for
+    [1, 10000, 5000, 3, 9990, 7265, 8724, 2861, 2117, 811, 6538, 4874],
+    # The description of the test, shown to the user
+    description="Searching for number {0}"
+)
+def testi(m, searched_number):
+    # test function - First argument (always given) is a container
+    # for the users program and for the stdin/stdout.
+    # Second is the searched number (see above).
+    found = False
+    guesses = []
+
+    while len(guesses) < 15 and not found:
+        # Get what the user guessed since last time we asked.
+        # This might raise an error if the program didn't only write out a number.
+        guess = int(m.stdout.new())
+        guesses.append(guess)
+        # let the program know if the guess was
+        # correct, too large or too small.
+        if guess < searched_number:
+            m.stdin.write("too small")
+        elif guess > searched_number:
+            m.stdin.write("too large")
+        elif guess == searched_number:
+            m.stdin.write("correct")
+            found = True
+
+    # If program didn't find the solution fast enough,
+    # notify that the program made too many guesses.
+    assert found, (
+        "Program made too many guesses.\n" +
+        "Guesses were: {}".format(guesses))
+```
 
 ## Setup
 
@@ -21,36 +72,17 @@ see [INSTALL.md](INSTALL.md)
 git clone https://github.com/macobo/python-grader.git
 cd python-grader
 
-python3.3 setup.py install
+python setup.py install
 ```
 
-To run tests, run `python3.3 run_tests.py`.
-
-
-
-## Sample test
-
-###Task:
-Write a function named `taisnurkne` that takes three numbers as an agument and returns True or False 
-according to whether it's possible to form a right-angled triangle with such side lengths. 
-Side lengths are guaranteed to be positive.
-
-###Tester [u6_taisnurkne_tester.py](tasks/MTAT.100/book/u6_taisnurkne_tester.py)
-```python
-from grader import *
-
-check_function("taisnurkne", [3, 4, 5], True)
-check_function("taisnurkne", [1, 1, 1], False)
-check_function("taisnurkne", [917.2102192315585, 561.3888059296613, 1075.3752729563455], True)
-check_function("taisnurkne", [917.2102192315585, 561.3888059296613, 1075.2752729563455], False)
-```
+To run tests for this module, run `python run_tests.py`.
 
 ### Running test on a file
-To run tests, run `python3.3 -m grader <tester_file> <solution_file>` in the directory they are both contained.
+To tester on a solution, run `python -m grader <tester_file> <solution_file>`.
 
 For example, to run the above tester (in the tasks folder) on the sample solution:
 ```bash
-cd tasks/MTAT.100/book
-python3.3 -m grader u6_taisnurkne_tester.py u6_taisnurkne_solution.py
+cd tasks/
+python -m grader Examples/interactive_search_tester.py Examples/interactive_search_solution.py
 ```
 
