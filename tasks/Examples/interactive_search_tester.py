@@ -1,3 +1,10 @@
+"""
+Task statement
+Write a program which tries to guess an integer that the user picks with as few 
+guesses as possible. More specifically, each time the program outputs a number, 
+the user will answer that the number is either “too large”, “too small” or “correct”. 
+"""
+
 from grader import *
 
 # This decorator creates 12 tests, each searching for a different number
