@@ -5,20 +5,14 @@ def yhisosa(a, b):
     return list(frozenset(a) & frozenset(b))
 
 @test_with_args(
-    a=[
-        [],
-        [2,5],
-        [4,4,5],
-        [2,2,3,4,4],
-    ],
-    b=[
-        [],
-        [6,2],
-        [4,4],
-        [],
+    [
+        ([], []),
+        ([2,5], [6,2]),
+        ([4,4], [4,4,5]),
+        ([2,2,3,4,4], [])
     ],
     expected=yhisosa,
-    description="yhisosa({a}, {b}) == {expected} (järjekord pole oluline)"
+    description="yhisosa({0}, {1}) == {expected} (järjekord pole oluline)"
 )
 def testi(m, a, b, expected):
     a_c, b_c = a.copy(), b.copy()

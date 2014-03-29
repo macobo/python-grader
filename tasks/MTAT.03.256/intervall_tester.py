@@ -16,8 +16,9 @@ from grader import *
 
 
 @test_with_args(
-    description="Vahemik [{low}, {high}]",
-    low=[0, 2, -3, 88, 5], high=[5, 2, -1, 100, 0])
+    [(0, 5), (2, 2), (-3, -1), (88, 100), (5, 100)],
+    description="Vahemik [{0}, {1}]"
+)
 def test_interval(m, low, high):
     m.stdin.put(str(low))
     m.stdin.put(str(high))
@@ -25,7 +26,7 @@ def test_interval(m, low, high):
     output = m.stdout.read()
     lines = output.strip().split('\n')
 
-    expected = list(map(str, range(low, high+1)))
+    expected = list(map(str, range(low, high + 1)))
 
     assert lines == expected or expected==[] and lines==[""], (
         "Ootasime:\n{}\n----\nSaime:\n{}"

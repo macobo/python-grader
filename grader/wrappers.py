@@ -54,26 +54,30 @@ def set_description(d):
     return inner
 
 
-def test_with_args(*test_args, description=None, **arg_functions):
+def test_with_args(test_args, description=None, **arg_functions):
+    if description is None:
+        description = ", ".join(str(i)+"={"+key+"}" for i, key in enumerate(test_args[0]))
 
     def calc_function_kwargs(values):
-        out = values.copy()
-        for k, fun in functions.items():
-            out[k] = fun(**values)
+        out = {}
+        for k, fun in arg_functions.items():
+            out[k] = fun(*values)
         return out
 
+
     def _inner(function):
-        if description is None:
-            description = ", ".join(str(i)+"={"+key+"}" for i, key in enumerate(test_args[0]))
         # remove from tests if there
-        def make_f(arg, kw):
+        def make_f(args, kw):
             @test
-            @set_description(description.format(**kw))
+            @set_description(description.format(*args, **kw))
             def _inner(m):
-                function(m, **kw)
+                function(m, *args, **kw)
 
         for args in test_args:
-            make_f(args, calc_function_kwargs(arg_functions))
+            if not isinstance(args, list) and not isinstance(args, tuple):
+                args = [args]
+            kw = calc_function_kwargs(args)
+            make_f(args, kw)
     return _inner
 
 
