@@ -2,13 +2,17 @@ import ast
 import grader
 from grader.utils import read_code
 
+__all__ = ["compare_trees", "is_underscore", "is_wildcard", "pprint_ast"]
+
 def dump(T):
     " maps nested list of asts to strings "
     if isinstance(T, ast.AST):
-        return ast.dump(T)
-    else:
+        return pprint_ast(T)
+    elif type(T) in [list, tuple]:
         type_ = type(T)
         return type_(map(dump, T))
+    else:
+        return T
 
 
 def is_underscore(node):
@@ -55,8 +59,7 @@ def compare_trees(original_tree, compared_tree):
     """
 
     type_differs = lambda a, b: type(a) != type(b)
-    value_type_in = lambda a, b, _set: \
-        not type_differs(a, b) and any(isinstance(a, x) for x in _set)
+    value_type_in = lambda a, b, _set: any(isinstance(a, x) for x in _set)
 
     if isinstance(original_tree, ast.AST) and isinstance(compared_tree, ast.AST):
         # Blanks shown by ____
@@ -103,9 +106,60 @@ def template_test(template_file=None, template_code=None,
     @grader.expose_ast
     def _inner(m, AST):
         result = compare_trees(template_tree, AST)
+        if result:
+            m.log(pprint_ast(AST))
+            m.log(pprint_ast(template_tree))
+            m.log(dump(result))
         assert result == [], (
             "Program code does not match template.\n\nTemplate code:\n{}"
             .format(template_code)
         )
 
     return _inner
+
+def next_in(str, char_set):
+    for i, ch in enumerate(str):
+        if ch in char_set:
+            yield i, ch
+
+def pair_with_next(iterator):
+    prev = None
+    for current in iterator:
+        if prev is not None:
+            yield prev, current
+        prev = current
+    yield current, None
+
+
+def traverse(tree_string, indent=4):
+    cut_offs = list(next_in(tree_string, '([])'))
+    level = 0
+
+    block = " " * indent
+    at = 0
+    skipNext = False
+    for (i, ch), N in pair_with_next(cut_offs):
+        yield tree_string[at:i]
+        at = i+1
+        if skipNext:
+            skipNext = False
+            yield "\n" + block * level
+            continue
+        if ch in '([':
+            yield ch
+            if N and N[0] == i+1 and N[1] in "])":
+                yield N[1]
+                skipNext = True
+            else:
+                level += 1
+                yield "\n" + block * level
+
+        if ch in '])':
+            level -= 1
+            yield "\n" + block * level + ch
+            if not (N and N[0] == i + 1 and N[1] in "])"):
+                yield "\n" + block * level
+
+
+def pprint_ast(tree):
+    return "".join(traverse(ast.dump(tree)))

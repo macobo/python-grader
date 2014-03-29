@@ -16,12 +16,12 @@ def io_test(description, writes_list, expected_read):
     
     def f(module):
         for i, write in enumerate(writes_list):
-            assert module.is_waiting_input(), \
+            assert not module.finished, \
                 "Did you forget to use input()? Writes so far: %s" % writes_list[:i]
             module.stdout.reset()
             module.stdin.write(write)
         require_contains(module.stdout.new(), expected_read)
-        assert not module.is_waiting_input(), \
+        assert module.finished, \
             "Make sure there isn't a stray input() after your code"
     setDescription(f, description)
     return test(f)
@@ -47,6 +47,7 @@ def check_function(function_name, args, expected_result, description=None):
     setDescription(f, description)
     return test(f)
 
+
 def set_description(d):
     def inner(f):
         setDescription(f, d)
@@ -64,7 +65,6 @@ def test_with_args(test_args, description=None, **arg_functions):
             out[k] = fun(*values)
         return out
 
-
     def _inner(function):
         # remove from tests if there
         def make_f(args, kw):
@@ -80,7 +80,7 @@ def test_with_args(test_args, description=None, **arg_functions):
             make_f(args, kw)
     return _inner
 
-
+# Junk to make older tasks work. Will be removed/moved
 def assertEquals(a, b, template = "Expected {a} but got {b}", **kw):
     if a != b:
         message = template.format(a=a, b=b, **kw)
