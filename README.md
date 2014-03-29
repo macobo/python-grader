@@ -1,13 +1,13 @@
 Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
-Module for writing tests in python 3. Used to teach various first-year programming courses at University of Tartu.
+Module for automatically testing homework solutions. Used to teach various first-year programming courses at University of Tartu.
 
 Goal is to allow testing interactive input-output based programs as well as functions and variables. 
 
 For the student, feedback provided by the module should be helpful for debugging and understanding where they went wrong.
 
-For the teacher, this module allows them to test existing tasks without having to change their specification very much as unit-test modules require.
+For the teacher, the advantage over using normal unit tests is that it allows to test IO-based solutions without having to change task specifications very much.
 
 
 
