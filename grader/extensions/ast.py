@@ -30,7 +30,9 @@ def matching_ast_lists(original_list, compared_list, i=0, j=0):
     # terrible performance, but enough for a POC
     if i == len(original_list) and j == len(compared_list):
         return []
-    if j == len(compared_list) and not all(is_wildcard(x) for x in original_list[i:]):
+    if j == len(compared_list):
+        if all(is_wildcard(x) for x in original_list[i:]):
+            return []
         return [(original_list, compared_list)]
     if i == len(original_list):
         return [(original_list, compared_list)]

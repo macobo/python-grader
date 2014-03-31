@@ -139,12 +139,74 @@ class Tests(unittest.TestCase):
         statement1
         statement2
         d = f
-        """)    
+        """)
         self.assertEqual(compare(template, tree2), [])
 
         tree3 = parse("something; a=b;c=d;e=g;d=f")
         self.assertNotEqual(compare(template, tree3), [])
 
         tree4 = parse("a=b;c=d;e=g;d=f;something")
-        self.assertNotEqual(compare(template, tree4), []) 
+        self.assertNotEqual(compare(template, tree4), [])
 
+    def test_grader_valid(self):
+        tester = dedent("""\
+        from grader import *
+        from grader.extensions import ast
+
+        template = '''
+        b = 0
+        if not ____:
+            i = 5
+        ...
+        j = 6
+        assert j * i * b == 30
+        ...
+
+        '''
+
+        ast.template_test(template_code=template)
+        """)
+
+        solution_valid = dedent("""\
+        b = 0
+        if not False:
+            i = 5
+        b = 1
+        j = 6
+        assert j * i * b == 30
+        """)
+
+        results = grader.test_code(tester, solution_valid)["results"][0]
+        assert results["success"], results
+
+    def test_grader_invalid(self):
+        tester = dedent("""\
+        from grader import *
+        from grader.extensions import ast
+
+        template = '''
+        b = 0
+        if not ____:
+            i = 5
+        ...
+        j = 6
+        assert j * i * b == 30
+        ...
+
+        '''
+
+        ast.template_test(template_code=template)
+        """)
+
+        solution_invalid = dedent("""\
+        b = 0
+        if not False:
+            b = 1
+            i = 5
+        j = 6
+        assert j * i * b == 30
+        """)
+
+        results = grader.test_code(tester, solution_invalid)["results"][0]
+        assert not results["success"], results
+        self.assertIn("Program code does not match template.", results["error_message"])
