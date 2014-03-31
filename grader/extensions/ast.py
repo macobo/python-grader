@@ -2,7 +2,7 @@ import ast
 import grader
 from grader.utils import read_code
 
-__all__ = ["compare_trees", "is_underscore", "is_wildcard", "pprint_ast"]
+__all__ = ["template_test", "compare_trees", "is_underscore", "is_wildcard", "pprint_ast", "dump"]
 
 def dump(T):
     " maps nested list of asts to strings "
