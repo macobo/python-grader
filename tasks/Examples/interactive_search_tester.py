@@ -21,7 +21,7 @@ def testi(m, searched_number):
     found = False
     guesses = []
 
-    while len(guesses) < 15 and not found:
+    while len(guesses) < 14 and not found:
         # Get what the user guessed since last time we asked.
         # This might raise an error if the program didn't only write out a number.
         guess = int(m.stdout.new())
