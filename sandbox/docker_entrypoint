@@ -9,6 +9,11 @@ uid=$(( ( RANDOM )  + 10000 ))
 groupadd code
 useradd -u "$uid" -G code -d "/home/codecube" -m codecube
 
-cd $folder_name
+real_folder='/real-'
+real_folder+=$(( ( RANDOM )  + 10000 ))
+#echo $real_folder
+
+cp -r $folder_name $real_folder
+cd $real_folder
 chmod -R 0755 .
 sudo -u codecube python3 -m grader $1 $2

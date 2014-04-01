@@ -120,12 +120,9 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     # copy files for during the tests to /tmp
     with AssetFolder(tester_path, solution_path, other_assets) as assets:
         if sandbox_cmd is not None:
-            sandbox_cmd = SANDBOXES.get(sandbox_cmd, sandbox_cmd)
-            status, stdout, stderr = call_sandbox(
-                sandbox_cmd, assets.tester_path, assets.solution_path)
-            return load_json(stdout)
+            _collect_results_from_sandbox(assets, sandbox_cmd)
 
-        # populate tests
+        # populate tests. TODO: add error handling
         testcases.load_from(assets.tester_path)
         assert len(testcases) > 0
 
@@ -134,7 +131,7 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
             result = do_testcase_run(test_name, assets.tester_path, assets.solution_path, {})
             test_results.append(result)
 
-    results = {"results": test_results}
+    results = {"results": test_results, "success": True}
     return results
 
 
@@ -147,3 +144,23 @@ def test_code(tester_code, user_code, other_assets=[], *args, **kwargs):
             *args,
             **kwargs
         )
+
+
+## Helpers
+def _collect_results_from_sandbox(assets, sandbox_cmd):
+    sandbox_cmd = SANDBOXES.get(sandbox_cmd, sandbox_cmd)
+    status, stdout, stderr = call_sandbox(
+        sandbox_cmd, assets.tester_path, assets.solution_path)
+    if status == 0:
+        result = load_json(stdout)
+    else:
+        result = {
+            "success": False,
+            "reason": "sandbox_failure",
+            "extra_info": {
+                "stdout": stdout,
+                "stderr": stderr
+            }
+        }
+
+    return result
