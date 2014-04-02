@@ -18,7 +18,7 @@ if __name__ == "__main__":
     import stdio_tester
     import exception_tester
     import extensions_ast
-
+    import external_interface
 
     cases = [
         utils_tester,
@@ -30,7 +30,8 @@ if __name__ == "__main__":
         renaming_tester,
         stdio_tester,
         exception_tester,
-        extensions_ast
+        extensions_ast,
+        external_interface
     ]
     # import os
     # CURRENT_FOLDER = os.path.dirname(__file__)

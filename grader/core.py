@@ -120,11 +120,16 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     # copy files for during the tests to /tmp
     with AssetFolder(tester_path, solution_path, other_assets) as assets:
         if sandbox_cmd is not None:
-            _collect_results_from_sandbox(assets, sandbox_cmd)
+            return _collect_results_from_sandbox(assets, sandbox_cmd)
 
         # populate tests. TODO: add error handling
-        testcases.load_from(assets.tester_path)
-        assert len(testcases) > 0
+        try:
+            testcases.load_from(assets.tester_path)
+        except Exception as e:
+            return _test_load_failure(e)
+
+        if len(testcases) == 0:
+            return _fail_result("No tests found in tester")
 
         test_results = []
         for test_name in testcases:
@@ -147,20 +152,39 @@ def test_code(tester_code, user_code, other_assets=[], *args, **kwargs):
 
 
 ## Helpers
-def _collect_results_from_sandbox(assets, sandbox_cmd):
-    sandbox_cmd = SANDBOXES.get(sandbox_cmd, sandbox_cmd)
-    status, stdout, stderr = call_sandbox(
-        sandbox_cmd, assets.tester_path, assets.solution_path)
-    if status == 0:
-        result = load_json(stdout)
-    else:
-        result = {
-            "success": False,
-            "reason": "sandbox_failure",
-            "extra_info": {
-                "stdout": stdout,
-                "stderr": stderr
-            }
-        }
 
+def _fail_result(reason, **extra_info):
+    result = {
+        "success": False,
+        "reason": reason,
+        "extra_info": extra_info
+    }
     return result
+
+
+def _collect_results_from_sandbox(assets, sandbox_cmd):
+    from . import utils
+    sandbox_cmd = SANDBOXES.get(sandbox_cmd, sandbox_cmd)
+    if isinstance(sandbox_cmd, str):
+        sandbox_cmd = [sandbox_cmd]
+    try:
+        status, stdout, stderr = call_sandbox(
+            sandbox_cmd, assets.tester_path, assets.solution_path)
+        if status == 0:
+            result = load_json(stdout)
+        else:
+            result = _fail_result("Sandbox failure", stdout=stdout, stderr=stderr)
+    except FileNotFoundError as e:
+        result = _fail_result(
+            "Invalid command: {}".format(" ".join(sandbox_cmd)),
+            error_message=utils.get_error_message(e),
+            traceback=utils.get_traceback(e))
+    return result
+
+
+def _test_load_failure(exception):
+    from . import utils
+    return _fail_result(
+        "Load tests failure",
+        error_message=utils.get_error_message(exception),
+        traceback=utils.get_traceback(exception))

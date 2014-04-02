@@ -29,10 +29,9 @@ class AssetFolder:
             creator_function = self._write
         else:
             creator_function = self._copy
-        if tester_path:
-            self.tester_path = creator_function(tester_path)
-        if solution_path:
-            self.solution_path = creator_function(solution_path)
+        
+        self.tester_path = creator_function(tester_path)
+        self.solution_path = creator_function(solution_path)
 
         self.other_assets = list(map(creator_function, other_assets))
 

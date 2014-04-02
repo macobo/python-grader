@@ -21,7 +21,7 @@ def read_proc_results(proc, decode):
     return status, stdout, stderr
 
 
-def call_command(cmd, timeout=float('inf'), cwd = None, decode=True, **subproc_options):
+def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_options):
     if cwd is None:
         cwd = os.getcwd()
 
