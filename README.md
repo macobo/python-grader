@@ -25,7 +25,7 @@ the user will answer that the number is either “too large”, “too small” 
 from grader import *
 
 # This decorator creates 12 tests, each searching for a different number
-@test_with_args(
+@test_cases(
     # list all the different numbers to search for
     [1, 10000, 5000, 3, 9990, 7265, 8724, 2861, 2117, 811, 6538, 4874],
     # The description of the test, shown to the user
@@ -46,11 +46,11 @@ def testi(m, searched_number):
         # let the program know if the guess was
         # correct, too large or too small.
         if guess < searched_number:
-            m.stdin.write("too small")
+            m.stdin.put("too small")
         elif guess > searched_number:
-            m.stdin.write("too large")
+            m.stdin.put("too large")
         elif guess == searched_number:
-            m.stdin.write("correct")
+            m.stdin.put("correct")
             found = True
 
     # If program didn't find the solution fast enough,

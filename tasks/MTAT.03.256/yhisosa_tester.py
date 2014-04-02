@@ -4,7 +4,7 @@ from grader import *
 def yhisosa(a, b):
     return list(frozenset(a) & frozenset(b))
 
-@test_with_args(
+@test_cases(
     [
         ([], []),
         ([2,5], [6,2]),

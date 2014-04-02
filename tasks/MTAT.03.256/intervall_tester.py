@@ -15,7 +15,7 @@ NB! Selleks, et mitte olla väljundi kontrollimisel ülemäära range, otsib
 from grader import *
 
 
-@test_with_args(
+@test_cases(
     [(0, 5), (2, 2), (-3, -1), (88, 100), (5, 100)],
     description="Vahemik [{0}, {1}]"
 )

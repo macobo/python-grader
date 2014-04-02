@@ -55,7 +55,7 @@ def set_description(d):
     return inner
 
 
-def test_with_args(test_args, description=None, **arg_functions):
+def test_cases(test_args, description=None, **arg_functions):
     if description is None:
         description = ", ".join(str(i)+"={"+key+"}" for i, key in enumerate(test_args[0]))
 
