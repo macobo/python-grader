@@ -31,12 +31,15 @@ if __name__ == "__main__":
 
     folder = path.dirname(tester_path)
     grader_args = [
-        path.join(code_dir, path.basename(tester_path)),
-        path.join(code_dir, path.basename(solution_path)),
+        path.basename(tester_path),
+        path.basename(solution_path),
         code_dir
     ]
 
+
     full_cmd = construct_cmd(folder, code_dir, *grader_args)
+    # print(grader_args, file=sys.stderr)
+    # print(" ".join(full_cmd), file=sys.stderr)
     exitcode, stdout, stderr = code_runner.call_command(full_cmd)
 
     print(stdout)
