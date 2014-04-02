@@ -2,6 +2,11 @@ import unittest
 import grader
 from textwrap import dedent
 
+def command_exists(cmd):
+    import subprocess
+    status, _ = subprocess.getstatusoutput(cmd)
+    return status == 0
+
 
 class Tests(unittest.TestCase):
     def test_tester_invalid_syntax(self):
@@ -28,14 +33,11 @@ class Tests(unittest.TestCase):
         """), "invalid_syntax")
         assert results["success"], results
 
+    @unittest.skipIf(not command_exists('docker'), 'requires docker')
     def test_docker_sandbox(self):
         results = grader.test_code(dedent("""\
         from grader import *
         @test
         def empty(m): pass
         """), "", sandbox_cmd="docker")
-        if results["success"]:
-            assert results["success"], results
-        else:
-            # skip on filesystems without docker
-            self.assertIn("Invalid command: docker", results["reason"])
+        assert results["success"], results

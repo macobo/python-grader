@@ -10,9 +10,15 @@ RUN apt-get update
 
 # install python3 and pip for python3
 RUN apt-get install -y python3-pip git-core
-RUN git clone https://github.com/macobo/python-grader.git
-RUN cd python-grader && python3 setup.py install
+# RUN git clone https://github.com/macobo/python-grader.git
 
-ADD docker_entrypoint docker_entrypoint
+ADD sandbox/docker_entrypoint docker_entrypoint
+ADD . /python-grader
+
+RUN cd python-grader && \
+    chmod +x sandbox/* && \
+    chmod +x grader/__main__.py && \
+    python3 setup.py install && \
+    python3 run_tests.py
 
 ENTRYPOINT ["/bin/bash", "/docker_entrypoint"]
