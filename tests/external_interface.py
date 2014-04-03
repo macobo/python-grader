@@ -41,3 +41,38 @@ class Tests(unittest.TestCase):
         def empty(m): pass
         """), "", sandbox_cmd="docker")
         assert results["success"], results
+
+    def tests_assets_are_importable_at_test_registration(self):
+        # TODO: check sys.path size
+        asset_code = {
+            "filename": "asset_file.py",
+            "contents": "exists = True"
+        }
+
+        results = grader.test_code(dedent("""\
+        from grader import *
+        import asset_file
+        @test
+        def empty(m):
+            assert asset_file.exists
+        """), "", [asset_code])
+
+        assert results["success"], results
+        assert results["results"][0]["success"], results
+
+    def test_assets_available_while_running(self):
+        # TODO: check sys.path size
+        asset_code = {
+            "filename": "file.txt",
+            "contents": "secret"
+        }
+
+        results = grader.test_code(dedent("""\
+        from grader import *
+        @test
+        def empty(m):
+            assert m.stdout.read().strip() == 'secret'
+        """), "print(open('file.txt').read())", [asset_code])
+
+        assert results["success"], results
+        assert results["results"][0]["success"], results["results"][0]

@@ -1,0 +1,14 @@
+{
+    "tasks": [
+        {
+            "name": "intervall",
+            "tester": "intervall_tester.py",
+            "solution": "intervall_solution.py"
+        },
+        {
+            "name": "ühisosa",
+            "tester": "yhisosa_tester.py",
+            "solution": "yhisosa_solution.py"
+        }
+    ]
+}

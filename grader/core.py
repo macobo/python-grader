@@ -108,7 +108,7 @@ def timeout(seconds):
 ### Exposed methods to test files/code
 
 
-def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
+def test_module(tester_path, solution_path, other_files=[], sandbox_cmd=None):
     """ Runs all tests for the solution given as argument.
         Should be only run with appropriate rights/user.
 
@@ -118,7 +118,7 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     from .execution_base import do_testcase_run
 
     # copy files for during the tests to /tmp
-    with AssetFolder(tester_path, solution_path, other_assets) as assets:
+    with AssetFolder(tester_path, solution_path, other_files) as assets:
         if sandbox_cmd is not None:
             return _collect_results_from_sandbox(assets, sandbox_cmd)
 
@@ -140,12 +140,12 @@ def test_module(tester_path, solution_path, other_assets=[], sandbox_cmd=None):
     return results
 
 
-def test_code(tester_code, user_code, other_assets=[], *args, **kwargs):
-    with AssetFolder(tester_code, user_code, other_assets, is_code=True) as assets:
+def test_code(tester_code, user_code, other_files=[], *args, **kwargs):
+    with AssetFolder(tester_code, user_code, other_files, is_code=True) as assets:
         return test_module(
             assets.tester_path,
             assets.solution_path,
-            assets.other_assets,
+            assets.other_files,
             *args,
             **kwargs
         )

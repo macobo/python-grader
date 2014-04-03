@@ -4,67 +4,80 @@
         {
             "name": "ve1_leheküljenumbrid",
             "tester": "KT2_N10_lehekyljenumbrid_tester.py",
-            "solution": "KT2_N10_lehekyljenumbrid_solution.py"
+            "solution": "KT2_N10_lehekyljenumbrid_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_autod",
             "tester": "KT2_N10_autod_tester.py",
-            "solution": "KT2_N10_autod_solution.py"
+            "solution": "KT2_N10_autod_solution.py",
+            "assets": ["KT2_util.py", "_autod.csv", "_autod_vaiksem.csv"]
         },
         {
             "name": "ve1_korrutustabel",
             "tester": "KT2_N10_korrutustabel_tester.py",
-            "solution": "KT2_N10_korrutustabel_solution.py"
+            "solution": "KT2_N10_korrutustabel_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_paarikaupa_keskmised",
             "tester": "KT2_N16_keskmised_tester.py",
-            "solution": "KT2_N16_keskmised_solution.py"
+            "solution": "KT2_N16_keskmised_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_valimisnimekirjad",
             "tester": "KT2_N16_valimisnimekirjad_tester.py",
-            "solution": "KT2_N16_valimisnimekirjad_solution.py"
+            "solution": "KT2_N16_valimisnimekirjad_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_järgnevusmaatriks",
             "tester": "KT2_N16_jargnevusmaatriks_tester.py",
-            "solution": "KT2_N16_jargnevusmaatriks_solution.py"
+            "solution": "KT2_N16_jargnevusmaatriks_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_laienda",
             "tester": "KT2_R8_laienda_tester.py",
-            "solution": "KT2_R8_laienda_solution.py"
+            "solution": "KT2_R8_laienda_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_euro",
             "tester": "KT2_R8_euro_tester.py",
-            "solution": "KT2_R8_euro_solution.py"
+            "solution": "KT2_R8_euro_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_mood",
             "tester": "KT2_R8_mood_tester.py",
-            "solution": "KT2_R8_mood_solution.py"
+            "solution": "KT2_R8_mood_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_loenda",
             "tester": "KT2_R10_loenda_tester.py",
-            "solution": "KT2_R10_loenda_solution.py"
+            "solution": "KT2_R10_loenda_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_otsimine",
             "tester": "KT2_R10_otsimine_tester.py",
-            "solution": "KT2_R10_otsimine_solution.py"
+            "solution": "KT2_R10_otsimine_solution.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_korduvate_summa",
             "solution": "KT2_R10_korduvate_summa_solution.py",
-            "tester": "KT2_R10_korduvate_summa_tester.py"
+            "tester": "KT2_R10_korduvate_summa_tester.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_teine_pool_suurem",
             "solution": "KT2_J1_teine_pool_suurem_solution.py",
-            "tester": "KT2_J1_teine_pool_suurem_tester.py"
+            "tester": "KT2_J1_teine_pool_suurem_tester.py",
+            "assets": ["KT2_util.py"]
         }
     ]
 }

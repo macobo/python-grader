@@ -31,7 +31,7 @@ def find_files_with_name(searched_name, path):
 
 def extend_nameset(collection, nameset):
     for c in collection:
-        assert c["name"] not in nameset
+        assert c["name"] not in nameset, c["name"]
         nameset.add(c["name"])
 
 
@@ -43,8 +43,42 @@ def find_all_tasks(path=CURRENT_FOLDER):
         result = process_file(open(file_path).read(), folder)
         extend_nameset(result, seen_names)
         tasks.extend(result)
-
     return tasks
 
+
+def transform_assets(path):
+    from grader.utils import read_code
+    return dict(
+        filename=os.path.basename(path),
+        contents=read_code(path)
+    )
+
+
+def format_submit_data(task_json):
+    from copy import copy
+    from grader.utils import read_code
+
+    submit_data = dict(
+        #post=dict(
+            solution_code=read_code(task_json["solution"]),
+            tester_code=read_code(task_json["tester"]),
+        #),
+        name=task_json["name"],
+        assets=list(map(transform_assets, task_json.get("assets", [])))
+    )
+    return submit_data
+
+def submit_task(task_json, endpoint):
+    import requests
+    submit_data = format_submit_data(task_json)
+    headers = {'Content-Type': 'application/json'}
+    answer = requests.post(endpoint, data=json.dumps(submit_data), headers=headers)
+    print(answer)
+    print(answer.text)
+    return answer.json()
+
+
 if __name__ == "__main__":
-    print(json.dumps(find_all_tasks(), indent=4))
+    tasks = find_all_tasks()
+    result = submit_task(tasks[4], "http://localhost:5000/api/grade")
+    print(json.dumps(result, indent=4))

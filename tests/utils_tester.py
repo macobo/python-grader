@@ -35,6 +35,13 @@ class Tests(unittest.TestCase):
             assert os.path.exists(assets.path)
         assert not os.path.exists(assets.path)
 
+    def test_assets_other_files_code(self):
+        with AssetFolder('a', 'b', [{'filename': 'something', 'contents': 'other'}], is_code=True) as assets:
+            self.assertEqual(len(assets.other_files), 1)
+            f = assets.other_files[0]
+            self.assertEqual(os.path.dirname(f), assets.path)
+            self.assertEqual(os.path.basename(f), 'something')
+            self.assertEqual(readFile(f), 'other')
 
     def import_check(self, name=None):
         code = (
@@ -79,7 +86,7 @@ class Tests(unittest.TestCase):
             raise ValueError("ErrorMessage")
         except Exception as e:
             traceback = get_traceback(e)
-            self.assertIn("Traceback (most recent call last):\n", traceback)
-            self.assertIn('File "'+__file__+'", line 79, in test_get_traceback\n', traceback)
-            self.assertIn('raise ValueError("ErrorMessage")\n', traceback)
-            self.assertIn('ValueError: ErrorMessage\n', traceback)
+        self.assertIn("Traceback (most recent call last):\n", traceback)
+        self.assertIn('File "'+__file__+'", line 86, in test_get_traceback\n', traceback)
+        self.assertIn('raise ValueError("ErrorMessage")\n', traceback)
+        self.assertIn('ValueError: ErrorMessage\n', traceback)

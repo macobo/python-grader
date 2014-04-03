@@ -43,6 +43,7 @@ args = parser.parse_args()
 result = test_module(
     args.tester_path,
     args.solution_path,
+    args.assets,
     sandbox_cmd=args.runner_cmd
 )
 print(dump_json(result))
