@@ -33,7 +33,7 @@ class SpoofedStdin:
 
     def put(self, line):
         # cond should be acquired by tester
-        self.out.put(line)
+        self.out.put(str(line))
         #print("put", line, self.out)
         self.condition.notify_release()
         # users program does their thing
@@ -54,7 +54,7 @@ class SpoofedStdin:
         # tester does its thing
         self.condition.acquire()
         #print("acquired by put")
-        return self.out.get(timeout=1)
+        return self.out.get()#timeout=1)
 
 
 class SpoofedStdout:

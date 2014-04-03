@@ -58,15 +58,15 @@ def checker(yearno, filename="_autod_vaiksem.csv", description=None):
     @timeout(3)
     def test_function(m):
         m.stdout.reset() # ignore year query
-        m.stdin.write(yearno)
+        m.stdin.put(yearno)
         assertOneContains(m.stdout.read(), expected)
 
     setDescription(test_function, description)
 
 checker(20000)
 checker(2004)
-for i in range(1990, 2010):
+for i in set(range(1992, 2010)) - {2006}:
     checker(i)
 
-checker(2005, '_autod.csv', "Suur test - fail {filename}, aasta {year} on üks järgnevatest: {result}")
-checker(2000, '_autod.csv', "Suur test - fail {filename}, aasta {year} on üks järgnevatest: {result}")
+#checker(2005, '_autod.csv', "Suur test - fail {filename}, aasta {year} on üks järgnevatest: {result}")
+#checker(2000, '_autod.csv', "Suur test - fail {filename}, aasta {year} on üks järgnevatest: {result}")

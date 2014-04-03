@@ -3,12 +3,20 @@
         {
             "name": "ve1_jarel_vähenda",
             "solution": "KT2_J1_vahenda_solution.py",
-            "tester": "KT2_J1_vahenda_tester.py"
+            "tester": "KT2_J1_vahenda_tester.py",
+            "assets": ["KT2_util.py"]
         },
         {
             "name": "ve1_jarel_vähenda_lihtsam",
             "solution": "KT2_J1_vahenda_solution.py",
-            "tester": "KT2_J1_vahenda_lihtsam_tester.py"
+            "tester": "KT2_J1_vahenda_lihtsam_tester.py",
+            "assets": ["KT2_util.py"]
+        },
+        {
+            "name": "ve1_jarel_teine_pool_suurem",
+            "solution": "KT2_J1_teine_pool_suurem_solution.py",
+            "tester": "KT2_J1_teine_pool_suurem_tester.py",
+            "assets": ["KT2_util.py"]
         }
     ]
 }

@@ -29,7 +29,7 @@
             "name": "ve1_valimisnimekirjad",
             "tester": "KT2_N16_valimisnimekirjad_tester.py",
             "solution": "KT2_N16_valimisnimekirjad_solution.py",
-            "assets": ["KT2_util.py"]
+            "assets": ["KT2_util.py", "_tartu.csv", "_tallinn.csv"]
         },
         {
             "name": "ve1_järgnevusmaatriks",
@@ -47,7 +47,7 @@
             "name": "ve1_euro",
             "tester": "KT2_R8_euro_tester.py",
             "solution": "KT2_R8_euro_solution.py",
-            "assets": ["KT2_util.py"]
+            "assets": ["KT2_util.py", "_kontod.txt"]
         },
         {
             "name": "ve1_mood",
@@ -65,18 +65,12 @@
             "name": "ve1_otsimine",
             "tester": "KT2_R10_otsimine_tester.py",
             "solution": "KT2_R10_otsimine_solution.py",
-            "assets": ["KT2_util.py"]
+            "assets": ["KT2_util.py", "_sonad.txt"]
         },
         {
             "name": "ve1_korduvate_summa",
             "solution": "KT2_R10_korduvate_summa_solution.py",
             "tester": "KT2_R10_korduvate_summa_tester.py",
-            "assets": ["KT2_util.py"]
-        },
-        {
-            "name": "ve1_teine_pool_suurem",
-            "solution": "KT2_J1_teine_pool_suurem_solution.py",
-            "tester": "KT2_J1_teine_pool_suurem_tester.py",
             "assets": ["KT2_util.py"]
         }
     ]

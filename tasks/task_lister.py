@@ -55,7 +55,6 @@ def transform_assets(path):
 
 
 def format_submit_data(task_json):
-    from copy import copy
     from grader.utils import read_code
 
     submit_data = dict(
@@ -68,15 +67,29 @@ def format_submit_data(task_json):
     )
     return submit_data
 
+
 def submit_task(task_json, endpoint):
     import requests
     submit_data = format_submit_data(task_json)
     headers = {'Content-Type': 'application/json'}
     answer = requests.post(endpoint, data=json.dumps(submit_data), headers=headers)
-    print(answer)
-    print(answer.text)
     return answer.json()
 
+
+def save_task(task_json, endpoint):
+    import requests
+    from grader.utils import read_code
+    submit_data = dict(
+        post=dict(
+            solution_code=read_code(task_json["solution"]),
+            tester_code=read_code(task_json["tester"]),
+        ),
+        name=task_json["name"],
+        assets=list(map(transform_assets, task_json.get("assets", [])))
+    )
+    headers = {'Content-Type': 'application/json'}
+    answer = requests.post(endpoint, data=json.dumps(submit_data), headers=headers)
+    return answer.json()
 
 if __name__ == "__main__":
     tasks = find_all_tasks()

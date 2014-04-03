@@ -76,7 +76,7 @@ def checker(prefixes, check_end=False, filename="_sonad.txt", description=BASE_T
                 assert expected_line in line, "Oodatud rea ({}) asemel saime ({}).\nVäljund: \n{}\nOodatud väljund:\n{}".format(expected_line, line, answer, "\n".join(matches))
 
             if check_end and end_of_input(matches):
-                assert not m.stdin.waiting, "Programm peaks töö lõpetama kui 1 vastusega sõna leitud. Väljund: \n{}\nOodatud väljund:\n{}".format(answer, "\n".join(matches))
+                assert m.finished, "Programm peaks töö lõpetama kui 1 vastusega sõna leitud. Väljund: \n{}\nOodatud väljund:\n{}".format(answer, "\n".join(matches))
 
 
     setDescription(test_function, description)
