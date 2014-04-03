@@ -16,4 +16,4 @@ real_folder+=$(( ( RANDOM )  + 10000 ))
 cp -r $folder_name $real_folder
 cd $real_folder
 chmod -R 0755 .
-sudo -u codecube python3 -m grader $1 $2
+sudo -u codecube python3 -m grader $1 $2 .
