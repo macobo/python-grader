@@ -39,6 +39,12 @@
             "name": "tagurpidi",
             "tester":   "u12_tagurpidi_tester.py", 
             "solution": "u12_tagurpidi_solution.py"
+        },
+        {
+            "name": "ruudud",
+            "tester":   "u7_ruudud_tester.py",
+            "solution": "u7_ruudud_solution.py",
+            "assets": ["helpers.py"]
         }
     ]
 }
