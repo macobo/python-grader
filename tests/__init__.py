@@ -8,30 +8,19 @@ def test_suite(suites=[], cases=[]):
     return unittest.TestSuite(new_cases + new_suites)
 
 if __name__ == "__main__":
-    import datastructures_tester
-    import core_tester
-    import assertions_tester
-    import timing_tester
-    import timeout_tester
-    import renaming_tester
-    import utils_tester
-    import stdio_tester
-    import exception_tester
-    import extensions_ast
-    import external_interface
-
     cases = [
-        utils_tester,
-        datastructures_tester,
-        core_tester,
-        assertions_tester,
-        timing_tester,
-        timeout_tester,
-        renaming_tester,
-        stdio_tester,
-        exception_tester,
-        extensions_ast,
-        external_interface
+        __import__("utils_tester"),
+        __import__("datastructures_tester"),
+        __import__("core_tester"),
+        __import__("assertions_tester"),
+        __import__("timing_tester"),
+        __import__("timeout_tester"),
+        __import__("renaming_tester"),
+        __import__("stdio_tester"),
+        __import__("exception_tester"),
+        __import__("extensions_ast"),
+        __import__("external_interface"),
+        __import__("wrappers_tester")
     ]
     # import os
     # CURRENT_FOLDER = os.path.dirname(__file__)

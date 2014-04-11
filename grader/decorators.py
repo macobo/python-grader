@@ -1,5 +1,24 @@
 import os
-from .utils import read_code
+from .utils import read_code, setDescription
+from functools import wraps
+
+def test_decorator(decorator):
+    @wraps(decorator)
+    def _inner(f):
+        if isinstance(f, list) or isinstance(f, tuple):
+            return tuple(decorator(func) for func in f)
+        else:
+            return decorator(f)
+    return _inner
+
+
+@test_decorator
+def set_description(d):
+    def inner(f):
+        setDescription(f, d)
+        return f
+    return inner
+
 
 ## File creation, deletion hooks
 def create_file(filename, contents=""):
@@ -28,7 +47,7 @@ def create_file(filename, contents=""):
 def delete_file(filename):
     """ Hook for deleting files
         Example usage:
-        
+
         @grader.test
         @grader.before_test(create_file('hello.txt', 'Hello world!'))
         @grader.after_test(delete_file('hello.txt'))
@@ -68,8 +87,15 @@ def create_temporary_file(filename, contents=""):
 
 
 def add_value(value_name, value_or_fn):
-    """ post-hook which as the value or the result of evaluating function on
-        result to the test result dict """
+    """ Post-test hook which as the value or the result of evaluating function on
+        result to the test result dict.
+
+        Example usage:
+        @test
+        @after_test(add_value("grade", 7))
+        def graded_testcase(m):
+            # ...
+        """
     def _inner(result):
         value = value_or_fn
         if hasattr(value, '__call__'):
@@ -85,9 +111,18 @@ def get_module_AST(path):
     return ast.parse(code)
 
 
+@test_decorator
 def expose_ast(test_function):
-    """ pre-test hook for exposing the ast of the solution module
-        as an argument to the tester. """
+    """ Pre-test hook for exposing the ast of the solution module
+        as an argument to the tester. 
+
+        Example usage:
+
+        @grader.test
+        @grader.expose_ast
+        def ast_test(m, AST):
+            # ...
+    """
     from grader.core import before_test
 
     def _hook(info):

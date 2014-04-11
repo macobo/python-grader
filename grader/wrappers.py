@@ -48,12 +48,6 @@ def check_function(function_name, args, expected_result, description=None):
     return test(f)
 
 
-def set_description(d):
-    def inner(f):
-        setDescription(f, d)
-        return f
-    return inner
-
 
 def test_cases(test_args, description=None, **arg_functions):
     if description is None:
@@ -70,12 +64,18 @@ def test_cases(test_args, description=None, **arg_functions):
         def make_f(args, kw):
             @test
             @set_description(description.format(*args, **kw))
-            def _inner(m):
-                function(m, *args, **kw)
+            def _inner(m, *extra_args, **extra_kw):
+                _kw = dict(list(kw.items()) + list(extra_kw.items()))
+                _args = list(args) + list(extra_args)
+                function(m, *_args, **_kw)
+            return _inner
 
+        tests = []
         for args in test_args:
             if not isinstance(args, list) and not isinstance(args, tuple):
                 args = [args]
             kw = calc_function_kwargs(args)
-            make_f(args, kw)
+            tests.append(make_f(args, kw))
+        return tests
+
     return _inner

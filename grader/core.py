@@ -4,6 +4,7 @@ from .code_runner import call_sandbox, DOCKER_SANDBOX
 from .asset_management import AssetFolder
 from .datastructures import OrderedTestcases
 from .utils import beautifyDescription, load_json
+from .decorators import test_decorator
 
 testcases = OrderedTestcases()
 
@@ -81,6 +82,7 @@ def set_setting(test_function, setting_name, value):
 def before_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` before running the decorated test. """
+    @test_decorator
     def _inner_decorator(test_function):
         hooks = get_setting(test_function, "pre-hooks") + (action,)
         set_setting(test_function, "pre-hooks", hooks)
@@ -91,6 +93,7 @@ def before_test(action):
 def after_test(action):
     """ Decorator for a hook on a tested function. Makes the tester execute
         the function `action` after running the decorated test. """
+    @test_decorator
     def _inner_decorator(test_function):
         hooks = get_setting(test_function, "post-hooks") + (action,)
         set_setting(test_function, "post-hooks", hooks)
