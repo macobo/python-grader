@@ -89,7 +89,10 @@ def save_task(task_json, endpoint):
     )
     headers = {'Content-Type': 'application/json'}
     answer = requests.post(endpoint, data=json.dumps(submit_data), headers=headers)
-    return answer.json()
+    try:
+        return answer.json()
+    except:
+        return answer.text
 
 if __name__ == "__main__":
     tasks = find_all_tasks()
