@@ -18,7 +18,7 @@ DEFAULT_TEST_SETTINGS = {
 }
 
 SANDBOXES = {
-    'docker': [DOCKER_SANDBOX]
+    'docker': DOCKER_SANDBOX
 }
 
 

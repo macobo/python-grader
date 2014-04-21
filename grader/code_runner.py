@@ -3,12 +3,13 @@ import subprocess
 import datetime
 import signal
 import time
+import sys
 
 CURRENT_FOLDER = os.path.abspath(os.path.dirname(__file__))
 SANDBOX_DIR = os.path.join(os.path.dirname(CURRENT_FOLDER), "sandbox")
 
-TEST_RUN_CMD = os.path.join(SANDBOX_DIR, "run_test")
-DOCKER_SANDBOX = os.path.join(SANDBOX_DIR, 'run_tests_docker_sandbox')
+TEST_RUN_CMD = [sys.executable, os.path.join(SANDBOX_DIR, "run_test")]
+DOCKER_SANDBOX = [sys.executable, os.path.join(SANDBOX_DIR, 'run_tests_docker_sandbox')]
 
 
 def read_proc_results(proc, decode):
@@ -53,8 +54,7 @@ def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_opt
 def call_test(test_name, tester_path, solution_path, options):
     # this assumes that tester, solution resides in the same path
     #working_dir = os.getcwd()#os.path.dirname(tester_path)
-    cmd = [
-        TEST_RUN_CMD,
+    cmd = TEST_RUN_CMD + [
         tester_path,
         solution_path,
         test_name
