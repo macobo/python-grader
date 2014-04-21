@@ -6,11 +6,12 @@ from grader import execution_base
 from grader.asset_management import AssetFolder
 
 if len(argv) < 4:
-    print("Usage: run_test <tester-path> <solution-path> <test-name> (<asset_dir>)")
+    print("Usage: run_test <tester-path> <solution-path> <test-index> (<asset_dir>)")
     exit(1)
 
 # assume all files reside in same directory
 asset_files = path.dirname(argv[1])
 
 with AssetFolder(argv[1], argv[2], [asset_files]) as assets:
-    execution_base.call_test_function(argv[3], assets.tester_path, assets.solution_path)
+    test_index = int(argv[3])
+    execution_base.call_test_function(test_index, assets.tester_path, assets.solution_path)

@@ -29,12 +29,18 @@ def call_all(function_list, *args, **kwargs):
         fun(*args)
 
 
-def call_test_function(test_name, tester_module, user_module):
+def call_test_function(test_index, tester_module, user_module):
     """ Called in another process. Finds the test `test_name`,  calls the
         pre-test hooks and tries to execute it.
 
         If an exception was raised by call, prints it to stdout """
 
+
+    import_module(tester_module)
+    test_name = grader.testcases.get_name(test_index)
+    test_function = grader.testcases[test_name]
+
+    # pre-test hooks
     pre_hook_info = {
         "test_name": test_name,
         "tester_module": tester_module,
@@ -42,11 +48,6 @@ def call_test_function(test_name, tester_module, user_module):
         "extra_args": [],
         "extra_kwargs": {}
     }
-
-    import_module(tester_module)
-    test_function = grader.testcases[test_name]
-
-    # pre-test hooks
     call_all(grader.get_setting(test_name, "pre-hooks"), pre_hook_info)
 
     results = RESULT_DEFAULTS.copy()
@@ -85,8 +86,10 @@ def do_testcase_run(test_name, tester_module, user_module, options):
     # TODO: not correct probably
     options["timeout"] = grader.get_setting(test_name, "timeout")
 
+    test_index = grader.testcases.indexOf(test_name)
+
     start = time()
-    success, stdout, stderr = call_test(test_name, tester_module, user_module, options)
+    success, stdout, stderr = call_test(test_index, tester_module, user_module, options)
     end = time()
 
     result = RESULT_DEFAULTS.copy()

@@ -10,9 +10,6 @@ class OrderedTestcases:
         self.cases = {}
         self.order = []
 
-    def _indexOf(self, name):
-        return self.order.index(name)
-
     def add(self, name, value):
         #assert name not in self.order
         self.cases[name] = value
@@ -30,7 +27,7 @@ class OrderedTestcases:
         if new_name in self.cases:
             raise ValueError('New name {} already exists in keys.'.format(new_name))
 
-        self.order[self._indexOf(old_name)] = new_name
+        self.order[self.indexOf(old_name)] = new_name
         self.cases[new_name] = self.cases[old_name]
         self.cases.pop(old_name)
 
@@ -40,6 +37,12 @@ class OrderedTestcases:
 
     def values(self):
         return ((o, self.cases[o]) for o in self.order)
+
+    def indexOf(self, name):
+        return self.order.index(name)
+
+    def get_name(self, index):
+        return self.order[index]
 
     def __getitem__(self, name):
         return self.cases[name]

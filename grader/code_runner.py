@@ -51,13 +51,13 @@ def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_opt
     return status, stdout, stderr
 
 
-def call_test(test_name, tester_path, solution_path, options):
+def call_test(test_index, tester_path, solution_path, options):
     # this assumes that tester, solution resides in the same path
     #working_dir = os.getcwd()#os.path.dirname(tester_path)
     cmd = TEST_RUN_CMD + [
         tester_path,
         solution_path,
-        test_name
+        str(test_index)
     ]
     status, stdout, stderr = call_command(cmd, timeout=options["timeout"])
     return status == 0, stdout, stderr

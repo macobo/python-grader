@@ -3,7 +3,7 @@ from random import seed, randint
 seed(0)
 
 def ühisosa(a, b):
-    return list(frozenset(a) & frozenset(b))
+    return list(sorted(frozenset(a) & frozenset(b)))
 
 def randomArray(size, _range=(0, 10)):
     return [randint(*_range) for _ in range(size)]
