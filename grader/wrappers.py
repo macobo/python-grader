@@ -50,6 +50,26 @@ def check_function(function_name, args, expected_result, description=None):
 
 
 def test_cases(test_args, description=None, **arg_functions):
+    """ Decorator for generating multiple tests with additional arguments.
+
+        `test_args` - list of lists - each element of the outer list should be
+                        extra arguments to call decorated function with.
+        `description` - String or function, gets passed in keywords and arguments.
+        `arg_functions` - function. Gets called with a value from test_args and the
+                        returned value is added as a keyword to test and description.
+
+        Example usage:
+
+        @test_cases(
+            [[1, 2], [3, 4]],
+            expected=lambda x, y: x+y,
+            description="Adding {0} and {1} should yield {expected}
+        )
+        def t(m, a, b, expected):
+            # a and b are either 1 and 2 or 3 and 4
+            assert a + b == expected
+    """
+
     if description is None:
         description = ", ".join(str(i)+"={"+key+"}" for i, key in enumerate(test_args[0]))
 
@@ -62,8 +82,13 @@ def test_cases(test_args, description=None, **arg_functions):
     def _inner(function):
         # remove from tests if there
         def make_f(args, kw):
+            if is_function(description):
+                test_desc = description(*args, **kw)
+            else:
+                test_desc = description.format(*args, **kw)
+
             @test
-            @set_description(description.format(*args, **kw))
+            @set_description(test_desc)
             def _inner(m, *extra_args, **extra_kw):
                 _kw = dict(list(kw.items()) + list(extra_kw.items()))
                 _args = list(args) + list(extra_args)

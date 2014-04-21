@@ -35,7 +35,6 @@ def call_test_function(test_index, tester_module, user_module):
 
         If an exception was raised by call, prints it to stdout """
 
-
     import_module(tester_module)
     test_name = grader.testcases.get_name(test_index)
     test_function = grader.testcases[test_name]

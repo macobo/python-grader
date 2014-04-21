@@ -14,6 +14,13 @@ def import_module(path, name=None):
     return module
 
 
+def is_function(value):
+    try:
+        return hasattr(value, '__call__')
+    except:
+        return False
+
+
 ## Function descriptions
 def beautifyDescription(description):
     """ Converts docstring of a function to a test description
