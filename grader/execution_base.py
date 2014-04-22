@@ -93,6 +93,7 @@ def do_testcase_run(test_name, tester_module, user_module, options):
 
     result = RESULT_DEFAULTS.copy()
     if (end - start) > options["timeout"]:
+        result["success"] = False
         result["error_message"] = "Timeout"
         result["traceback"] = "Timeout"
     else:
