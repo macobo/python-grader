@@ -60,7 +60,8 @@ def call_test(test_index, tester_path, solution_path, options):
         solution_path,
         str(test_index)
     ]
-    status, stdout, stderr = call_command(cmd, timeout=options["timeout"])
+    timeout = options.get(timeout, 1.0)
+    status, stdout, stderr = call_command(cmd, timeout)
     return status == 0, stdout, stderr
 
 
