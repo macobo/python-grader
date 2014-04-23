@@ -21,6 +21,9 @@ def read_proc_results(proc, decode):
     status = proc.returncode
     return status, stdout, stderr
 
+def microseconds_passed(time_delta):
+    return time_delta.microseconds + time_delta.seconds * 10**7
+
 
 def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_options):
     if cwd is None:
@@ -40,11 +43,12 @@ def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_opt
     while subproc.poll() is None:
         time.sleep(0.02)
         now = datetime.datetime.now()
-        if (now - start).microseconds >= timeout * 10**6:
+        if microseconds_passed(now-start) >= timeout * 10**6:
             subproc.kill()
-            #os.kill(subproc.pid, signal.SIGKILL)
-            #os.waitpid(-1, os.WNOHANG)
+            os.kill(subproc.pid, signal.SIGKILL)
+            os.waitpid(-1, os.WNOHANG)
             reached_timeout = True
+            break
 
     status, stdout, stderr = read_proc_results(subproc, decode)
     if reached_timeout:
