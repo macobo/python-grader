@@ -1,7 +1,7 @@
 Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
-Module for automatically testing homework solutions. Used to teach various first-year programming courses at University of Tartu.
+Module for automatically testing homework solutions. Used to test homeworks and midterms for various first-year programming courses at University of Tartu.
 
 Goal is to allow testing interactive input-output based programs as well as functions and variables. 
 
@@ -31,14 +31,14 @@ from grader import *
     # The description of the test, shown to the user
     description="Searching for number {0}"
 )
-def testi(m, searched_number):
+def search(m, searched_number):
     # test function - First argument (always given) is a container
     # for the users program and for the stdin/stdout.
     # Second is the searched number (see above).
     found = False
     guesses = []
 
-    while len(guesses) < 15 and not found:
+    while len(guesses) < 14 and not found:
         # Get what the user guessed since last time we asked.
         # This might raise an error if the program didn't only write out a number.
         guess = int(m.stdout.new())
