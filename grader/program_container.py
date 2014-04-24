@@ -30,6 +30,8 @@ class ProgramContainer(Thread):
         self.stdin = sys.stdin = SpoofedStdin(self.condition)
         self.stdout = sys.stdout = SpoofedStdout()
 
+        while not hasattr(self.module):
+            sleep(0.001)
         self.condition.acquire()
         self._started = True
         self.finished = False
