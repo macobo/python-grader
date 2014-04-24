@@ -48,7 +48,7 @@ def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_opt
             os.kill(subproc.pid, signal.SIGKILL)
             os.waitpid(-1, os.WNOHANG)
             reached_timeout = True
-            break
+            #break
 
     status, stdout, stderr = read_proc_results(subproc, decode)
     if reached_timeout:
