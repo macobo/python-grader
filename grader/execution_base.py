@@ -13,7 +13,7 @@ See `resolve_testcase_run` for output format description.
 """
 
 import grader
-from time import time
+from time import time, sleep
 from .program_container import ProgramContainer
 from .utils import get_traceback, get_error_message, import_module, dump_json, load_json
 
@@ -54,6 +54,8 @@ def call_test_function(test_index, tester_module, user_module):
     # start users program
     try:
         module = ProgramContainer(user_module, results)
+        while not hasattr(module, "module"):
+            sleep(0.001)
         module.condition.acquire()
         test_function(
             module,
