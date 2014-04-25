@@ -29,21 +29,21 @@ def call_all(function_list, *args, **kwargs):
         fun(*args)
 
 
-def call_test_function(test_index, tester_module, user_module):
+def call_test_function(test_index, tester_path, solution_path):
     """ Called in another process. Finds the test `test_name`,  calls the
         pre-test hooks and tries to execute it.
 
         If an exception was raised by call, prints it to stdout """
 
-    import_module(tester_module)
+    import_module(tester_path)
     test_name = grader.testcases.get_name(test_index)
     test_function = grader.testcases[test_name]
 
     # pre-test hooks
     pre_hook_info = {
         "test_name": test_name,
-        "tester_module": tester_module,
-        "user_module": user_module,
+        "tester_path": tester_path,
+        "solution_path": solution_path,
         "extra_args": [],
         "extra_kwargs": {}
     }
@@ -53,7 +53,7 @@ def call_test_function(test_index, tester_module, user_module):
 
     # start users program
     try:
-        module = ProgramContainer(user_module, results)
+        module = ProgramContainer(solution_path, results)
         while not hasattr(module, "module"):
             sleep(0.001)
         module.condition.acquire()
@@ -71,7 +71,7 @@ def call_test_function(test_index, tester_module, user_module):
         print(dump_json(results))
 
 
-def do_testcase_run(test_name, tester_module, user_module, options):
+def do_testcase_run(test_name, tester_path, solution_path, options):
     """ Calls the test, checking if it doesn't raise an Exception.
         Returns a dictionary in the following form:
         {
@@ -90,7 +90,7 @@ def do_testcase_run(test_name, tester_module, user_module, options):
     test_index = grader.testcases.indexOf(test_name)
 
     start = time()
-    success, stdout, stderr = call_test(test_index, tester_module, user_module, options)
+    success, stdout, stderr = call_test(test_index, tester_path, solution_path, options)
     end = time()
 
     result = RESULT_DEFAULTS.copy()

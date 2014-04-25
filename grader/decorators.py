@@ -123,10 +123,12 @@ def expose_ast(test_function):
         def ast_test(m, AST):
             # ...
     """
+    import ast
     from grader.core import before_test
 
     def _hook(info):
-        module_ast = get_module_AST(info["user_module"])
-        info["extra_kwargs"]["AST"] = module_ast
+        code = read_code(info["solution_path"])
+        # add as a named argument to the test function
+        info["extra_kwargs"]["AST"] = ast.parse(code)
 
     return before_test(_hook)(test_function)
