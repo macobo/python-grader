@@ -1,4 +1,5 @@
 import os
+
 from .utils import read_code, setDescription
 from functools import wraps
 
@@ -14,28 +15,6 @@ def test_decorator(decorator):
         else:
             return decorator(f)
     return _inner
-
-### Hooks
-def before_test(action):
-    """ Decorator for a pre-hook on a tested function. Makes the tester execute
-        the function `action` before running the decorated test. """
-    @test_decorator
-    def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "pre-hooks") + (action,)
-        set_setting(test_function, "pre-hooks", hooks)
-        return test_function
-    return _inner_decorator
-
-
-def after_test(action):
-    """ Decorator for a post-hook on a tested function. Makes the tester execute
-        the function `action` after running the decorated test. """
-    @test_decorator
-    def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "post-hooks") + (action,)
-        set_setting(test_function, "post-hooks", hooks)
-        return test_function
-    return _inner_decorator
 
 
 def timeout(seconds):

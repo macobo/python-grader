@@ -79,6 +79,29 @@ def set_setting(test_function, setting_name, value):
     get_setting(test_function, setting_name)
     test_function._grader_settings_[setting_name] = value
 
+### Hooks
+def before_test(action):
+    """ Decorator for a pre-hook on a tested function. Makes the tester execute
+        the function `action` before running the decorated test. """
+    @test_decorator
+    def _inner_decorator(test_function):
+        hooks = get_setting(test_function, "pre-hooks") + (action,)
+        set_setting(test_function, "pre-hooks", hooks)
+        return test_function
+    return _inner_decorator
+
+
+def after_test(action):
+    """ Decorator for a post-hook on a tested function. Makes the tester execute
+        the function `action` after running the decorated test. """
+    @test_decorator
+    def _inner_decorator(test_function):
+        hooks = get_setting(test_function, "post-hooks") + (action,)
+        set_setting(test_function, "post-hooks", hooks)
+        return test_function
+    return _inner_decorator
+
+
 ### Exposed methods to test files/code
 def test_module(tester_path, solution_path, other_files=[], sandbox_cmd=None):
     """ Runs all tests for the solution given as argument.
