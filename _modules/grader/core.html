@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.core &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.core</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">.code_runner</span> <span class="kn">import</span> <span class="n">call_sandbox</span><span class="p">,</span> <span class="n">DOCKER_SANDBOX</span>
+<span class="kn">from</span> <span class="nn">.asset_management</span> <span class="kn">import</span> <span class="n">AssetFolder</span>
+<span class="kn">from</span> <span class="nn">.datastructures</span> <span class="kn">import</span> <span class="n">OrderedTestcases</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">beautifyDescription</span><span class="p">,</span> <span class="n">load_json</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">test_decorator</span>
+
+<span class="n">testcases</span> <span class="o">=</span> <span class="n">OrderedTestcases</span><span class="p">()</span>
+
+<span class="n">DEFAULT_TEST_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># hooks that run before tests</span>
+    <span class="s">&quot;pre-hooks&quot;</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="c"># hooks that run after tests</span>
+    <span class="s">&quot;post-hooks&quot;</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="c"># timeout for function run</span>
+    <span class="s">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+
+<span class="n">SANDBOXES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;docker&#39;</span><span class="p">:</span> <span class="n">DOCKER_SANDBOX</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../grader.html#grader.core.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+    <span class="s">&quot; Removes all loaded tests from test case table. &quot;</span>
+    <span class="n">testcases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../grader.html#grader.core.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for a test. The function should take a single argument which</span>
+<span class="sd">        is the object containing stdin, stdout and module (the globals of users program).</span>
+
+<span class="sd">        The function name is used as the test name, which is a description for the test</span>
+<span class="sd">        that is shown to the user. If the function has a docstring, that is used instead.</span>
+
+<span class="sd">        Raising an exception causes the test to fail, the resulting stack trace is</span>
+<span class="sd">        passed to the user. &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&#39;__call__&#39;</span><span class="p">),</span> \
+        <span class="s">&quot;test_function should be a function, got &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">test_function</span><span class="p">)</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_function</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="n">caughtException</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">module</span><span class="o">.</span><span class="n">caughtException</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">test_function</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="n">caughtException</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">module</span><span class="o">.</span><span class="n">caughtException</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">get_test_name</span><span class="p">(</span><span class="n">test_function</span><span class="p">)</span>
+    <span class="n">testcases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+</div>
+<div class="viewcode-block" id="get_test_name"><a class="viewcode-back" href="../../grader.html#grader.core.get_test_name">[docs]</a><span class="k">def</span> <span class="nf">get_test_name</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the test name as it is used by the grader. Used internally. &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">__name__</span>
+    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">beautifyDescription</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">function</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+</div>
+<div class="viewcode-block" id="get_setting"><a class="viewcode-back" href="../../grader.html#grader.core.get_setting">[docs]</a><span class="k">def</span> <span class="nf">get_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a test setting. Used internally. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">test_function</span> <span class="o">=</span> <span class="n">testcases</span><span class="p">[</span><span class="n">test_function</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;_grader_settings_&quot;</span><span class="p">):</span>
+        <span class="c"># copy default settings</span>
+        <span class="n">test_function</span><span class="o">.</span><span class="n">_grader_settings_</span> <span class="o">=</span> <span class="n">DEFAULT_TEST_SETTINGS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">test_function</span><span class="o">.</span><span class="n">_grader_settings_</span><span class="p">[</span><span class="n">setting_name</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="set_setting"><a class="viewcode-back" href="../../grader.html#grader.core.set_setting">[docs]</a><span class="k">def</span> <span class="nf">set_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Sets a test setting. Used internally. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">test_function</span> <span class="o">=</span> <span class="n">testcases</span><span class="p">[</span><span class="n">test_function</span><span class="p">]</span>
+    <span class="c"># populate settings if needed</span>
+    <span class="n">get_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">)</span>
+    <span class="n">test_function</span><span class="o">.</span><span class="n">_grader_settings_</span><span class="p">[</span><span class="n">setting_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<span class="c">### Exposed methods to test files/code</span></div>
+<div class="viewcode-block" id="test_module"><a class="viewcode-back" href="../../grader.html#grader.core.test_module">[docs]</a><span class="k">def</span> <span class="nf">test_module</span><span class="p">(</span><span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">,</span> <span class="n">other_files</span><span class="o">=</span><span class="p">[],</span> <span class="n">sandbox_cmd</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Runs all tests for the solution given as argument.</span>
+
+<span class="sd">        :param str tester_path: Path to the tester used.</span>
+<span class="sd">        :param str solution_path: Path to the solution being tested.</span>
+<span class="sd">        :param list other_files: Paths to other files to put into same directory while testing.</span>
+<span class="sd">        :param sandbox_cmd: Sandbox to use. Set this to &#39;docker&#39; to use the built-in docker sandbox.</span>
+
+<span class="sd">        :return: Dictionary of test results.</span>
+
+<span class="sd">        Return value format::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &quot;results&quot;: [</span>
+<span class="sd">                    {</span>
+<span class="sd">                        &quot;description&quot;: str, # test description</span>
+<span class="sd">                        &quot;success&quot;: bool, # indicates whether the test case was successful</span>
+<span class="sd">                        &quot;time&quot;: &quot;0.101&quot;, # float indicating how long test took</span>
+<span class="sd">                        &quot;error_message&quot;: str, # error message if test was not successful</span>
+<span class="sd">                        &quot;traceback&quot;: str, # full error traceback if test was not successful</span>
+<span class="sd">                    },</span>
+<span class="sd">                    ...</span>
+<span class="sd">                ],</span>
+<span class="sd">                &quot;success&quot;: bool, # indicates whether tests were run or not</span>
+<span class="sd">                &quot;reason&quot;: str, # short string describing why tester failed to run</span>
+<span class="sd">                &quot;extra_info&quot;: dict, # extra information about why tester failed to run</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">.execution_base</span> <span class="kn">import</span> <span class="n">do_testcase_run</span>
+
+    <span class="c"># copy files for during the tests to /tmp</span>
+    <span class="k">with</span> <span class="n">AssetFolder</span><span class="p">(</span><span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">,</span> <span class="n">other_files</span><span class="p">)</span> <span class="k">as</span> <span class="n">assets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sandbox_cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_results_from_sandbox</span><span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="n">sandbox_cmd</span><span class="p">)</span>
+
+        <span class="c"># populate tests. TODO: add error handling</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">testcases</span><span class="o">.</span><span class="n">load_from</span><span class="p">(</span><span class="n">assets</span><span class="o">.</span><span class="n">tester_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_test_load_failure</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">testcases</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_fail_result</span><span class="p">(</span><span class="s">&quot;No tests found in tester&quot;</span><span class="p">)</span>
+
+        <span class="n">test_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="n">testcases</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">do_testcase_run</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">assets</span><span class="o">.</span><span class="n">tester_path</span><span class="p">,</span> <span class="n">assets</span><span class="o">.</span><span class="n">solution_path</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">test_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;results&quot;</span><span class="p">:</span> <span class="n">test_results</span><span class="p">,</span> <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+</div>
+<div class="viewcode-block" id="test_code"><a class="viewcode-back" href="../../grader.html#grader.core.test_code">[docs]</a><span class="k">def</span> <span class="nf">test_code</span><span class="p">(</span><span class="n">tester_code</span><span class="p">,</span> <span class="n">user_code</span><span class="p">,</span> <span class="n">other_files</span><span class="o">=</span><span class="p">[],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Tests code. See :func:`test_module` for argument and return value description. &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">AssetFolder</span><span class="p">(</span><span class="n">tester_code</span><span class="p">,</span> <span class="n">user_code</span><span class="p">,</span> <span class="n">other_files</span><span class="p">,</span> <span class="n">is_code</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">assets</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">test_module</span><span class="p">(</span>
+            <span class="n">assets</span><span class="o">.</span><span class="n">tester_path</span><span class="p">,</span>
+            <span class="n">assets</span><span class="o">.</span><span class="n">solution_path</span><span class="p">,</span>
+            <span class="n">assets</span><span class="o">.</span><span class="n">other_files</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
+
+<span class="c">## Helpers</span>
+</div>
+<span class="k">def</span> <span class="nf">_fail_result</span><span class="p">(</span><span class="n">reason</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_info</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s">&quot;reason&quot;</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span>
+        <span class="s">&quot;extra_info&quot;</span><span class="p">:</span> <span class="n">extra_info</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_collect_results_from_sandbox</span><span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="n">sandbox_cmd</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+    <span class="n">sandbox_cmd</span> <span class="o">=</span> <span class="n">SANDBOXES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sandbox_cmd</span><span class="p">,</span> <span class="n">sandbox_cmd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sandbox_cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">sandbox_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">sandbox_cmd</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">call_sandbox</span><span class="p">(</span>
+            <span class="n">sandbox_cmd</span><span class="p">,</span> <span class="n">assets</span><span class="o">.</span><span class="n">tester_path</span><span class="p">,</span> <span class="n">assets</span><span class="o">.</span><span class="n">solution_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">_fail_result</span><span class="p">(</span><span class="s">&quot;Sandbox failure&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_fail_result</span><span class="p">(</span>
+            <span class="s">&quot;Invalid command: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sandbox_cmd</span><span class="p">)),</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_error_message</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="n">traceback</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_test_load_failure</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+    <span class="k">return</span> <span class="n">_fail_result</span><span class="p">(</span>
+        <span class="s">&quot;Load tests failure&quot;</span><span class="p">,</span>
+        <span class="n">error_message</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_error_message</span><span class="p">(</span><span class="n">exception</span><span class="p">),</span>
+        <span class="n">traceback</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_traceback</span><span class="p">(</span><span class="n">exception</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

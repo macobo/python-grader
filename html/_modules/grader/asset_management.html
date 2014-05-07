@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.asset_management &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.asset_management</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">rmtree</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span><span class="p">,</span> <span class="n">mkdtemp</span><span class="p">,</span> <span class="n">gettempdir</span>
+
+
+<span class="nd">@contextlib.contextmanager</span>
+<div class="viewcode-block" id="tempModule"><a class="viewcode-back" href="../../grader.internal.html#grader.asset_management.tempModule">[docs]</a><span class="k">def</span> <span class="nf">tempModule</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">working_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;utf8&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">working_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">working_dir</span> <span class="o">=</span> <span class="n">gettempdir</span><span class="p">()</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="n">working_dir</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s">&quot;wb&quot;</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.py&quot;</span><span class="p">,</span>
+        <span class="n">delete</span><span class="o">=</span><span class="bp">False</span>
+    <span class="p">)</span>
+    <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+    <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="nb">file</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="AssetFolder"><a class="viewcode-back" href="../../grader.internal.html#grader.asset_management.AssetFolder">[docs]</a><span class="k">class</span> <span class="nc">AssetFolder</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">,</span> <span class="n">other_files</span><span class="o">=</span><span class="p">[],</span> <span class="n">is_code</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">add_to_path</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_code</span><span class="p">:</span>
+            <span class="n">creator_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">creator_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tester_path</span> <span class="o">=</span> <span class="n">creator_function</span><span class="p">(</span><span class="n">tester_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_path</span> <span class="o">=</span> <span class="n">creator_function</span><span class="p">(</span><span class="n">solution_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_code</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">other_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_asset</span><span class="p">,</span> <span class="n">other_files</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">other_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">,</span> <span class="n">other_files</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_to_path</span> <span class="o">=</span> <span class="n">add_to_path</span>
+        <span class="k">if</span> <span class="n">add_to_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">original_cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="c"># returns path</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="nb">file</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s">&quot;w&quot;</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.py&quot;</span><span class="p">,</span>
+            <span class="n">delete</span><span class="o">=</span><span class="bp">False</span>
+        <span class="p">)</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">file</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="AssetFolder.write_asset"><a class="viewcode-back" href="../../grader.internal.html#grader.asset_management.AssetFolder.write_asset">[docs]</a>    <span class="k">def</span> <span class="nf">write_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_info</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">asset_info</span><span class="p">[</span><span class="s">&quot;filename&quot;</span><span class="p">]))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">asset_info</span><span class="p">[</span><span class="s">&quot;contents&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">path</span>
+</div>
+<div class="viewcode-block" id="AssetFolder.remove"><a class="viewcode-back" href="../../grader.internal.html#grader.asset_management.AssetFolder.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_to_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_cwd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&quot;{} already doesn&#39;t exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AssetFolder.files_in_path"><a class="viewcode-back" href="../../grader.internal.html#grader.asset_management.AssetFolder.files_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">files_in_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;Assets: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tester_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">other_files</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

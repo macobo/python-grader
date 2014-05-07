@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.wrappers &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.wrappers</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; Wrappers to make writing tests easier &quot;&quot;&quot;</span>
+
+<span class="c">#from macropy.tracing import macros, require</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.assertions</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="io_test"><a class="viewcode-back" href="../../grader.html#grader.wrappers.io_test">[docs]</a><span class="k">def</span> <span class="nf">io_test</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">writes_list</span><span class="p">,</span> <span class="n">expected_read</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Tests whether after writing each element of writes_list to stdin we</span>
+<span class="sd">        can find expected_read in the resulting output.</span>
+
+<span class="sd">        Note that this also tests whether the program is waiting for before</span>
+<span class="sd">        each write and that it&#39;s not after the last one. &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">write</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">writes_list</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">finished</span><span class="p">,</span> \
+                <span class="s">&quot;Did you forget to use input()? Writes so far: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">writes_list</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">write</span><span class="p">)</span>
+        <span class="n">require_contains</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="n">expected_read</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">module</span><span class="o">.</span><span class="n">finished</span><span class="p">,</span> \
+            <span class="s">&quot;Make sure there isn&#39;t a stray input() after your code&quot;</span>
+    <span class="n">setDescription</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">test</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="check_function"><a class="viewcode-back" href="../../grader.html#grader.wrappers.check_function">[docs]</a><span class="k">def</span> <span class="nf">check_function</span><span class="p">(</span><span class="n">function_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">expected_result</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Tests that calling function with the given name exists and calling it</span>
+<span class="sd">        with args gives expected_result.</span>
+
+<span class="sd">        If description is given, it is used as test name, else the description</span>
+<span class="sd">        will before similar to &quot;Check add(1, 2, 3) == 6&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s">&quot;module&quot;</span><span class="p">),</span> <span class="s">&quot;Do not use input() in this solution&quot;</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">function_name</span><span class="p">),</span> \
+            <span class="s">&quot;Please define the function with name &quot;</span> <span class="o">+</span> <span class="n">function_name</span>
+        <span class="n">function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">function_name</span><span class="p">)</span>
+        <span class="n">assertEquals</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="n">expected_result</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Check &quot;</span> <span class="o">+</span> <span class="n">function_name</span> <span class="o">+</span> \
+            <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">repr</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span> <span class="o">+</span> <span class="s">&quot;) == &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">expected_result</span><span class="p">)</span>
+    <span class="n">setDescription</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">test</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="test_cases"><a class="viewcode-back" href="../../grader.html#grader.wrappers.test_cases">[docs]</a><span class="k">def</span> <span class="nf">test_cases</span><span class="p">(</span><span class="n">test_args</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">arg_functions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for generating multiple tests with additional arguments.</span>
+
+<span class="sd">        :param test_args: Each element of the list is a list of arguments to add to test function call.</span>
+<span class="sd">        :type test_args: [args...]</span>
+<span class="sd">        :param str description: String or function, gets passed in keywords and arguments.</span>
+<span class="sd">        :keyword function arg_functions: Keyword arguments for the test function.</span>
+
+<span class="sd">        :return: list of test functions</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @test_cases(</span>
+<span class="sd">                [[1, 2], [3, 4]],</span>
+<span class="sd">                expected=lambda x, y: x+y,</span>
+<span class="sd">                description=&quot;Adding {0} and {1} should yield {expected}&quot;</span>
+<span class="sd">            )</span>
+<span class="sd">            def t(m, a, b, expected):</span>
+<span class="sd">                # a and b are either 1 and 2 or 3 and 4</span>
+<span class="sd">                assert a + b == expected</span>
+
+<span class="sd">        This is equivelent to::</span>
+
+<span class="sd">            @test</span>
+<span class="sd">            @set_description(&quot;Adding 1 and 2 should yield 3&quot;)</span>
+<span class="sd">            def t_1(m):</span>
+<span class="sd">                assert 1+2 == 3</span>
+
+
+<span class="sd">            @test</span>
+<span class="sd">            @set_description(&quot;Adding 3 and 4 should yield 7&quot;)</span>
+<span class="sd">            def t_2(m):</span>
+<span class="sd">                assert 3+4 == 7</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;={&quot;</span><span class="o">+</span><span class="n">key</span><span class="o">+</span><span class="s">&quot;}&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">calc_function_kwargs</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">arg_functions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+        <span class="c"># remove from tests if there</span>
+        <span class="k">def</span> <span class="nf">make_f</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_function</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+                <span class="n">test_desc</span> <span class="o">=</span> <span class="n">description</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test_desc</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+            <span class="nd">@test</span>
+            <span class="nd">@set_description</span><span class="p">(</span><span class="n">test_desc</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_args</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_kw</span><span class="p">):</span>
+                <span class="n">_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">extra_kw</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+                <span class="n">_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
+                <span class="n">function</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kw</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_inner</span>
+
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">test_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="n">calc_function_kwargs</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">make_f</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">tests</span>
+
+    <span class="k">return</span> <span class="n">_inner</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

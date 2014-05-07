@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.extensions.ast &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.extensions.ast</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">grader</span>
+<span class="kn">from</span> <span class="nn">grader.utils</span> <span class="kn">import</span> <span class="n">read_code</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;template_test&quot;</span><span class="p">,</span> <span class="s">&quot;compare_trees&quot;</span><span class="p">,</span> <span class="s">&quot;is_underscore&quot;</span><span class="p">,</span> <span class="s">&quot;is_wildcard&quot;</span><span class="p">,</span> <span class="s">&quot;pprint_ast&quot;</span><span class="p">,</span> <span class="s">&quot;dump&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="dump"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.dump">[docs]</a><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+    <span class="s">&quot; maps nested list of asts to strings &quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pprint_ast</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">type_</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">dump</span><span class="p">,</span> <span class="n">T</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">T</span>
+
+</div>
+<div class="viewcode-block" id="is_underscore"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.is_underscore">[docs]</a><span class="k">def</span> <span class="nf">is_underscore</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="s">&quot; Function matching a ____ expression. Used to allow to be filled with any expression. &quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="s">&quot;_&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="is_wildcard"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.is_wildcard">[docs]</a><span class="k">def</span> <span class="nf">is_wildcard</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="s">&quot; Function matching a ... expression (used as a wildcard expression) &quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Expr</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="n">ast</span><span class="o">.</span><span class="n">Ellipsis</span>
+
+</div>
+<span class="k">def</span> <span class="nf">matching_ast_lists</span><span class="p">(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="s">&quot; Returns if the ast lists are identical or not (allowing for wildcards) &quot;</span>
+    <span class="c"># terrible performance, but enough for a POC</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">original_list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">compared_list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">compared_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">is_wildcard</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">original_list</span><span class="p">[</span><span class="n">i</span><span class="p">:]):</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">original_list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">)]</span>
+
+    <span class="n">original</span><span class="p">,</span> <span class="n">compared</span> <span class="o">=</span> <span class="n">original_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">compared_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">is_wildcard</span><span class="p">(</span><span class="n">original</span><span class="p">):</span>
+        <span class="n">end_wildcard_result</span> <span class="o">=</span> <span class="n">matching_ast_lists</span><span class="p">(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end_wildcard_result</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c"># wildcard matches</span>
+        <span class="k">return</span> <span class="n">matching_ast_lists</span><span class="p">(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">compare_trees</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">compared</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="n">matching_ast_lists</span><span class="p">(</span><span class="n">original_list</span><span class="p">,</span> <span class="n">compared_list</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="compare_trees"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.compare_trees">[docs]</a><span class="k">def</span> <span class="nf">compare_trees</span><span class="p">(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">compared_tree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compares two AST trees with each other.</span>
+<span class="sd">        Returns a list of differences, pairs of (expected, got).</span>
+
+<span class="sd">        In addition to doing straight-forward comparison, it allows</span>
+<span class="sd">        for two kinds of wildcard expressions:</span>
+<span class="sd">            1) ____ expressions which can be filled with a single expression/statement.</span>
+<span class="sd">            2) ... expressions which can be filled with any number of</span>
+<span class="sd">                valid expressions/statements. Used in bodies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">type_differs</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">value_type_in</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">_set</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">_set</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compared_tree</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">):</span>
+        <span class="c"># Blanks shown by ____</span>
+        <span class="k">if</span> <span class="n">is_underscore</span><span class="p">(</span><span class="n">original_tree</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c"># different types of expressions? fail</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">original_tree</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">compared_tree</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">compared_tree</span><span class="p">)]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># look over fields</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">iter_fields</span><span class="p">(</span><span class="n">original_tree</span><span class="p">):</span>
+            <span class="n">expected_new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">got_new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">compared_tree</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="c"># if we should check recursively, do so</span>
+            <span class="k">if</span> <span class="n">value_type_in</span><span class="p">(</span><span class="n">expected_new</span><span class="p">,</span> <span class="n">got_new</span><span class="p">,</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">]):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">compare_trees</span><span class="p">(</span><span class="n">expected_new</span><span class="p">,</span> <span class="n">got_new</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">type_differs</span><span class="p">(</span><span class="n">expected_new</span><span class="p">,</span> <span class="n">got_new</span><span class="p">)</span> <span class="ow">or</span> <span class="n">expected_new</span> <span class="o">!=</span> <span class="n">got_new</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">compared_tree</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">original_tree</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">compared_tree</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">matching_ast_lists</span><span class="p">(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">compared_tree</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">original_tree</span><span class="p">,</span> <span class="n">compared_tree</span><span class="p">)]</span>
+
+</div>
+<span class="k">def</span> <span class="nf">load_ast_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">read_code</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="template_test"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.template_test">[docs]</a><span class="k">def</span> <span class="nf">template_test</span><span class="p">(</span><span class="n">template_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template_code</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">description</span><span class="o">=</span><span class="s">&quot;Program should match the template.&quot;</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">template_code</span> <span class="o">=</span> <span class="n">read_code</span><span class="p">(</span><span class="n">template_file</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">template_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="n">template_tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template_code</span><span class="p">)</span>
+
+    <span class="nd">@grader.test</span>
+    <span class="nd">@grader.set_description</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+    <span class="nd">@grader.expose_ast</span>
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">AST</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">compare_trees</span><span class="p">(</span><span class="n">template_tree</span><span class="p">,</span> <span class="n">AST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pprint_ast</span><span class="p">(</span><span class="n">AST</span><span class="p">))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pprint_ast</span><span class="p">(</span><span class="n">template_tree</span><span class="p">))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[],</span> <span class="p">(</span>
+            <span class="s">&quot;Program code does not match template.</span><span class="se">\n\n</span><span class="s">Template code:</span><span class="se">\n</span><span class="s">{}&quot;</span>
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">template_code</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_inner</span>
+</div>
+<span class="k">def</span> <span class="nf">next_in</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">char_set</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">char_set</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span>
+
+<span class="k">def</span> <span class="nf">pair_with_next</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+    <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">prev</span><span class="p">,</span> <span class="n">current</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">current</span>
+    <span class="k">yield</span> <span class="n">current</span><span class="p">,</span> <span class="bp">None</span>
+
+
+<span class="k">def</span> <span class="nf">traverse</span><span class="p">(</span><span class="n">tree_string</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">cut_offs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">next_in</span><span class="p">(</span><span class="n">tree_string</span><span class="p">,</span> <span class="s">&#39;([])&#39;</span><span class="p">))</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">block</span> <span class="o">=</span> <span class="s">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">at</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">skipNext</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">ch</span><span class="p">),</span> <span class="n">N</span> <span class="ow">in</span> <span class="n">pair_with_next</span><span class="p">(</span><span class="n">cut_offs</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">tree_string</span><span class="p">[</span><span class="n">at</span><span class="p">:</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">skipNext</span><span class="p">:</span>
+            <span class="n">skipNext</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">yield</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">block</span> <span class="o">*</span> <span class="n">level</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="s">&#39;([&#39;</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">ch</span>
+            <span class="k">if</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s">&quot;])&quot;</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">skipNext</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">yield</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">block</span> <span class="o">*</span> <span class="n">level</span>
+
+        <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="s">&#39;])&#39;</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">yield</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">block</span> <span class="o">*</span> <span class="n">level</span> <span class="o">+</span> <span class="n">ch</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">N</span> <span class="ow">and</span> <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s">&quot;])&quot;</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">block</span> <span class="o">*</span> <span class="n">level</span>
+
+
+<div class="viewcode-block" id="pprint_ast"><a class="viewcode-back" href="../../../grader.extensions.html#grader.extensions.ast.pprint_ast">[docs]</a><span class="k">def</span> <span class="nf">pprint_ast</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traverse</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">tree</span><span class="p">)))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

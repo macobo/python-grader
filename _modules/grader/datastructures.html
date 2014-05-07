@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.datastructures &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.datastructures</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">import_module</span>
+
+
+<div class="viewcode-block" id="OrderedTestcases"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases">[docs]</a><span class="k">class</span> <span class="nc">OrderedTestcases</span><span class="p">:</span>
+    <span class="s">&quot; Class that acts like a ordered dictionary, with removal and reset&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<div class="viewcode-block" id="OrderedTestcases.clear"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.add"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c">#assert name not in self.order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.remove"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.rename"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.rename">[docs]</a>    <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">old_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Old name {} does not exist in keys.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;New name {} already exists in keys.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indexOf</span><span class="p">(</span><span class="n">old_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">old_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">old_name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.load_from"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.load_from">[docs]</a>    <span class="k">def</span> <span class="nf">load_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">import_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.values"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">o</span><span class="p">])</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.indexOf"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OrderedTestcases.get_name"><a class="viewcode-back" href="../../grader.internal.html#grader.datastructures.OrderedTestcases.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

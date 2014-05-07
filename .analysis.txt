@@ -1,0 +1,47 @@
+Saadame testimise koodi teise threadi.
+
+Testimise kood - 
+    macroga muudetud testist? Macropy viib sõltuvuseks.
+    Serialiseeritud objektid? Saadame kaasa mingid parameetrid, mille järgi testeri ehitab, seejärel lisame koos dekoraatoriga paika.
+
+    Probleem: dekoraatoriga funktsiooni koodi ei saa kätte.
+
+
+Dekoraator lisab dekoreeritud koodi kuhugile arraysse
+
+.test_all() välja kutsumisel tehakse kõik testid ära
+
+Mida teeme, testhaaval:
+    kirjutame testimiskoodi faili
+    käivitame faili subprocessiga
+    kirjutame tulemused hiljem stdouti
+
+Näitekood ===
+
+
+import grader
+from grader.helpers import *
+
+tester = grader.Tester(program = "blah.py")
+
+@tester.test
+def test(module):
+    " It should have a function with name 'meh' "
+    require("meh" in module)
+    require(isinstance(module.meh, function))
+
+
+search nonexisting artist, then some known: 
+    Uncaught TypeError: Object #<U> has no method 'stopVideo' application.js:5321
+    Playlist.reset application.js:5321
+    Playlist.init application.js:5301
+    (anonymous function) application.js:5900
+    f.event.dispatch application.js:4
+    h.handle.i
+
+====
+
+Porting macropy - import system, ast changes
+11.08 - pathing issues with tests - how do we determine what directory  to run the tests in?
+12.08 - testing
+

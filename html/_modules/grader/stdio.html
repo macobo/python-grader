@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.stdio &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.stdio</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Condition</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+
+<div class="viewcode-block" id="SyncCondition"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SyncCondition">[docs]</a><span class="k">class</span> <span class="nc">SyncCondition</span><span class="p">(</span><span class="n">Condition</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Condition</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SyncCondition.notify_release"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SyncCondition.notify_release">[docs]</a>    <span class="k">def</span> <span class="nf">notify_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="p">:</span> <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="SyncCondition.wait_next_release"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SyncCondition.wait_next_release">[docs]</a>    <span class="k">def</span> <span class="nf">wait_next_release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="p">:</span> <span class="k">return</span>
+        <span class="n">target_release_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">release_count</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">release_count</span> <span class="o">&lt;=</span> <span class="n">target_release_count</span><span class="p">:</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SyncCondition.finish"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SyncCondition.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># called by program container, to mark that everything is finished</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished</span> <span class="o">=</span> <span class="bp">True</span>
+
+</div></div>
+<div class="viewcode-block" id="SpoofedStdin"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdin">[docs]</a><span class="k">class</span> <span class="nc">SpoofedStdin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span>
+
+<div class="viewcode-block" id="SpoofedStdin.put"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdin.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="c"># cond should be acquired by tester</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+        <span class="c">#print(&quot;put&quot;, line, self.out)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">notify_release</span><span class="p">()</span>
+        <span class="c"># users program does their thing</span>
+        <span class="c">#print(&quot;released by put, waiting until next release&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">wait_next_release</span><span class="p">()</span>
+        <span class="c"># let me do my thing now!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="c">#print(&quot;acquired by put&quot;)</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdin.write"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdin.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdin.readline"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdin.readline">[docs]</a>    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">notify_release</span><span class="p">()</span>
+
+        <span class="c">#print(&quot;released by read, waiting until next release&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">wait_next_release</span><span class="p">()</span>
+        <span class="c"># tester does its thing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="c">#print(&quot;acquired by put&quot;)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="c">#timeout=1)</span>
+
+</div></div>
+<div class="viewcode-block" id="SpoofedStdout"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout">[docs]</a><span class="k">class</span> <span class="nc">SpoofedStdout</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SpoofedStdout.flush"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdout.write"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdout.reset"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastread</span> <span class="o">=</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdout.read"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastread</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="SpoofedStdout.new"><a class="viewcode-back" href="../../grader.internal.html#grader.stdio.SpoofedStdout.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&quot; Utility method, returns new things written to stdout since last .new() call. &quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lastread</span><span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastread</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

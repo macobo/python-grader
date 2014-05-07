@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API reference &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="index.html" />
+    <link rel="next" title="Extensions API" href="grader.extensions.html" />
+    <link rel="prev" title="Welcome to python-grader’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.extensions.html" title="Extensions API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to python-grader’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-reference">
+<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<p>Functions from <cite>grader.core</cite>, <cite>grader.wrappers</cite> and <cite>grader.decorators</cite> modules can be used by simply importing <cite>grader</cite> module.</p>
+<div class="section" id="grader-core-module">
+<h2>grader.core module<a class="headerlink" href="#grader-core-module" title="Permalink to this headline">¶</a></h2>
+<p>Core functions for the module.</p>
+<p>See <a class="reference internal" href="#grader.core.test_module" title="grader.core.test_module"><tt class="xref py py-func docutils literal"><span class="pre">grader.core.test_module()</span></tt></a> for how to</p>
+<span class="target" id="module-grader.core"></span><dl class="function">
+<dt id="grader.core.get_setting">
+<tt class="descclassname">grader.core.</tt><tt class="descname">get_setting</tt><big>(</big><em>test_function</em>, <em>setting_name</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#get_setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.get_setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a test setting. Used internally.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.get_test_name">
+<tt class="descclassname">grader.core.</tt><tt class="descname">get_test_name</tt><big>(</big><em>function</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#get_test_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.get_test_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the test name as it is used by the grader. Used internally.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.reset">
+<tt class="descclassname">grader.core.</tt><tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/core.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all loaded tests from test case table.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.set_setting">
+<tt class="descclassname">grader.core.</tt><tt class="descname">set_setting</tt><big>(</big><em>test_function</em>, <em>setting_name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#set_setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.set_setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a test setting. Used internally.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.test">
+<tt class="descclassname">grader.core.</tt><tt class="descname">test</tt><big>(</big><em>test_function</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for a test. The function should take a single argument which
+is the object containing stdin, stdout and module (the globals of users program).</p>
+<p>The function name is used as the test name, which is a description for the test
+that is shown to the user. If the function has a docstring, that is used instead.</p>
+<p>Raising an exception causes the test to fail, the resulting stack trace is
+passed to the user.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.test_code">
+<tt class="descclassname">grader.core.</tt><tt class="descname">test_code</tt><big>(</big><em>tester_code</em>, <em>user_code</em>, <em>other_files=</em>, <span class="optional">[</span><span class="optional">]</span><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#test_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.test_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests code. See <a class="reference internal" href="#grader.core.test_module" title="grader.core.test_module"><tt class="xref py py-func docutils literal"><span class="pre">test_module()</span></tt></a> for argument and return value description.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.core.test_module">
+<tt class="descclassname">grader.core.</tt><tt class="descname">test_module</tt><big>(</big><em>tester_path</em>, <em>solution_path</em>, <em>other_files=</em>, <span class="optional">[</span><span class="optional">]</span><em>sandbox_cmd=None</em><big>)</big><a class="reference internal" href="_modules/grader/core.html#test_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.core.test_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all tests for the solution given as argument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tester_path</strong> (<em>str</em>) &#8211; Path to the tester used.</li>
+<li><strong>solution_path</strong> (<em>str</em>) &#8211; Path to the solution being tested.</li>
+<li><strong>other_files</strong> (<em>list</em>) &#8211; Paths to other files to put into same directory while testing.</li>
+<li><strong>sandbox_cmd</strong> &#8211; Sandbox to use. Set this to &#8216;docker&#8217; to use the built-in docker sandbox.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Dictionary of test results.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Return value format:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="c"># test description</span>
+            <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c"># indicates whether the test case was successful</span>
+            <span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="s">&quot;0.101&quot;</span><span class="p">,</span> <span class="c"># float indicating how long test took</span>
+            <span class="s">&quot;error_message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="c"># error message if test was not successful</span>
+            <span class="s">&quot;traceback&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="c"># full error traceback if test was not successful</span>
+        <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">],</span>
+    <span class="s">&quot;success&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c"># indicates whether tests were run or not</span>
+    <span class="s">&quot;reason&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="c"># short string describing why tester failed to run</span>
+    <span class="s">&quot;extra_info&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="c"># extra information about why tester failed to run</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="grader-wrappers-module">
+<h2>grader.wrappers module<a class="headerlink" href="#grader-wrappers-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.wrappers"></span><p>Wrappers to make writing tests easier</p>
+<dl class="function">
+<dt id="grader.wrappers.check_function">
+<tt class="descclassname">grader.wrappers.</tt><tt class="descname">check_function</tt><big>(</big><em>function_name</em>, <em>args</em>, <em>expected_result</em>, <em>description=None</em><big>)</big><a class="reference internal" href="_modules/grader/wrappers.html#check_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.wrappers.check_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests that calling function with the given name exists and calling it
+with args gives expected_result.</p>
+<p>If description is given, it is used as test name, else the description
+will before similar to &#8220;Check add(1, 2, 3) == 6&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.wrappers.io_test">
+<tt class="descclassname">grader.wrappers.</tt><tt class="descname">io_test</tt><big>(</big><em>description</em>, <em>writes_list</em>, <em>expected_read</em><big>)</big><a class="reference internal" href="_modules/grader/wrappers.html#io_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.wrappers.io_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests whether after writing each element of writes_list to stdin we
+can find expected_read in the resulting output.</p>
+<p>Note that this also tests whether the program is waiting for before
+each write and that it&#8217;s not after the last one.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.wrappers.test_cases">
+<tt class="descclassname">grader.wrappers.</tt><tt class="descname">test_cases</tt><big>(</big><em>test_args</em>, <em>description=None</em>, <em>**arg_functions</em><big>)</big><a class="reference internal" href="_modules/grader/wrappers.html#test_cases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.wrappers.test_cases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for generating multiple tests with additional arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>test_args</strong> (<em>[args...]</em>) &#8211; Each element of the list is a list of arguments to add to test function call.</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; String or function, gets passed in keywords and arguments.</li>
+<li><strong>arg_functions</strong> (<em>function</em>) &#8211; Keyword arguments for the test function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of test functions</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@test_cases</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span>
+    <span class="n">expected</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">&quot;Adding {0} and {1} should yield {expected}&quot;</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">t</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="c"># a and b are either 1 and 2 or 3 and 4</span>
+    <span class="k">assert</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">==</span> <span class="n">expected</span>
+</pre></div>
+</div>
+<p>This is equivelent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@test</span>
+<span class="nd">@set_description</span><span class="p">(</span><span class="s">&quot;Adding 1 and 2 should yield 3&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">t_1</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="mi">1</span><span class="o">+</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">3</span>
+
+
+<span class="nd">@test</span>
+<span class="nd">@set_description</span><span class="p">(</span><span class="s">&quot;Adding 3 and 4 should yield 7&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">t_2</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="mi">3</span><span class="o">+</span><span class="mi">4</span> <span class="o">==</span> <span class="mi">7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="grader-decorators-module">
+<h2>grader.decorators module<a class="headerlink" href="#grader-decorators-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.decorators"></span><dl class="function">
+<dt id="grader.decorators.add_value">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">add_value</tt><big>(</big><em>value_name</em>, <em>value_or_fn</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#add_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.add_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-test hook which as the value or the result of evaluating function on
+result to the test result dict.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@test</span>
+<span class="nd">@after_test</span><span class="p">(</span><span class="n">add_value</span><span class="p">(</span><span class="s">&quot;grade&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">graded_testcase</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.after_test">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">after_test</tt><big>(</big><em>action</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#after_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.after_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for a post-hook on a tested function. Makes the tester execute
+the function <cite>action</cite> after running the decorated test.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.before_test">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">before_test</tt><big>(</big><em>action</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#before_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.before_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for a pre-hook on a tested function. Makes the tester execute
+the function <cite>action</cite> before running the decorated test.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.create_file">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">create_file</tt><big>(</big><em>filename</em>, <em>contents=''</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#create_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.create_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for creating files before a test.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@grader.test</span>
+<span class="nd">@grader.before_test</span><span class="p">(</span><span class="n">create_file</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">,</span> <span class="s">&#39;Hello world!&#39;</span><span class="p">))</span>
+<span class="nd">@grader.after_test</span><span class="p">(</span><span class="n">delete_file</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">hook_test</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.create_temporary_file">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">create_temporary_file</tt><big>(</big><em>filename</em>, <em>contents=''</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#create_temporary_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.create_temporary_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for constructing a file which is available
+during a single test and is deleted afterwards.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@grader.test</span>
+<span class="nd">@create_temporary_file</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">,</span> <span class="s">&#39;Hello world!&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hook_test</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.delete_file">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">delete_file</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#delete_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.delete_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for deleting files after a test.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@grader.test</span>
+<span class="nd">@grader.before_test</span><span class="p">(</span><span class="n">create_file</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">,</span> <span class="s">&#39;Hello world!&#39;</span><span class="p">))</span>
+<span class="nd">@grader.after_test</span><span class="p">(</span><span class="n">delete_file</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">hook_test</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;hello.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="c"># ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.expose_ast">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">expose_ast</tt><big>(</big><em>test_function</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#expose_ast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.expose_ast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-test hook for exposing the ast of the solution module
+as an argument to the tester.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@grader.test</span>
+<span class="nd">@grader.expose_ast</span>
+<span class="k">def</span> <span class="nf">ast_test</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">AST</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.set_description">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">set_description</tt><big>(</big><em>d</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#set_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.set_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for setting the description of a test.</p>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@grader.test</span>
+<span class="nd">@grader.set_description</span><span class="p">(</span><span class="s">&quot;New description&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">a_test_case</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.test_decorator">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">test_decorator</tt><big>(</big><em>decorator</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#test_decorator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.test_decorator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for test decorators.</p>
+<p>This makes the decorator work testcases decorated with 
+<a class="reference internal" href="#grader.wrappers.test_cases" title="grader.wrappers.test_cases"><tt class="xref py py-func docutils literal"><span class="pre">grader.wrappers.test_cases()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.decorators.timeout">
+<tt class="descclassname">grader.decorators.</tt><tt class="descname">timeout</tt><big>(</big><em>seconds</em><big>)</big><a class="reference internal" href="_modules/grader/decorators.html#timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.decorators.timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for a test. Indicates how long the test can run.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="grader-assertions-module">
+<h2>grader.assertions module<a class="headerlink" href="#grader-assertions-module" title="Permalink to this headline">¶</a></h2>
+<p>Assertion methods that can be used within tests.</p>
+<span class="target" id="module-grader.assertions"></span><dl class="function">
+<dt id="grader.assertions.assertEquals">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">assertEquals</tt><big>(</big><em>got</em>, <em>expected</em>, <em>template='Expected {expected} but got {got}'</em>, <em>**kw</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#assertEquals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.assertEquals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.assertions.assertNContains">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">assertNContains</tt><big>(</big><em>input</em>, <em>collection</em>, <em>N</em>, <em>template=None</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#assertNContains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.assertNContains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.assertions.assertOneContains">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">assertOneContains</tt><big>(</big><em>input</em>, <em>collection</em>, <em>template=None</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#assertOneContains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.assertOneContains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.assertions.indent">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">indent</tt><big>(</big><em>text</em>, <em>spaces</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#indent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.indent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.assertions.require_contains">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">require_contains</tt><big>(</big><em>input</em>, <em>what</em>, <em>message=None</em>, <em>**extraparams</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#require_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.require_contains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.assertions.require_each_contains">
+<tt class="descclassname">grader.assertions.</tt><tt class="descname">require_each_contains</tt><big>(</big><em>input_list</em>, <em>expected_list</em>, <em>message=None</em>, <em>**extraparams</em><big>)</big><a class="reference internal" href="_modules/grader/assertions.html#require_each_contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.assertions.require_each_contains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API reference</a><ul>
+<li><a class="reference internal" href="#grader-core-module">grader.core module</a></li>
+<li><a class="reference internal" href="#grader-wrappers-module">grader.wrappers module</a></li>
+<li><a class="reference internal" href="#grader-decorators-module">grader.decorators module</a></li>
+<li><a class="reference internal" href="#grader-assertions-module">grader.assertions module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to python-grader&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grader.extensions.html"
+                        title="next chapter">Extensions API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grader.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.extensions.html" title="Extensions API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to python-grader’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

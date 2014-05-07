@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.decorators &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.decorators</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">read_code</span><span class="p">,</span> <span class="n">setDescription</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<div class="viewcode-block" id="test_decorator"><a class="viewcode-back" href="../../grader.html#grader.decorators.test_decorator">[docs]</a><span class="k">def</span> <span class="nf">test_decorator</span><span class="p">(</span><span class="n">decorator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for test decorators. </span>
+
+<span class="sd">        This makes the decorator work testcases decorated with </span>
+<span class="sd">        :func:`grader.wrappers.test_cases`. &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">decorator</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_inner</span>
+
+<span class="c">### Hooks</span></div>
+<div class="viewcode-block" id="before_test"><a class="viewcode-back" href="../../grader.html#grader.decorators.before_test">[docs]</a><span class="k">def</span> <span class="nf">before_test</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for a pre-hook on a tested function. Makes the tester execute</span>
+<span class="sd">        the function `action` before running the decorated test. &quot;&quot;&quot;</span>
+    <span class="nd">@test_decorator</span>
+    <span class="k">def</span> <span class="nf">_inner_decorator</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="n">get_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;pre-hooks&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">action</span><span class="p">,)</span>
+        <span class="n">set_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;pre-hooks&quot;</span><span class="p">,</span> <span class="n">hooks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_function</span>
+    <span class="k">return</span> <span class="n">_inner_decorator</span>
+
+</div>
+<div class="viewcode-block" id="after_test"><a class="viewcode-back" href="../../grader.html#grader.decorators.after_test">[docs]</a><span class="k">def</span> <span class="nf">after_test</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for a post-hook on a tested function. Makes the tester execute</span>
+<span class="sd">        the function `action` after running the decorated test. &quot;&quot;&quot;</span>
+    <span class="nd">@test_decorator</span>
+    <span class="k">def</span> <span class="nf">_inner_decorator</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="n">get_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;post-hooks&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">action</span><span class="p">,)</span>
+        <span class="n">set_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;post-hooks&quot;</span><span class="p">,</span> <span class="n">hooks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_function</span>
+    <span class="k">return</span> <span class="n">_inner_decorator</span>
+
+</div>
+<div class="viewcode-block" id="timeout"><a class="viewcode-back" href="../../grader.html#grader.decorators.timeout">[docs]</a><span class="k">def</span> <span class="nf">timeout</span><span class="p">(</span><span class="n">seconds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for a test. Indicates how long the test can run. &quot;&quot;&quot;</span>
+    <span class="nd">@test_decorator</span>
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+        <span class="n">set_setting</span><span class="p">(</span><span class="n">test_function</span><span class="p">,</span> <span class="s">&quot;timeout&quot;</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_function</span>
+    <span class="k">return</span> <span class="n">_inner</span>
+
+</div>
+<span class="nd">@test_decorator</span>
+<div class="viewcode-block" id="set_description"><a class="viewcode-back" href="../../grader.html#grader.decorators.set_description">[docs]</a><span class="k">def</span> <span class="nf">set_description</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for setting the description of a test.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @grader.test</span>
+<span class="sd">            @grader.set_description(&quot;New description&quot;)</span>
+<span class="sd">            def a_test_case(m):</span>
+<span class="sd">                ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="n">setDescription</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">return</span> <span class="n">inner</span>
+
+
+<span class="c">## File creation, deletion hooks</span></div>
+<div class="viewcode-block" id="create_file"><a class="viewcode-back" href="../../grader.html#grader.decorators.create_file">[docs]</a><span class="k">def</span> <span class="nf">create_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">contents</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Hook for creating files before a test.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @grader.test</span>
+<span class="sd">            @grader.before_test(create_file(&#39;hello.txt&#39;, &#39;Hello world!&#39;))</span>
+<span class="sd">            @grader.after_test(delete_file(&#39;hello.txt&#39;))</span>
+<span class="sd">            def hook_test(m):</span>
+<span class="sd">                with open(&#39;hello.txt&#39;) as file:</span>
+<span class="sd">                    txt = file.read()</span>
+<span class="sd">                    # ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">collections</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">contents</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_inner</span>
+
+</div>
+<div class="viewcode-block" id="delete_file"><a class="viewcode-back" href="../../grader.html#grader.decorators.delete_file">[docs]</a><span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Hook for deleting files after a test.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @grader.test</span>
+<span class="sd">            @grader.before_test(create_file(&#39;hello.txt&#39;, &#39;Hello world!&#39;))</span>
+<span class="sd">            @grader.after_test(delete_file(&#39;hello.txt&#39;))</span>
+<span class="sd">            def hook_test(m):</span>
+<span class="sd">                with open(&#39;hello.txt&#39;) as file:</span>
+<span class="sd">                    txt = file.read()</span>
+<span class="sd">                    # ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">_inner</span>
+
+</div>
+<div class="viewcode-block" id="create_temporary_file"><a class="viewcode-back" href="../../grader.html#grader.decorators.create_temporary_file">[docs]</a><span class="k">def</span> <span class="nf">create_temporary_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">contents</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator for constructing a file which is available</span>
+<span class="sd">        during a single test and is deleted afterwards.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @grader.test</span>
+<span class="sd">            @create_temporary_file(&#39;hello.txt&#39;, &#39;Hello world!&#39;)</span>
+<span class="sd">            def hook_test(m):</span>
+<span class="sd">                with open(&#39;hello.txt&#39;) as file:</span>
+<span class="sd">                    txt = file.read()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">grader.core</span> <span class="kn">import</span> <span class="n">before_test</span><span class="p">,</span> <span class="n">after_test</span>
+
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+        <span class="n">before_test</span><span class="p">(</span><span class="n">create_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">contents</span><span class="p">))(</span><span class="n">test_function</span><span class="p">)</span>
+        <span class="n">after_test</span><span class="p">(</span><span class="n">delete_file</span><span class="p">(</span><span class="n">filename</span><span class="p">))(</span><span class="n">test_function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_function</span>
+    <span class="k">return</span> <span class="n">_inner</span>
+
+</div>
+<div class="viewcode-block" id="add_value"><a class="viewcode-back" href="../../grader.html#grader.decorators.add_value">[docs]</a><span class="k">def</span> <span class="nf">add_value</span><span class="p">(</span><span class="n">value_name</span><span class="p">,</span> <span class="n">value_or_fn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Post-test hook which as the value or the result of evaluating function on</span>
+<span class="sd">        result to the test result dict.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @test</span>
+<span class="sd">            @after_test(add_value(&quot;grade&quot;, 7))</span>
+<span class="sd">            def graded_testcase(m):</span>
+<span class="sd">                ...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value_or_fn</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value_or_fn</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">_inner</span>
+
+</div>
+<span class="nd">@test_decorator</span>
+<div class="viewcode-block" id="expose_ast"><a class="viewcode-back" href="../../grader.html#grader.decorators.expose_ast">[docs]</a><span class="k">def</span> <span class="nf">expose_ast</span><span class="p">(</span><span class="n">test_function</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Pre-test hook for exposing the ast of the solution module</span>
+<span class="sd">        as an argument to the tester. </span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            @grader.test</span>
+<span class="sd">            @grader.expose_ast</span>
+<span class="sd">            def ast_test(m, AST):</span>
+<span class="sd">                ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">ast</span>
+    <span class="kn">from</span> <span class="nn">grader.core</span> <span class="kn">import</span> <span class="n">before_test</span>
+
+    <span class="k">def</span> <span class="nf">_hook</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">read_code</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&quot;solution_path&quot;</span><span class="p">])</span>
+        <span class="c"># add the solutions AST as a named argument to the test function</span>
+        <span class="n">info</span><span class="p">[</span><span class="s">&quot;extra_kwargs&quot;</span><span class="p">][</span><span class="s">&quot;AST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="c"># add function _hook as a pre-hook to test_function</span>
+    <span class="k">return</span> <span class="n">before_test</span><span class="p">(</span><span class="n">_hook</span><span class="p">)(</span><span class="n">test_function</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+WHAT TO PUT IN
+ ☐ Examples of graders
+ ☐ General architecture of graders
+
+ ☐ General execution flow, what each step does.
+ 
+
+ ☐ Stdio-stdout communication model, how it affects execution
+   ☐ Concurrency problems
+ ☐ Guide for writing tests (basic)
+
+ 
+ ☐ Web enviroment
+ ☐ About using in mtat.100
+ ☐ More test types
+     ☐ Fill in the blanks
+     ☐ Turtlesnap?
+ ☐ Guide for writing more complex tests (e.g. how to integrate turtlesnap)
+ ☐ How to include library into grader X
+ ☐ Pedagoical - how to write good error messages
+
+ ☐ Macropy
+ ☐ How testing the testing engine was done
+
+Securing as a separate chapter
+Terminoloogia
+
+i8n?
+
+Number vahemikust, arva ära
+
+Sissejuhatus - mis varem, jne
+ ☐ Analüüsida ülesande taustast.
+ ☐ Väljajuhatus - mida vaja oleks. 
+Töö käik, miks nii
+ ☐ Teise peatüki alguses, mida teeb. 
+ ☐ Testeri ülesande näitelahenduse-testi
+ ☐ Süsteemi ülevaade, probleemide kaupa
+ ☐ Tehnilised probleemid
+   ☐ Lõimed - kuidas jooksutada kahte asja koos. Hoiab ära eri testide globaalse jama kokkupõrked.
+   ☐ moodulile ligipääs - kuidas saada muutujatele ligi
+   ☐ Stdio - kuidas testida interaktiivseid programme? Kuidas mõjutab jooksutamist
+   ☐ Testide registreerimine
+   ☐ Doing stuff before, after tests (hooks)
+ ☐ Security model (docker)
+   ☐ What is docker, why is it secure to run the app within docker?
+   ☐ How to isolate the python infos if both run in the same.
+   ☐ Memory management, timeouts, disk space
+Mis välja tuli
+ ☐ Kuidas kasutada, mida saab, mida ei saa.
+ ☐ Näited testide kohta, ülesandetüübid, kasutamise kirjeldus.
+
+- rakendus Progremise aines
+  
+Misc õppetunnid
+  docker siiski pole piisavalt kiire et luua iga testi jaoks, võtab  ~0.5 sekundit siiski
+
+Paralleelselt testide jooksutamine

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>grader.code_runner &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for grader.code_runner</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">CURRENT_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="n">SANDBOX_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">CURRENT_FOLDER</span><span class="p">),</span> <span class="s">&quot;sandbox&quot;</span><span class="p">)</span>
+
+<span class="n">TEST_RUN_CMD</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SANDBOX_DIR</span><span class="p">,</span> <span class="s">&quot;run_test&quot;</span><span class="p">)]</span>
+<span class="n">DOCKER_SANDBOX</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SANDBOX_DIR</span><span class="p">,</span> <span class="s">&#39;run_tests_docker_sandbox&#39;</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="read_proc_results"><a class="viewcode-back" href="../../grader.internal.html#grader.code_runner.read_proc_results">[docs]</a><span class="k">def</span> <span class="nf">read_proc_results</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">decode</span><span class="p">):</span>
+    <span class="n">stdout</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> 
+    <span class="n">stderr</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">decode</span><span class="p">:</span>
+        <span class="n">stdout</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">stderr</span> <span class="o">=</span> <span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span>
+    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+</div>
+<div class="viewcode-block" id="microseconds_passed"><a class="viewcode-back" href="../../grader.internal.html#grader.code_runner.microseconds_passed">[docs]</a><span class="k">def</span> <span class="nf">microseconds_passed</span><span class="p">(</span><span class="n">time_delta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">time_delta</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">+</span> <span class="n">time_delta</span><span class="o">.</span><span class="n">seconds</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">7</span>
+
+</div>
+<div class="viewcode-block" id="call_command"><a class="viewcode-back" href="../../grader.internal.html#grader.code_runner.call_command">[docs]</a><span class="k">def</span> <span class="nf">call_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s">&#39;inf&#39;</span><span class="p">),</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">subproc_options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cwd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="n">subproc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="p">,</span>
+        <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">,</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">subproc_options</span>
+    <span class="p">)</span>
+
+    <span class="n">reached_timeout</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">while</span> <span class="n">subproc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.02</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">microseconds_passed</span><span class="p">(</span><span class="n">now</span><span class="o">-</span><span class="n">start</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">timeout</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">:</span>
+            <span class="n">subproc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">subproc</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">waitpid</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">WNOHANG</span><span class="p">)</span>
+            <span class="n">reached_timeout</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c">#break</span>
+
+    <span class="n">status</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">read_proc_results</span><span class="p">(</span><span class="n">subproc</span><span class="p">,</span> <span class="n">decode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reached_timeout</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+
+</div>
+<div class="viewcode-block" id="call_test"><a class="viewcode-back" href="../../grader.internal.html#grader.code_runner.call_test">[docs]</a><span class="k">def</span> <span class="nf">call_test</span><span class="p">(</span><span class="n">test_index</span><span class="p">,</span> <span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+    <span class="c"># this assumes that tester, solution resides in the same path</span>
+    <span class="c">#working_dir = os.getcwd()#os.path.dirname(tester_path)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">TEST_RUN_CMD</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">tester_path</span><span class="p">,</span>
+        <span class="n">solution_path</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">test_index</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;timeout&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">call_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+
+</div>
+<div class="viewcode-block" id="call_sandbox"><a class="viewcode-back" href="../../grader.internal.html#grader.code_runner.call_sandbox">[docs]</a><span class="k">def</span> <span class="nf">call_sandbox</span><span class="p">(</span><span class="n">sandbox_cmd</span><span class="p">,</span> <span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">):</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sandbox_cmd</span> <span class="o">+</span> <span class="p">[</span><span class="n">tester_path</span><span class="p">,</span> <span class="n">solution_path</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">call_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-grader 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

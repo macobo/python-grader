@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Internal API reference &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Extensions API" href="grader.extensions.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.extensions.html" title="Extensions API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="internal-api-reference">
+<h1>Internal API reference<a class="headerlink" href="#internal-api-reference" title="Permalink to this headline">¶</a></h1>
+<p>These modules are used internally for the test running process.</p>
+<div class="section" id="grader-asset-management-module">
+<h2>grader.asset_management module<a class="headerlink" href="#grader-asset-management-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.asset_management"></span><dl class="class">
+<dt id="grader.asset_management.AssetFolder">
+<em class="property">class </em><tt class="descclassname">grader.asset_management.</tt><tt class="descname">AssetFolder</tt><big>(</big><em>tester_path</em>, <em>solution_path</em>, <em>other_files=</em>, <span class="optional">[</span><span class="optional">]</span><em>is_code=False</em>, <em>add_to_path=True</em><big>)</big><a class="reference internal" href="_modules/grader/asset_management.html#AssetFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.asset_management.AssetFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="grader.asset_management.AssetFolder.files_in_path">
+<tt class="descname">files_in_path</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/asset_management.html#AssetFolder.files_in_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.asset_management.AssetFolder.files_in_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.asset_management.AssetFolder.remove">
+<tt class="descname">remove</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/asset_management.html#AssetFolder.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.asset_management.AssetFolder.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.asset_management.AssetFolder.write_asset">
+<tt class="descname">write_asset</tt><big>(</big><em>asset_info</em><big>)</big><a class="reference internal" href="_modules/grader/asset_management.html#AssetFolder.write_asset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.asset_management.AssetFolder.write_asset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.asset_management.tempModule">
+<tt class="descclassname">grader.asset_management.</tt><tt class="descname">tempModule</tt><big>(</big><em>code</em>, <em>working_dir=None</em>, <em>encoding='utf8'</em><big>)</big><a class="reference internal" href="_modules/grader/asset_management.html#tempModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.asset_management.tempModule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="grader-code-runner-module">
+<h2>grader.code_runner module<a class="headerlink" href="#grader-code-runner-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.code_runner"></span><dl class="function">
+<dt id="grader.code_runner.call_command">
+<tt class="descclassname">grader.code_runner.</tt><tt class="descname">call_command</tt><big>(</big><em>cmd</em>, <em>timeout=inf</em>, <em>cwd=None</em>, <em>decode=True</em>, <em>**subproc_options</em><big>)</big><a class="reference internal" href="_modules/grader/code_runner.html#call_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.code_runner.call_command" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.code_runner.call_sandbox">
+<tt class="descclassname">grader.code_runner.</tt><tt class="descname">call_sandbox</tt><big>(</big><em>sandbox_cmd</em>, <em>tester_path</em>, <em>solution_path</em><big>)</big><a class="reference internal" href="_modules/grader/code_runner.html#call_sandbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.code_runner.call_sandbox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.code_runner.call_test">
+<tt class="descclassname">grader.code_runner.</tt><tt class="descname">call_test</tt><big>(</big><em>test_index</em>, <em>tester_path</em>, <em>solution_path</em>, <em>options</em><big>)</big><a class="reference internal" href="_modules/grader/code_runner.html#call_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.code_runner.call_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.code_runner.microseconds_passed">
+<tt class="descclassname">grader.code_runner.</tt><tt class="descname">microseconds_passed</tt><big>(</big><em>time_delta</em><big>)</big><a class="reference internal" href="_modules/grader/code_runner.html#microseconds_passed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.code_runner.microseconds_passed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.code_runner.read_proc_results">
+<tt class="descclassname">grader.code_runner.</tt><tt class="descname">read_proc_results</tt><big>(</big><em>proc</em>, <em>decode</em><big>)</big><a class="reference internal" href="_modules/grader/code_runner.html#read_proc_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.code_runner.read_proc_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="grader-datastructures-module">
+<h2>grader.datastructures module<a class="headerlink" href="#grader-datastructures-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.datastructures"></span><dl class="class">
+<dt id="grader.datastructures.OrderedTestcases">
+<em class="property">class </em><tt class="descclassname">grader.datastructures.</tt><tt class="descname">OrderedTestcases</tt><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Class that acts like a ordered dictionary, with removal and reset</p>
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.add">
+<tt class="descname">add</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.get_name">
+<tt class="descname">get_name</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.get_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.indexOf">
+<tt class="descname">indexOf</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.indexOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.indexOf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.load_from">
+<tt class="descname">load_from</tt><big>(</big><em>module_path</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.load_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.load_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.remove">
+<tt class="descname">remove</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.rename">
+<tt class="descname">rename</tt><big>(</big><em>old_name</em>, <em>new_name</em><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.rename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.datastructures.OrderedTestcases.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/datastructures.html#OrderedTestcases.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.datastructures.OrderedTestcases.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="grader-execution-base-module">
+<h2>grader.execution_base module<a class="headerlink" href="#grader-execution-base-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.execution_base"></span><p>This module handles the execution of the users module. It should ideally
+be called in an subprocess (like code_runner does) in a secure enviroment
+with all code files prepared.</p>
+<p>This overhead is needed to avoid having extra testcases loaded by the grader.</p>
+<p><cite>test_module</cite> loads the tester code loaded in a file. In that For each test, an 
+async request is fired (run in another process). It is resolved within the 
+<cite>resolve_testcase_run</cite> function. If that call timeouts, it is then terminated.</p>
+<p>See <cite>resolve_testcase_run</cite> for output format description.</p>
+<dl class="function">
+<dt id="grader.execution_base.call_all">
+<tt class="descclassname">grader.execution_base.</tt><tt class="descname">call_all</tt><big>(</big><em>function_list</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/grader/execution_base.html#call_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.execution_base.call_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.execution_base.call_test_function">
+<tt class="descclassname">grader.execution_base.</tt><tt class="descname">call_test_function</tt><big>(</big><em>test_index</em>, <em>tester_path</em>, <em>solution_path</em><big>)</big><a class="reference internal" href="_modules/grader/execution_base.html#call_test_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.execution_base.call_test_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called in another process. Finds the test <cite>test_name</cite>,  calls the
+pre-test hooks and tries to execute it.</p>
+<p>If an exception was raised by call, prints it to stdout</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.execution_base.do_testcase_run">
+<tt class="descclassname">grader.execution_base.</tt><tt class="descname">do_testcase_run</tt><big>(</big><em>test_name</em>, <em>tester_path</em>, <em>solution_path</em>, <em>options</em><big>)</big><a class="reference internal" href="_modules/grader/execution_base.html#do_testcase_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.execution_base.do_testcase_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the test, checking if it doesn&#8217;t raise an Exception.
+Returns a dictionary in the following form:</p>
+<div class="highlight-python"><div class="highlight"><pre>{
+    &quot;success&quot;: boolean,
+    &quot;traceback&quot;: string (&quot;&quot; if None)
+    &quot;error_message: string
+    &quot;time&quot;: string (execution time, rounded to 3 decimal digits)
+    &quot;description&quot;: string (test name/its description)
+}
+</pre></div>
+</div>
+<p>If the test timeouts, traceback is set to &#8220;timeout&#8221;.</p>
+<p>Post-hooks can manipulate with the test results before returning.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="grader-program-container-module">
+<h2>grader.program_container module<a class="headerlink" href="#grader-program-container-module" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-grader.program_container"></span><dl class="class">
+<dt id="grader.program_container.ProgramContainer">
+<em class="property">class </em><tt class="descclassname">grader.program_container.</tt><tt class="descname">ProgramContainer</tt><big>(</big><em>module_path</em>, <em>results</em><big>)</big><a class="reference internal" href="_modules/grader/program_container.html#ProgramContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.program_container.ProgramContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></tt></p>
+<p>The thread in which the users program runs</p>
+<dl class="method">
+<dt id="grader.program_container.ProgramContainer.log">
+<tt class="descname">log</tt><big>(</big><em>what</em><big>)</big><a class="reference internal" href="_modules/grader/program_container.html#ProgramContainer.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.program_container.ProgramContainer.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="grader.program_container.ProgramContainer.restore_io">
+<em class="property">classmethod </em><tt class="descname">restore_io</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/program_container.html#ProgramContainer.restore_io"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.program_container.ProgramContainer.restore_io" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.program_container.ProgramContainer.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/program_container.html#ProgramContainer.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.program_container.ProgramContainer.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-grader.stdio">
+<span id="grader-stdio-module"></span><h2>grader.stdio module<a class="headerlink" href="#module-grader.stdio" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="grader.stdio.SpoofedStdin">
+<em class="property">class </em><tt class="descclassname">grader.stdio.</tt><tt class="descname">SpoofedStdin</tt><big>(</big><em>condition</em><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdin.put">
+<tt class="descname">put</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdin.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdin.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdin.readline">
+<tt class="descname">readline</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdin.readline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdin.readline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdin.write">
+<tt class="descname">write</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdin.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdin.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="grader.stdio.SpoofedStdout">
+<em class="property">class </em><tt class="descclassname">grader.stdio.</tt><tt class="descname">SpoofedStdout</tt><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdout.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdout.new">
+<tt class="descname">new</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility method, returns new things written to stdout since last .new() call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdout.read">
+<tt class="descname">read</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdout.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SpoofedStdout.write">
+<tt class="descname">write</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SpoofedStdout.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SpoofedStdout.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="grader.stdio.SyncCondition">
+<em class="property">class </em><tt class="descclassname">grader.stdio.</tt><tt class="descname">SyncCondition</tt><a class="reference internal" href="_modules/grader/stdio.html#SyncCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SyncCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">threading.Condition</span></tt></p>
+<dl class="method">
+<dt id="grader.stdio.SyncCondition.finish">
+<tt class="descname">finish</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SyncCondition.finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SyncCondition.finish" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SyncCondition.notify_release">
+<tt class="descname">notify_release</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SyncCondition.notify_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SyncCondition.notify_release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="grader.stdio.SyncCondition.wait_next_release">
+<tt class="descname">wait_next_release</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/grader/stdio.html#SyncCondition.wait_next_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.stdio.SyncCondition.wait_next_release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-grader.utils">
+<span id="grader-utils-module"></span><h2>grader.utils module<a class="headerlink" href="#module-grader.utils" title="Permalink to this headline">¶</a></h2>
+<p>An utility module containing utility functions used by the grader module
+and some useful pre-test hooks.</p>
+<dl class="function">
+<dt id="grader.utils.beautifyDescription">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">beautifyDescription</tt><big>(</big><em>description</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#beautifyDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.beautifyDescription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts docstring of a function to a test description
+by removing excess whitespace and joining the answer on one
+line</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.dump_json">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">dump_json</tt><big>(</big><em>ordered_dict</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#dump_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.dump_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumps the dict to a string, indented</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.get_error_message">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">get_error_message</tt><big>(</big><em>exception</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#get_error_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.get_error_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.get_traceback">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">get_traceback</tt><big>(</big><em>exception</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#get_traceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.get_traceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.import_module">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">import_module</tt><big>(</big><em>path</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#import_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.import_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.is_function">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">is_function</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#is_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.is_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.load_json">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">load_json</tt><big>(</big><em>json_string</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#load_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.load_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads json_string into an dict</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.read_code">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">read_code</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#read_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.read_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.utils.setDescription">
+<tt class="descclassname">grader.utils.</tt><tt class="descname">setDescription</tt><big>(</big><em>function</em>, <em>description</em><big>)</big><a class="reference internal" href="_modules/grader/utils.html#setDescription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.utils.setDescription" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Internal API reference</a><ul>
+<li><a class="reference internal" href="#grader-asset-management-module">grader.asset_management module</a></li>
+<li><a class="reference internal" href="#grader-code-runner-module">grader.code_runner module</a></li>
+<li><a class="reference internal" href="#grader-datastructures-module">grader.datastructures module</a></li>
+<li><a class="reference internal" href="#grader-execution-base-module">grader.execution_base module</a></li>
+<li><a class="reference internal" href="#grader-program-container-module">grader.program_container module</a></li>
+<li><a class="reference internal" href="#module-grader.stdio">grader.stdio module</a></li>
+<li><a class="reference internal" href="#module-grader.utils">grader.utils module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grader.extensions.html"
+                        title="previous chapter">Extensions API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grader.internal.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.extensions.html" title="Extensions API"
+             >previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

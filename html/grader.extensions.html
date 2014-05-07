@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Extensions API &mdash; python-grader 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-grader 0.1 documentation" href="index.html" />
+    <link rel="next" title="Internal API reference" href="grader.internal.html" />
+    <link rel="prev" title="API reference" href="grader.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.internal.html" title="Internal API reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="grader.html" title="API reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="extensions-api">
+<h1>Extensions API<a class="headerlink" href="#extensions-api" title="Permalink to this headline">¶</a></h1>
+<p>This page contains API reference for various extensions of the grader module.</p>
+<div class="section" id="module-grader.extensions.adv_functions">
+<span id="grader-extensions-adv-functions-module"></span><h2>grader.extensions.adv_functions module<a class="headerlink" href="#module-grader.extensions.adv_functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="grader.extensions.adv_functions.check_function">
+<tt class="descclassname">grader.extensions.adv_functions.</tt><tt class="descname">check_function</tt><big>(</big><em>sample_function</em>, <em>arguments</em>, <em>expected_result=None</em>, <em>description=None</em>, <em>check_print=True</em>, <em>n_calls=3</em>, <em>check_globals=True</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/adv_functions.html#check_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.adv_functions.check_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="grader-extensions-ast-module">
+<h2>grader.extensions.ast module<a class="headerlink" href="#grader-extensions-ast-module" title="Permalink to this headline">¶</a></h2>
+<p>Module for testing fill-in-the-blanks task type.</p>
+<p>Tester for the example task.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">grader</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">grader.extensions</span> <span class="kn">import</span> <span class="n">ast</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">number = int(input(&quot;Input a number: &quot;))</span>
+<span class="s">if number &gt; _____: # fill in the blank here...</span>
+<span class="s">    print(&quot;Non-negative!&quot;)</span>
+<span class="s">else:</span>
+<span class="s">    ... # and here! Can be several lines</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="n">ast</span><span class="o">.</span><span class="n">template_test</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that additional tests are also needed to verify the behaviour of the program.</p>
+<span class="target" id="module-grader.extensions.ast"></span><dl class="function">
+<dt id="grader.extensions.ast.template_test">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">template_test</tt><big>(</big><em>template_file=None</em>, <em>template_code=None</em>, <em>description='Program should match the template.'</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#template_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.template_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.extensions.ast.compare_trees">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">compare_trees</tt><big>(</big><em>original_tree</em>, <em>compared_tree</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#compare_trees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.compare_trees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two AST trees with each other.
+Returns a list of differences, pairs of (expected, got).</p>
+<p>In addition to doing straight-forward comparison, it allows
+for two kinds of wildcard expressions:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">____ expressions which can be filled with a single expression/statement.</p>
+</li>
+<li><dl class="first docutils">
+<dt>... expressions which can be filled with any number of</dt>
+<dd><p class="first last">valid expressions/statements. Used in bodies.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.extensions.ast.is_underscore">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">is_underscore</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#is_underscore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.is_underscore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function matching a ____ expression. Used to allow to be filled with any expression.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.extensions.ast.is_wildcard">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">is_wildcard</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#is_wildcard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.is_wildcard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function matching a ... expression (used as a wildcard expression)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="grader.extensions.ast.pprint_ast">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">pprint_ast</tt><big>(</big><em>tree</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#pprint_ast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.pprint_ast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="grader.extensions.ast.dump">
+<tt class="descclassname">grader.extensions.ast.</tt><tt class="descname">dump</tt><big>(</big><em>T</em><big>)</big><a class="reference internal" href="_modules/grader/extensions/ast.html#dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#grader.extensions.ast.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>maps nested list of asts to strings</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extensions API</a><ul>
+<li><a class="reference internal" href="#module-grader.extensions.adv_functions">grader.extensions.adv_functions module</a></li>
+<li><a class="reference internal" href="#grader-extensions-ast-module">grader.extensions.ast module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grader.html"
+                        title="previous chapter">API reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grader.internal.html"
+                        title="next chapter">Internal API reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/grader.extensions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="grader.internal.html" title="Internal API reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="grader.html" title="API reference"
+             >previous</a> |</li>
+        <li><a href="index.html">python-grader 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Karl-Aksel Puulmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

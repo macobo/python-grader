@@ -1,0 +1,72 @@
+Saadame testimise koodi teise threadi.
+
+Testimise kood - 
+    macroga muudetud testist? Macropy viib sõltuvuseks.
+    Serialiseeritud objektid? Saadame kaasa mingid parameetrid, mille järgi testeri ehitab, seejärel lisame koos dekoraatoriga paika.
+
+    Probleem: dekoraatoriga funktsiooni koodi ei saa kätte.
+
+
+Dekoraator lisab dekoreeritud koodi kuhugile arraysse
+
+.test_all() välja kutsumisel tehakse kõik testid ära
+
+Mida teeme, testhaaval:
+    kirjutame testimiskoodi faili
+    käivitame faili subprocessiga
+    kirjutame tulemused hiljem stdouti
+
+Näitekood ===
+
+
+import grader
+from grader.helpers import *
+
+tester = grader.Tester(program = "blah.py")
+
+@tester.test
+def test(module):
+    " It should have a function with name 'meh' "
+    require("meh" in module)
+    require(isinstance(module.meh, function))
+
+
+search nonexisting artist, then some known: 
+    Uncaught TypeError: Object #<U> has no method 'stopVideo' application.js:5321
+    Playlist.reset application.js:5321
+    Playlist.init application.js:5301
+    (anonymous function) application.js:5900
+    f.event.dispatch application.js:4
+    h.handle.i
+
+====
+
+Porting macropy - import system, ast changes
+11.08 - pathing issues with tests - how do we determine what directory  to run the tests in?
+12.08 - testing, testing
+13.08 - long letter to aivar, discovered sample testing was broken
+14.08 - put the macros back in, wrote testing code into a temporary file.
+21.08 - more testers written, made grader be a singleton, test_wrappers
+
+Problems - 
+    Speed vs flexibility
+    Running each test in a separate subprocess slowed testing down. 
+        (each separate test took ~0.9s on vps)
+
+    However, running each test in the same subprocess comes at a price - 
+        flexibility. Namely, each test must "finish" in the sense that
+        the module thread has shut down (__import__ statement is complete)
+
+        This is a dealbreaker for many tests, e.g. esp ones that build up io solution
+        tests from smaller pieces.
+
+    Running in the same subprocess has an additional advantage - it simplifies the grader api quite a bit.
+
+    This might be mitigated by instead of loading the module, we compile and
+    execute the user code!
+        This is what I currently did. Note the assumption that user module lives in the same folder as their program
+    Another way would be to forcibly kill off threads.
+
+27.08 - utf8 issues. use codecs.open instead of normal open everywhere!
+
+TODO: input vs output in feedback
