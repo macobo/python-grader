@@ -1,6 +1,0 @@
-README.rst
-facebook.py
-facebook_sdk.egg-info/PKG-INFO
-facebook_sdk.egg-info/SOURCES.txt
-facebook_sdk.egg-info/dependency_links.txt
-facebook_sdk.egg-info/top_level.txt
