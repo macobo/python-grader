@@ -128,7 +128,7 @@ def expose_ast(test_function):
 
     def _hook(info):
         code = read_code(info["solution_path"])
-        # add as a named argument to the test function
+        # add the solutions AST as a named argument to the test function
         info["extra_kwargs"]["AST"] = ast.parse(code)
-
+    # add function _hook as a pre-hook to test_function
     return before_test(_hook)(test_function)
