@@ -23,7 +23,7 @@ SANDBOXES = {
 
 
 def reset():
-    " resets settings and loaded tests "
+    " Removes all loaded tests from test case table. "
     testcases.clear()
 
 
@@ -54,7 +54,7 @@ def test(test_function):
 
 
 def get_test_name(function):
-    """ Returns the test name as it is used by the grader. """
+    """ Returns the test name as it is used by the grader. Used internally. """
     name = function.__name__
     if inspect.getdoc(function):
         name = beautifyDescription(inspect.getdoc(function))
@@ -62,6 +62,7 @@ def get_test_name(function):
 
 
 def get_setting(test_function, setting_name):
+    """ Returns a test setting. Used internally. """
     if isinstance(test_function, str):
         test_function = testcases[test_function]
     if not hasattr(test_function, "_grader_settings_"):
@@ -71,51 +72,41 @@ def get_setting(test_function, setting_name):
 
 
 def set_setting(test_function, setting_name, value):
+    """ Sets a test setting. Used internally. """
     if isinstance(test_function, str):
         test_function = testcases[test_function]
     # populate settings if needed
     get_setting(test_function, setting_name)
     test_function._grader_settings_[setting_name] = value
 
-
-### Hooks
-def before_test(action):
-    """ Decorator for a hook on a tested function. Makes the tester execute
-        the function `action` before running the decorated test. """
-    @test_decorator
-    def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "pre-hooks") + (action,)
-        set_setting(test_function, "pre-hooks", hooks)
-        return test_function
-    return _inner_decorator
-
-
-def after_test(action):
-    """ Decorator for a hook on a tested function. Makes the tester execute
-        the function `action` after running the decorated test. """
-    @test_decorator
-    def _inner_decorator(test_function):
-        hooks = get_setting(test_function, "post-hooks") + (action,)
-        set_setting(test_function, "post-hooks", hooks)
-        return test_function
-    return _inner_decorator
-
-
-def timeout(seconds):
-    """ Decorator for a test. Indicates how long the test can run. """
-    def _inner(test_function):
-        set_setting(test_function, "timeout", seconds)
-        return test_function
-    return _inner
-
 ### Exposed methods to test files/code
-
-
 def test_module(tester_path, solution_path, other_files=[], sandbox_cmd=None):
     """ Runs all tests for the solution given as argument.
-        Should be only run with appropriate rights/user.
 
-        Returns/prints the results as json.
+        :param str tester_path: Path to the tester used.
+        :param str solution_path: Path to the solution being tested.
+        :param list other_files: Paths to other files to put into same directory while testing.
+        :param sandbox_cmd: Sandbox to use. Set this to 'docker' to use the built-in docker sandbox.
+
+        :return: Dictionary of test results.
+
+        Return value format::
+
+            {
+                "results": [
+                    {
+                        "description": str, # test description
+                        "success": bool, # indicates whether the test case was successful
+                        "time": "0.101", # float indicating how long test took
+                        "error_message": str, # error message if test was not successful
+                        "traceback": str, # full error traceback if test was not successful
+                    },
+                    ...
+                ],
+                "success": bool, # indicates whether tests were run or not
+                "reason": str, # short string describing why tester failed to run
+                "extra_info": dict, # extra information about why tester failed to run
+            }
     """
 
     from .execution_base import do_testcase_run
@@ -144,6 +135,7 @@ def test_module(tester_path, solution_path, other_files=[], sandbox_cmd=None):
 
 
 def test_code(tester_code, user_code, other_files=[], *args, **kwargs):
+    """ Tests code. See :func:`test_module` for argument and return value description. """
     with AssetFolder(tester_code, user_code, other_files, is_code=True) as assets:
         return test_module(
             assets.tester_path,

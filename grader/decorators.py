@@ -3,6 +3,10 @@ from .utils import read_code, setDescription
 from functools import wraps
 
 def test_decorator(decorator):
+    """ Decorator for test decorators. 
+
+        This makes the decorator work testcases decorated with 
+        :func:`grader.wrappers.test_cases`. """
     @wraps(decorator)
     def _inner(f):
         if isinstance(f, list) or isinstance(f, tuple):
@@ -11,9 +15,49 @@ def test_decorator(decorator):
             return decorator(f)
     return _inner
 
+### Hooks
+def before_test(action):
+    """ Decorator for a pre-hook on a tested function. Makes the tester execute
+        the function `action` before running the decorated test. """
+    @test_decorator
+    def _inner_decorator(test_function):
+        hooks = get_setting(test_function, "pre-hooks") + (action,)
+        set_setting(test_function, "pre-hooks", hooks)
+        return test_function
+    return _inner_decorator
+
+
+def after_test(action):
+    """ Decorator for a post-hook on a tested function. Makes the tester execute
+        the function `action` after running the decorated test. """
+    @test_decorator
+    def _inner_decorator(test_function):
+        hooks = get_setting(test_function, "post-hooks") + (action,)
+        set_setting(test_function, "post-hooks", hooks)
+        return test_function
+    return _inner_decorator
+
+
+def timeout(seconds):
+    """ Decorator for a test. Indicates how long the test can run. """
+    @test_decorator
+    def _inner(test_function):
+        set_setting(test_function, "timeout", seconds)
+        return test_function
+    return _inner
+
 
 @test_decorator
 def set_description(d):
+    """ Decorator for setting the description of a test.
+
+        Example usage::
+
+            @grader.test
+            @grader.set_description("New description")
+            def a_test_case(m):
+                ...
+    """
     def inner(f):
         setDescription(f, d)
         return f
@@ -22,16 +66,17 @@ def set_description(d):
 
 ## File creation, deletion hooks
 def create_file(filename, contents=""):
-    """ Hook for creating files
-        Example usage:
+    """ Hook for creating files before a test.
 
-        @grader.test
-        @grader.before_test(create_file('hello.txt', 'Hello world!'))
-        @grader.after_test(delete_file('hello.txt'))
-        def hook_test(m):
-            with open('hello.txt') as file:
-                txt = file.read()
-                # ...
+        Example usage::
+
+            @grader.test
+            @grader.before_test(create_file('hello.txt', 'Hello world!'))
+            @grader.after_test(delete_file('hello.txt'))
+            def hook_test(m):
+                with open('hello.txt') as file:
+                    txt = file.read()
+                    # ...
     """
     import collections
     if isinstance(contents, collections.Iterable) and not isinstance(contents, str):
@@ -45,16 +90,17 @@ def create_file(filename, contents=""):
 
 
 def delete_file(filename):
-    """ Hook for deleting files
-        Example usage:
+    """ Hook for deleting files after a test.
 
-        @grader.test
-        @grader.before_test(create_file('hello.txt', 'Hello world!'))
-        @grader.after_test(delete_file('hello.txt'))
-        def hook_test(m):
-            with open('hello.txt') as file:
-                txt = file.read()
-                # ...
+        Example usage::
+
+            @grader.test
+            @grader.before_test(create_file('hello.txt', 'Hello world!'))
+            @grader.after_test(delete_file('hello.txt'))
+            def hook_test(m):
+                with open('hello.txt') as file:
+                    txt = file.read()
+                    # ...
     """
 
     def _inner(result):
@@ -70,12 +116,13 @@ def create_temporary_file(filename, contents=""):
     """ Decorator for constructing a file which is available
         during a single test and is deleted afterwards.
 
-        Example usage:
-        @grader.test
-        @create_temporary_file('hello.txt', 'Hello world!')
-        def hook_test(m):
-            with open('hello.txt') as file:
-                txt = file.read()
+        Example usage::
+
+            @grader.test
+            @create_temporary_file('hello.txt', 'Hello world!')
+            def hook_test(m):
+                with open('hello.txt') as file:
+                    txt = file.read()
         """
     from grader.core import before_test, after_test
 
@@ -90,11 +137,12 @@ def add_value(value_name, value_or_fn):
     """ Post-test hook which as the value or the result of evaluating function on
         result to the test result dict.
 
-        Example usage:
-        @test
-        @after_test(add_value("grade", 7))
-        def graded_testcase(m):
-            # ...
+        Example usage::
+
+            @test
+            @after_test(add_value("grade", 7))
+            def graded_testcase(m):
+                ...
         """
     def _inner(result):
         value = value_or_fn
@@ -104,24 +152,17 @@ def add_value(value_name, value_or_fn):
     return _inner
 
 
-def get_module_AST(path):
-    import ast
-    # encoding-safe open
-    code = read_code(path)
-    return ast.parse(code)
-
-
 @test_decorator
 def expose_ast(test_function):
     """ Pre-test hook for exposing the ast of the solution module
         as an argument to the tester. 
 
-        Example usage:
+        Example usage::
 
-        @grader.test
-        @grader.expose_ast
-        def ast_test(m, AST):
-            # ...
+            @grader.test
+            @grader.expose_ast
+            def ast_test(m, AST):
+                ...
     """
     import ast
     from grader.core import before_test

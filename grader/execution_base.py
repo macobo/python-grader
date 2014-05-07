@@ -73,15 +73,19 @@ def call_test_function(test_index, tester_path, solution_path):
 
 def do_testcase_run(test_name, tester_path, solution_path, options):
     """ Calls the test, checking if it doesn't raise an Exception.
-        Returns a dictionary in the following form:
-        {
-            "success": boolean,
-            "traceback": string ("" if None)
-            "time": string (execution time, rounded to 3 decimal digits)
-            "description": string (test name/its description)
-        }
+        Returns a dictionary in the following form::
 
-        If the test timeouts, traceback is "timeout"
+            {
+                "success": boolean,
+                "traceback": string ("" if None)
+                "error_message: string
+                "time": string (execution time, rounded to 3 decimal digits)
+                "description": string (test name/its description)
+            }
+
+        If the test timeouts, traceback is set to "timeout".
+
+        Post-hooks can manipulate with the test results before returning.
     """
     from grader.code_runner import call_test
     # TODO: not correct probably

@@ -52,22 +52,36 @@ def check_function(function_name, args, expected_result, description=None):
 def test_cases(test_args, description=None, **arg_functions):
     """ Decorator for generating multiple tests with additional arguments.
 
-        `test_args` - list of lists - each element of the outer list should be
-                        extra arguments to call decorated function with.
-        `description` - String or function, gets passed in keywords and arguments.
-        `arg_functions` - function. Gets called with a value from test_args and the
-                        returned value is added as a keyword to test and description.
+        :param test_args: Each element of the list is a list of arguments to add to test function call.
+        :type test_args: [args...]
+        :param str description: String or function, gets passed in keywords and arguments.
+        :keyword function arg_functions: Keyword arguments for the test function.
 
-        Example usage:
+        :return: list of test functions
 
-        @test_cases(
-            [[1, 2], [3, 4]],
-            expected=lambda x, y: x+y,
-            description="Adding {0} and {1} should yield {expected}
-        )
-        def t(m, a, b, expected):
-            # a and b are either 1 and 2 or 3 and 4
-            assert a + b == expected
+        Example usage::
+
+            @test_cases(
+                [[1, 2], [3, 4]],
+                expected=lambda x, y: x+y,
+                description="Adding {0} and {1} should yield {expected}"
+            )
+            def t(m, a, b, expected):
+                # a and b are either 1 and 2 or 3 and 4
+                assert a + b == expected
+
+        This is equivelent to::
+
+            @test
+            @set_description("Adding 1 and 2 should yield 3")
+            def t_1(m):
+                assert 1+2 == 3
+
+
+            @test
+            @set_description("Adding 3 and 4 should yield 7")
+            def t_2(m):
+                assert 3+4 == 7
     """
 
     if description is None:
