@@ -22,7 +22,7 @@ def read_proc_results(proc, decode):
     return status, stdout, stderr
 
 def microseconds_passed(time_delta):
-    return time_delta.microseconds + time_delta.seconds * 10**7
+    return time_delta.microseconds + time_delta.seconds * 10**6
 
 
 def call_command(cmd, timeout=float('inf'), cwd=None, decode=True, **subproc_options):
