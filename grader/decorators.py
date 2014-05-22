@@ -124,7 +124,6 @@ def create_temporary_file(filename, contents=""):
                 with open('hello.txt') as file:
                     txt = file.read()
         """
-    from grader.core import before_test, after_test
 
     def _inner(test_function):
         before_test(create_file(filename, contents))(test_function)
@@ -165,7 +164,6 @@ def expose_ast(test_function):
                 ...
     """
     import ast
-    from grader.core import before_test
 
     def _hook(info):
         code = read_code(info["solution_path"])

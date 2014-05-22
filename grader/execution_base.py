@@ -63,6 +63,8 @@ def call_test_function(test_index, tester_path, solution_path):
             **pre_hook_info["extra_kwargs"]
         )
     except Exception as e:
+        if module.caughtException is not None:
+            e = module.caughtException
         results["error_message"] = get_error_message(e)
         results["traceback"] = get_traceback(e)
         raise
@@ -88,7 +90,6 @@ def do_testcase_run(test_name, tester_path, solution_path, options):
         Post-hooks can manipulate with the test results before returning.
     """
     from grader.code_runner import call_test
-    # TODO: not correct probably
     options["timeout"] = grader.get_setting(test_name, "timeout")
 
     test_index = grader.testcases.indexOf(test_name)
