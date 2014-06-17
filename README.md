@@ -9,8 +9,6 @@ For the student, feedback provided by the module should be helpful for debugging
 
 For the teacher, the advantage over using normal unit tests is that it allows to test IO-based solutions without having to change task specifications very much.
 
-
-
 ## Example
 
 ###Task statement
@@ -77,6 +75,7 @@ python setup.py install
 
 To run tests for this module, run `python run_tests.py`.
 
+
 ### Running test on a file
 To tester on a solution, run `python -m grader <tester_file> <solution_file>`.
 
@@ -86,3 +85,10 @@ cd tasks/
 python -m grader Examples/interactive_search_tester.py Examples/interactive_search_solution.py
 ```
 
+
+---------------
+This project was made as a part of Karl-Aksel Puulmann's Bachelor's thesis. 
+
+Links:
+* [Link to thesis](http://macobo.github.io/python-grader/thesis.pdf)
+* [Link to poster introducing project](http://macobo.github.io/python-grader/poster.pdf)
