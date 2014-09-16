@@ -1,13 +1,22 @@
 Python Grader [![Build Status](https://travis-ci.org/macobo/python-grader.png?branch=master)](https://travis-ci.org/macobo/python-grader)
 =============
 
-Module for automatically testing homework solutions. Used to test homeworks and midterms for various first-year programming courses at University of Tartu.
+---------------
+This project was made as a part of Karl-Aksel Puulmann's Bachelor's thesis. The following two links serve as a better introduction to the project than this readme does.
 
-Goal is to allow testing interactive input-output based programs as well as functions and variables. 
+* [Link to poster introducing project](http://macobo.github.io/python-grader/poster.pdf)
+* [Link to thesis](http://macobo.github.io/python-grader/thesis.pdf)
+
+-------
+
+This is a module for automatically testing homework solutions that has been used for giving feedback for homeworks and midterms for various first-year programming courses at University of Tartu.
+
+What this project does differently from conventional unit-testing frameworks is allow testing of interactive, input-output based programs as well as more conventional function/class based programs, meanwhile retaining a simple and powerful interface for doing that.
 
 For the student, feedback provided by the module should be helpful for debugging and understanding where they went wrong.
 
-For the teacher, the advantage over using normal unit tests is that it allows to test IO-based solutions without having to change task specifications very much.
+For the teacher, the advantage over using normal unit tests is that it allows to move from purely-manual based input-output testing to a more structured and consistent framework that saves time.
+
 
 ## Example
 
@@ -84,11 +93,3 @@ For example, to run the above tester (in the tasks folder) on the sample solutio
 cd tasks/
 python -m grader Examples/interactive_search_tester.py Examples/interactive_search_solution.py
 ```
-
-
----------------
-This project was made as a part of Karl-Aksel Puulmann's Bachelor's thesis. 
-
-Links:
-* [Link to thesis](http://macobo.github.io/python-grader/thesis.pdf)
-* [Link to poster introducing project](http://macobo.github.io/python-grader/poster.pdf)
